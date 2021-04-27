@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Threading.Tasks;
 
@@ -32,11 +31,8 @@ namespace Airslip.Identity.Api.Controller
 
         [HttpPost("login")]
         [AllowAnonymous]
-        [SwaggerResponse(StatusCodes.Status200OK, "A successful response, returning a AuthenticatedUserResponse.",
-            typeof(AuthenticatedUserResponse))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest,
-            "Returned if there is an issue with the request.",
-            typeof(ErrorResponse))]
+        [ProducesResponseType( typeof(AuthenticatedUserResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType( typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> IdentityLogin(LoginRequest request)
         {
             GenerateJwtBearerTokenCommand generateJwtBearerTokenCommand = new(

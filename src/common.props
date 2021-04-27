@@ -15,20 +15,20 @@
 		<AzureCosmos>3.17.0</AzureCosmos>
 		<BlobStorage>12.8.0</BlobStorage>
 		<FluentAssertions>5.10.3</FluentAssertions>
-		<FluentValidation>9.3.0</FluentValidation>
-		<IdentityJwt>6.7.1</IdentityJwt>
+		<FluentValidation>10.1.0</FluentValidation>
+		<IdentityJwt>6.11.0</IdentityJwt>
 		<JetBrainsAnnoations>2021.1.0</JetBrainsAnnoations>
 		<MediatR>9.0.0</MediatR>
 		<MicrosoftAspNetCoreHttp>2.2.0</MicrosoftAspNetCoreHttp>
 		<MicrosoftAspNetWebApiClient>5.2.7</MicrosoftAspNetWebApiClient>
-		<MongoDb>2.12.0</MongoDb>
+		<MongoDb>2.12.2</MongoDb>
 		<NetTestSdk>16.9.4</NetTestSdk>
 		<MongoDbIdentity>3.1.1</MongoDbIdentity>
-		<NewtonsoftJson>12.0.3</NewtonsoftJson>
+		<NewtonsoftJson>13.0.1</NewtonsoftJson>
 		<SerilogAspNetCore>4.1.0</SerilogAspNetCore>
 		<SerilogSinkLogzIo>3.0.1</SerilogSinkLogzIo>
-		<Swashbuckle>5.6.3</Swashbuckle>
-		<SwashbuckleFilters>6.1.0</SwashbuckleFilters>
+		<Swashbuckle>6.1.3</Swashbuckle>
+		<SwashbuckleFilters>7.0.2</SwashbuckleFilters>
 		<Xunit>2.4.1</Xunit>
 	</PropertyGroup>
 	

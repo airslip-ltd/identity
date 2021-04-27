@@ -4,14 +4,10 @@
 
 	<ItemGroup>
 		<PackageReference Include="JetBrains.Annotations" Version="$(JetBrainsAnnoations)" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="$(NetVersion)" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(NetVersion)" />
+<!--		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="$(NetVersion)" />-->
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(NetVersion)" NoWarn="NU1605" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(NetVersion)" NoWarn="NU1605" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(NetVersion)" />
-		<PackageReference Include="Microsoft.Extensions.Http.Polly" Version="$(NetVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Options" Version="$(NetVersion)" />
-		<PackageReference Include="Microsoft.Azure.Cosmos" Version="$(AzureCosmos)" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="$(Swashbuckle)" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="$(SwashbuckleFilters)" />
 		<PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="$(MongoDbIdentity)" />

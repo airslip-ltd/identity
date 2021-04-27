@@ -11,8 +11,4 @@
 		<PackageReference Include="Airslip.Common.Types" Version="$(AirslipCommonTypes)" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <ProjectReference Include="..\Airslip.Identity.MongoDb.Contracts\Airslip.Identity.MongoDb.Contracts.csproj" />
-	</ItemGroup>
-
 </Project>
