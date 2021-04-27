@@ -1,7 +1,7 @@
 ﻿using JetBrains.Annotations;
 using System.ComponentModel.DataAnnotations;
 
-namespace Airslip.Identity.Api
+namespace Airslip.Identity.Api.Contracts.Requests
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public record LoginRequest

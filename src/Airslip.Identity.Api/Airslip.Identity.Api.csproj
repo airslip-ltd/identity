@@ -9,7 +9,6 @@
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(NetVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Options" Version="$(NetVersion)" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="$(Swashbuckle)" />
-		<PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="$(SwashbuckleFilters)" />
 		<PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="$(MongoDbIdentity)" />
 		<PackageReference Include="Serilog.AspNetCore" Version="$(SerilogAspNetCore)" />
 		<PackageReference Include="Serilog.Sinks.Logz.Io" Version="$(SerilogSinkLogzIo)" />
@@ -26,5 +25,13 @@
 	  <ProjectReference Include="..\Airslip.Identity.Infrastructure.MongoDb\Airslip.Identity.Infrastructure.MongoDb.csproj" />
 	  <ProjectReference Include="..\Airslip.Identity.MongoDb.Contracts\Airslip.Identity.MongoDb.Contracts.csproj" />
 	</ItemGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+		<DocumentationFile>bin\Debug\Airslip.Identity.Api.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+		<DocumentationFile>bin\Release\Airslip.Identity.Api.xml</DocumentationFile>
+	</PropertyGroup>
 
 </Project>

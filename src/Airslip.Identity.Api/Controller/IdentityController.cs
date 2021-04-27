@@ -4,6 +4,7 @@ using Airslip.Common.Types.Enums;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.Commands;
 using Airslip.Identity.Api.Auth;
+using Airslip.Identity.Api.Contracts.Requests;
 using Airslip.Identity.Api.Contracts.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -17,11 +18,11 @@ namespace Airslip.Identity.Api.Controller
 {
     [ApiController]
     [Route("v1/identity/")]
-    public class AuthenticateController : ApiResponse
+    public class IdentityController : ApiResponse
     {
         private readonly IMediator _mediator;
 
-        public AuthenticateController(
+        public IdentityController(
             Token token,
             IOptions<PublicApiSettings> publicApiOptions,
             IMediator mediator) : base(token, publicApiOptions)

@@ -28,7 +28,6 @@
 		<SerilogAspNetCore>4.1.0</SerilogAspNetCore>
 		<SerilogSinkLogzIo>3.0.1</SerilogSinkLogzIo>
 		<Swashbuckle>6.1.3</Swashbuckle>
-		<SwashbuckleFilters>7.0.2</SwashbuckleFilters>
 		<Xunit>2.4.1</Xunit>
 	</PropertyGroup>
 	

@@ -1,3 +1,4 @@
+using Airslip.Common.Types;
 using Airslip.Identity.Api.Application;
 using Airslip.Identity.Api.Auth;
 using Airslip.Identity.Api.Middleware;
@@ -14,7 +15,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using System;
+using System.IO;
+using System.Reflection;
 
 namespace Airslip.Identity.Api
 {
@@ -38,9 +42,30 @@ namespace Airslip.Identity.Api
                 .AddHttpClient()
                 .AddHttpContextAccessor();
             
+            services.AddSwaggerGen(options =>
+            {
+                options.DocumentFilter<BasePathDocumentFilter>();
+
+                string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                string filePath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.IncludeXmlComments(filePath);
+                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory,
+                    $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
+
+                options.SwaggerDoc("v1",
+                    new OpenApiInfo
+                    {
+                        Title = "Identity API",
+                        Version = "v1",
+                        Description = "Includes all API endpoints for authorisation."
+                    }
+                );
+            });
+            
             services
                 .AddOptions()
-                .Configure<MongoDbSettings>(Configuration.GetSection(nameof(MongoDbSettings)));
+                .Configure<MongoDbSettings>(Configuration.GetSection(nameof(MongoDbSettings)))
+                .Configure<PublicApiSettings>(Configuration.GetSection(nameof(PublicApiSettings)));
 
             services
                 .AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>()
@@ -72,6 +97,14 @@ namespace Airslip.Identity.Api
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
+            
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Airslip.Identity.Api v1");
+                c.RoutePrefix = string.Empty;
+            });
 
             app.UseHttpsRedirection()
                 .UseRouting()
