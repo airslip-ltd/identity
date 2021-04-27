@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+	  <OutputType>Library</OutputType>
+	</PropertyGroup>
+
+	<Import Project="..\common.props" />
+
+	<ItemGroup>
+		<PackageReference Include="Airslip.Common.Contracts" Version="$(AirslipCommonContracts)" />
+		<PackageReference Include="Airslip.Common.Types" Version="$(AirslipCommonTypes)" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Airslip.Identity.MongoDb.Contracts\Airslip.Identity.MongoDb.Contracts.csproj" />
+	</ItemGroup>
+
+</Project>

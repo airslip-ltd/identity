@@ -1,0 +1,12 @@
+﻿{
+  "profiles": {
+    "Airslip.Identity.Api": {
+      "commandName": "Project",
+      "dotnetRunMessages": "true",
+      "applicationUrl": "https://localhost:10289",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
