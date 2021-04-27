@@ -7,11 +7,14 @@
 <!--		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="$(NetVersion)" />-->
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(NetVersion)" NoWarn="NU1605" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(NetVersion)" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="$(NetVersion)" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="$(NetVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Options" Version="$(NetVersion)" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="$(Swashbuckle)" />
 		<PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="$(MongoDbIdentity)" />
 		<PackageReference Include="Serilog.AspNetCore" Version="$(SerilogAspNetCore)" />
 		<PackageReference Include="Serilog.Sinks.Logz.Io" Version="$(SerilogSinkLogzIo)" />
+		
 	</ItemGroup>
 
 	<ItemGroup>
