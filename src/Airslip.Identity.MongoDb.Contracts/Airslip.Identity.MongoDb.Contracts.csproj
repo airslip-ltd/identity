@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="..\common.props" />
+
+	<ItemGroup>
+		<PackageReference Include="Airslip.Common.Types" Version="1.0.3" />
+		<PackageReference Include="MongoDB.Bson" Version="$(MongoDb)" />
+		<PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJson)" />
+		<PackageReference Include="JetBrains.Annotations" Version="$(JetBrainsAnnoations)" />
+	</ItemGroup>
+
+</Project>

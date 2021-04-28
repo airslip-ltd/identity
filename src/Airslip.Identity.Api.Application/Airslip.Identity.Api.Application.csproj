@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+	  <OutputType>Library</OutputType>
+	</PropertyGroup>
+
+	<Import Project="..\common.props" />
+
+	<ItemGroup>
+		<PackageReference Include="MediatR" Version="$(MediatR)" />
+		<PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="$(MediatR)" />
+		<PackageReference Include="FluentValidation" Version="$(FluentValidation)" />
+		<PackageReference Include="Airslip.Common.Contracts" Version="$(AirslipCommonContracts)" />
+		<PackageReference Include="Airslip.Common.Types" Version="$(AirslipCommonTypes)" />
+		<PackageReference Include="Serilog.AspNetCore" Version="$(SerilogAspNetCore)" />
+		<PackageReference Include="Serilog.Sinks.Logz.Io" Version="$(SerilogSinkLogzIo)" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Airslip.Identity.Api.Contracts\Airslip.Identity.Api.Contracts.csproj" />
+	  <ProjectReference Include="..\Airslip.Identity.Domain\Airslip.Identity.Domain.csproj" />
+	  <ProjectReference Include="..\Airslip.Identity.MongoDb.Contracts\Airslip.Identity.MongoDb.Contracts.csproj" />
+	  <ProjectReference Include="..\Airslip.Security\Airslip.Security.csproj" />
+	</ItemGroup>
+
+</Project>

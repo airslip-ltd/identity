@@ -1,0 +1,40 @@
+﻿<Project>
+
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
+		<NetVersion>5.0.*</NetVersion>
+		<Nullable>enable</Nullable>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<AspNetCoreAuthentication>2.2.0</AspNetCoreAuthentication>
+		<AspNetCoreHttpAbstractions>2.2.0</AspNetCoreHttpAbstractions>
+		<AzureCosmos>3.17.0</AzureCosmos>
+		<BlobStorage>12.8.0</BlobStorage>
+		<FluentAssertions>5.10.3</FluentAssertions>
+		<FluentValidation>9.3.0</FluentValidation>
+		<IdentityJwt>6.7.1</IdentityJwt>
+		<JetBrainsAnnoations>2021.1.0</JetBrainsAnnoations>
+		<MediatR>9.0.0</MediatR>
+		<MicrosoftAspNetCoreHttp>2.2.0</MicrosoftAspNetCoreHttp>
+		<MicrosoftAspNetWebApiClient>5.2.7</MicrosoftAspNetWebApiClient>
+		<MongoDb>2.12.0</MongoDb>
+		<NetTestSdk>16.9.4</NetTestSdk>
+		<MongoDbIdentity>3.1.1</MongoDbIdentity>
+		<NewtonsoftJson>12.0.3</NewtonsoftJson>
+		<SerilogAspNetCore>4.1.0</SerilogAspNetCore>
+		<SerilogSinkLogzIo>3.0.1</SerilogSinkLogzIo>
+		<Swashbuckle>5.6.3</Swashbuckle>
+		<SwashbuckleFilters>6.1.0</SwashbuckleFilters>
+		<Xunit>2.4.1</Xunit>
+	</PropertyGroup>
+	
+	<PropertyGroup>
+		<AirslipCommonContracts>1.0.2</AirslipCommonContracts>
+		<AirslipCommonTypes>1.0.3</AirslipCommonTypes>
+	</PropertyGroup>
+
+</Project>
