@@ -6,6 +6,7 @@
 		<PackageReference Include="JetBrains.Annotations" Version="$(JetBrainsAnnoations)" />
 <!--		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="$(NetVersion)" />-->
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(NetVersion)" NoWarn="NU1605" />
+		<PackageReference Include="Microsoft.Extensions.Http.Polly" Version="$(NetVersion)" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(NetVersion)" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="$(NetVersion)" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="$(NetVersion)" />
@@ -14,12 +15,12 @@
 		<PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="$(MongoDbIdentity)" />
 		<PackageReference Include="Serilog.AspNetCore" Version="$(SerilogAspNetCore)" />
 		<PackageReference Include="Serilog.Sinks.Logz.Io" Version="$(SerilogSinkLogzIo)" />
-		
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Airslip.Common.Contracts" Version="$(AirslipCommonContracts)" />
 		<PackageReference Include="Airslip.Common.Types" Version="$(AirslipCommonTypes)" />
+		<PackageReference Include="Airslip.Yapily.Client" Version="$(AirslipYapilyClient)" />
 	</ItemGroup>
 
 	<ItemGroup>

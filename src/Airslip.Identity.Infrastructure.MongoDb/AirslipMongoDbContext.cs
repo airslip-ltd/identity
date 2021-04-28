@@ -1,4 +1,4 @@
-﻿using Airslip.Common.Types;
+﻿using Airslip.Common.Types.Extensions;
 using Airslip.Identity.MongoDb.Contracts;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Options;

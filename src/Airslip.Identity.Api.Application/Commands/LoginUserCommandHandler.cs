@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Airslip.Identity.Api.Application.Commands
 {
-    public class GenerateJwtBearerTokenCommandHandler : IRequestHandler<GenerateJwtBearerTokenCommand, IResponse>
+    public class GenerateJwtBearerTokenCommandHandler : IRequestHandler<LoginUserCommand, IResponse>
     {
         private readonly IUserService _userService;
         private readonly IUserManagerService _userManagerService;
@@ -29,7 +29,7 @@ namespace Airslip.Identity.Api.Application.Commands
             _jwtSettings = jwtSettingsOptions.Value;
         }
 
-        public async Task<IResponse> Handle(GenerateJwtBearerTokenCommand command, CancellationToken cancellationToken)
+        public async Task<IResponse> Handle(LoginUserCommand command, CancellationToken cancellationToken)
         {
             bool canLogin = await _userManagerService.TryToLogin(command.Email, command.Password);
 

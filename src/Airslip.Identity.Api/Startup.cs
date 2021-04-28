@@ -2,9 +2,11 @@ using Airslip.Common.Types;
 using Airslip.Identity.Api.Application;
 using Airslip.Identity.Api.Auth;
 using Airslip.Identity.Api.Middleware;
-using Airslip.Identity.Infrastructure.MongoDb.Identity;
 using Airslip.Identity.MongoDb.Contracts;
+using Airslip.Identity.MongoDb.Contracts.Identity;
 using Airslip.Security.Jwt;
+using Airslip.Yapily.Client;
+using Airslip.Yapily.Client.Contracts;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -19,6 +21,7 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.IO;
 using System.Reflection;
+using Polly;
 
 namespace Airslip.Identity.Api
 {
@@ -53,7 +56,6 @@ namespace Airslip.Identity.Api
                 .AddScoped<JwtBearerToken>()
                 .Configure<JwtSettings>(Configuration.GetSection(nameof(JwtSettings)))
                 .AddAuthorization()
-                //.AddAuthorization(options => { AddPolicy(options, new TenantPolicies().Policies); })
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer();
 
@@ -65,6 +67,17 @@ namespace Airslip.Identity.Api
                         : Configuration["MongoDbSettings:DatabaseName"])
                 .AddDefaultTokenProviders();
             
+            services.AddHttpClient<IYapilyClient>(nameof(IYapilyClient),
+                    yapilyHttpClient =>
+                    {
+                        yapilyHttpClient.AddDefaults(
+                            Configuration["YapilySettings:BaseUri"],
+                            Configuration["YapilySettings:ApiKey"],
+                            Configuration["YapilySettings:ApiSecret"]);
+                    })
+                .AddTransientHttpErrorPolicy(p =>
+                    p.WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))));
+
             services.AddMediatR(ApplicationAssembly.Reference);
             // For all the validators, register them with dependency injection as scoped
             AssemblyScanner.FindValidatorsInAssembly(ApplicationAssembly.Reference)
@@ -102,8 +115,12 @@ namespace Airslip.Identity.Api
                     options.SubstituteApiVersionInUrl = true;
                 });
 
-            services.AddMongoServices();
+            services
+                .AddMongoServices()
+                .AddYapily();
         }
+
+     
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
