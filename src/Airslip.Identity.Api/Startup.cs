@@ -41,27 +41,7 @@ namespace Airslip.Identity.Api
             services
                 .AddHttpClient()
                 .AddHttpContextAccessor();
-            
-            services.AddSwaggerGen(options =>
-            {
-                options.DocumentFilter<BasePathDocumentFilter>();
 
-                string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                string filePath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                options.IncludeXmlComments(filePath);
-                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory,
-                    $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
-
-                options.SwaggerDoc("v1",
-                    new OpenApiInfo
-                    {
-                        Title = "Identity API",
-                        Version = "v1",
-                        Description = "Includes all API endpoints for authorisation."
-                    }
-                );
-            });
-            
             services
                 .AddOptions()
                 .Configure<MongoDbSettings>(Configuration.GetSection(nameof(MongoDbSettings)))
@@ -90,6 +70,37 @@ namespace Airslip.Identity.Api
             AssemblyScanner.FindValidatorsInAssembly(ApplicationAssembly.Reference)
                 .ForEach(item => services.AddScoped(item.InterfaceType, item.ValidatorType));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidatorBehavior<,>));
+
+            services.AddSwaggerGen(options =>
+            {
+                options.DocumentFilter<BasePathDocumentFilter>();
+
+                string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                string filePath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.IncludeXmlComments(filePath);
+                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory,
+                    $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
+
+                options.SwaggerDoc("v1",
+                    new OpenApiInfo
+                    {
+                        Title = "Identity API",
+                        Version = "v1",
+                        Description = "Includes all API endpoints for authorisation."
+                    }
+                );
+            });
+            
+            services
+                .AddApiVersioning(options =>
+                {
+                    options.ReportApiVersions = true;
+                })
+                .AddVersionedApiExplorer(options =>
+                {
+                    options.GroupNameFormat = "'v'VVV";
+                    options.SubstituteApiVersionInUrl = true;
+                });
 
             services.AddMongoServices();
         }

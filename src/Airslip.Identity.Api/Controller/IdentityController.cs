@@ -17,7 +17,10 @@ using System.Threading.Tasks;
 namespace Airslip.Identity.Api.Controller
 {
     [ApiController]
-    [Route("v1/identity/")]
+    [ApiVersion(ApiConstants.VersionOne)]
+    // ReSharper disable once RouteTemplates.RouteParameterConstraintNotResolved
+    [Route("v{version:apiVersion}/identity")]
+    [Produces(ApiConstants.JsonMediaType)]
     public class IdentityController : ApiResponse
     {
         private readonly IMediator _mediator;
