@@ -18,7 +18,6 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Airslip.Identity.Api.Contracts\Airslip.Identity.Api.Contracts.csproj" />
-	  <ProjectReference Include="..\Airslip.Identity.Domain\Airslip.Identity.Domain.csproj" />
 	  <ProjectReference Include="..\Airslip.Identity.MongoDb.Contracts\Airslip.Identity.MongoDb.Contracts.csproj" />
 	  <ProjectReference Include="..\Airslip.Security\Airslip.Security.csproj" />
 	</ItemGroup>

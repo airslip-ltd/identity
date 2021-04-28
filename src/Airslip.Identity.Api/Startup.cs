@@ -1,7 +1,6 @@
 using Airslip.Identity.Api.Application;
 using Airslip.Identity.Api.Auth;
 using Airslip.Identity.Api.Middleware;
-using Airslip.Identity.Infrastructure.MongoDb;
 using Airslip.Identity.Infrastructure.MongoDb.Identity;
 using Airslip.Identity.MongoDb.Contracts;
 using Airslip.Security.Jwt;
@@ -37,8 +36,7 @@ namespace Airslip.Identity.Api
 
             services
                 .AddHttpClient()
-                .AddHttpContextAccessor()
-                .AddOptions();
+                .AddHttpContextAccessor();
             
             services
                 .AddOptions()
@@ -60,7 +58,6 @@ namespace Airslip.Identity.Api
                     bool.Parse(Environment.GetEnvironmentVariable("DBCONTEXT_INMEMORY") ?? "false")
                         ? "airslipTestDb"
                         : Configuration["MongoDbSettings:DatabaseName"])
-                //.AddUserManager<ApplicationUser>()
                 .AddDefaultTokenProviders();
             
             services.AddMediatR(ApplicationAssembly.Reference);
