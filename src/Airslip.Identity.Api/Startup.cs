@@ -9,9 +9,11 @@ using Airslip.Yapily.Client;
 using Airslip.Yapily.Client.Contracts;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -57,7 +59,17 @@ namespace Airslip.Identity.Api
                 .Configure<JwtSettings>(Configuration.GetSection(nameof(JwtSettings)))
                 .AddAuthorization()
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer();
+                .AddJwtBearer()
+                .AddCookie(options => { options.LoginPath = new PathString("/v1/identity/google-login"); })
+                .AddGoogle(GoogleDefaults.AuthenticationScheme,
+                    options =>
+                    {
+                        IConfigurationSection googleAuthNSection =
+                            Configuration.GetSection("IdentityExternalProviders:Google");
+
+                        options.ClientId = googleAuthNSection["ClientId"];
+                        options.ClientSecret = googleAuthNSection["ClientSecret"];
+                    });
 
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>(
@@ -66,7 +78,7 @@ namespace Airslip.Identity.Api
                         ? "airslipTestDb"
                         : Configuration["MongoDbSettings:DatabaseName"])
                 .AddDefaultTokenProviders();
-            
+
             services.AddHttpClient<IYapilyClient>(nameof(IYapilyClient),
                     yapilyHttpClient =>
                     {
@@ -103,29 +115,25 @@ namespace Airslip.Identity.Api
                     }
                 );
             });
-            
+
             services
-                .AddApiVersioning(options =>
-                {
-                    options.ReportApiVersions = true;
-                })
+                .AddApiVersioning(options => { options.ReportApiVersions = true; })
                 .AddVersionedApiExplorer(options =>
                 {
                     options.GroupNameFormat = "'v'VVV";
                     options.SubstituteApiVersionInUrl = true;
                 });
 
-            services
+            services    
                 .AddMongoServices()
                 .AddYapily();
         }
 
-     
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
-            
+
             app.UseSwagger();
 
             app.UseSwaggerUI(c =>
