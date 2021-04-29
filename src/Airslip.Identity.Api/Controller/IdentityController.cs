@@ -35,15 +35,15 @@ namespace Airslip.Identity.Api.Controller
 
         [HttpPost("login")]
         [AllowAnonymous]
-        [ProducesResponseType( typeof(AuthenticatedUserResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType( typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(AuthenticatedUserResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> IdentityLogin(LoginRequest request)
         {
-            GenerateJwtBearerTokenCommand generateJwtBearerTokenCommand = new(
+            LoginUserCommand loginUserCommand = new(
                 request.Email,
                 request.Password);
 
-            IResponse getUserByEmailResponse = await _mediator.Send(generateJwtBearerTokenCommand);
+            IResponse getUserByEmailResponse = await _mediator.Send(loginUserCommand);
 
             return getUserByEmailResponse switch
             {
@@ -53,56 +53,36 @@ namespace Airslip.Identity.Api.Controller
                     Alpha2CountryCodes.GB.ToString())),
                 NotFoundResponse response => NotFound(response),
                 ErrorResponse response => BadRequest(response),
-                IFail r => BadRequest(r),
+                IFail response => BadRequest(response),
                 _ => throw new InvalidOperationException()
             };
         }
+
+        [HttpPost("register")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(AuthenticatedUserResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ConflictResponse), StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> IdentityRegister(LoginRequest request)
+        {
+            RegisterUserCommand registerUserCommand = new(
+                request.Email,
+                request.Password
+            );
         
-        // [HttpPost("register")]
-        // [ProducesResponseType(typeof(AuthenticatedUserResponse), StatusCodes.Status200OK)]
-        // [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        // [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
-        // public async Task<IActionResult> IdentityRegister(LoginRequest request)
-        // {
-        //     CreateUserCommand createUserCommand = new(
-        //         request.Email
-        //     );
-        //
-        //     IResponse createUserResponse = await _mediator.Send(createUserCommand);
-        //
-        //     switch (createUserResponse)
-        //     {
-        //         case UserResponse userResponse:
-        //
-        //             ApplicationUser user = new() {UserName = request.Email, Email = request.Email};
-        //
-        //             IdentityResult? result = await _userManager.CreateAsync(user, request.Password);
-        //
-        //             if (!result.Succeeded)
-        //                 return result.Errors.First().Code switch
-        //                 {
-        //                     "DuplicateUserName" => Conflict(new ConflictResponse(nameof(request.Email), request.Email,
-        //                         "User already exists")),
-        //                     _ => BadRequest(new ErrorResponse(result.Errors.First().Code,
-        //                         result.Errors.First().Description))
-        //                 };
-        //
-        //             await _signInManager.SignInAsync(user, true);
-        //
-        //             await AddClaims(userResponse.UserId);
-        //
-        //             return Ok(new AuthenticatedUserResponse().AddHateoasLinks(
-        //                 BaseUri,
-        //                 userResponse.HasAddedInstitution,
-        //                 Alpha2CountryCodes.GB.ToString()));
-        //
-        //         case ConflictResponse r:
-        //             return Conflict(r);
-        //         case IFail r:
-        //             return BadRequest(r);
-        //         default:
-        //             throw new InvalidOperationException();
-        //     }
-        // }
+            IResponse createUserResponse = await _mediator.Send(registerUserCommand);
+
+            return createUserResponse switch
+            {
+                AuthenticatedUserResponse response => Ok(response.AddHateoasLinks(
+                    BaseUri,
+                    response.HasAddedInstitution,
+                    Alpha2CountryCodes.GB.ToString())),
+                ConflictResponse response => Conflict(response),
+                ErrorResponse response => BadRequest(response),
+                IFail response => BadRequest(response),
+                _ => throw new InvalidOperationException()
+            };
+        }
     }
 }

@@ -33,7 +33,9 @@
 	
 	<PropertyGroup>
 		<AirslipCommonContracts>1.0.2</AirslipCommonContracts>
-		<AirslipCommonTypes>1.0.3</AirslipCommonTypes>
+		<AirslipCommonTypes>1.0.4</AirslipCommonTypes>
+		<AirslipYapilyClient>0.2.0</AirslipYapilyClient>
+		<AirslipYapilyClientContracts>0.2.0</AirslipYapilyClientContracts>
 	</PropertyGroup>
 
 </Project>
