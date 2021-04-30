@@ -7,16 +7,21 @@ using Airslip.Identity.Api.Auth;
 using Airslip.Identity.Api.Contracts.Requests;
 using Airslip.Identity.Api.Contracts.Responses;
 using MediatR;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Airslip.Identity.Api.Controller
 {
     [ApiController]
+    [AllowAnonymous]
     [ApiVersion(ApiConstants.VersionOne)]
     // ReSharper disable once RouteTemplates.RouteParameterConstraintNotResolved
     [Route("v{version:apiVersion}/identity")]
@@ -34,7 +39,6 @@ namespace Airslip.Identity.Api.Controller
         }
 
         [HttpPost("login")]
-        [AllowAnonymous]
         [ProducesResponseType(typeof(AuthenticatedUserResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> IdentityLogin(LoginRequest request)
@@ -54,12 +58,11 @@ namespace Airslip.Identity.Api.Controller
                 NotFoundResponse response => NotFound(response),
                 ErrorResponse response => BadRequest(response),
                 IFail response => BadRequest(response),
-                _ => throw new InvalidOperationException()
+                _ => throw new NotSupportedException()
             };
         }
 
         [HttpPost("register")]
-        [AllowAnonymous]
         [ProducesResponseType(typeof(AuthenticatedUserResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ConflictResponse), StatusCodes.Status409Conflict)]
@@ -81,8 +84,68 @@ namespace Airslip.Identity.Api.Controller
                 ConflictResponse response => Conflict(response),
                 ErrorResponse response => BadRequest(response),
                 IFail response => BadRequest(response),
-                _ => throw new InvalidOperationException()
+                _ => throw new NotSupportedException()
             };
+        }
+        
+        [HttpGet("google-login")]
+        public IActionResult GoogleLogin()
+        {
+            AuthenticationProperties properties = new() { RedirectUri = Url.Action("GoogleResponse") };
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpGet("google-response")]
+        public async Task<IActionResult> GoogleResponse()
+        {
+            AuthenticateResult result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+
+            ClaimsIdentity? claimIdentity = result.Principal?.Identities.FirstOrDefault();
+
+            if (claimIdentity == null)
+                return BadRequest(new ExternalLoginFailed(GoogleDefaults.AuthenticationScheme));
+
+            ExternalLoginResponse externalLoginResponse = GetExternalLoginResponse(
+                claimIdentity, 
+                result.Properties?.ExpiresUtc);
+            
+            LoginExternalProviderCommand loginExternalProviderCommand = new(
+                externalLoginResponse.Email
+            );
+        
+            IResponse loginExternalProviderResponse = await _mediator.Send(loginExternalProviderCommand);
+            
+            return loginExternalProviderResponse switch
+            {
+                AuthenticatedUserResponse response => Ok(response.AddHateoasLinks(
+                    BaseUri,
+                    response.HasAddedInstitution,
+                    Alpha2CountryCodes.GB.ToString())),
+                ErrorResponse response => BadRequest(response),
+                IFail response => BadRequest(response),
+                _ => throw new NotSupportedException()
+            };
+        }
+        
+        private static ExternalLoginResponse GetExternalLoginResponse(ClaimsIdentity claimIdentity,
+            DateTimeOffset? expires)
+        {
+            var claims = claimIdentity.Claims.Select(claim => new
+            {
+                claim.Type,
+                claim.Value
+            }).ToList();
+
+            var firstNameClaim = claims.FirstOrDefault(x => x.Type.Contains("givenname"))!;
+            var surnameClaim = claims.FirstOrDefault(x => x.Type.Contains("surname"))!;
+            var emailAddressClaim = claims.FirstOrDefault(x => x.Type.Contains("emailaddress"))!;
+
+            return new ExternalLoginResponse(
+                firstNameClaim.Value,
+                surnameClaim.Value,
+                emailAddressClaim.Value,
+                expires);
         }
     }
 }

@@ -4,7 +4,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="JetBrains.Annotations" Version="$(JetBrainsAnnoations)" />
-<!--		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="$(NetVersion)" />-->
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="$(NetVersion)" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(NetVersion)" NoWarn="NU1605" />
 		<PackageReference Include="Microsoft.Extensions.Http.Polly" Version="$(NetVersion)" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(NetVersion)" />

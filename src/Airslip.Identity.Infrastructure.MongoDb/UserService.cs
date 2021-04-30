@@ -23,6 +23,11 @@ namespace Airslip.Identity.Infrastructure.MongoDb
         {
             return await _context.Users.Find(user => user.EmailAddress == email).FirstOrDefaultAsync();
         }
+        
+        public async Task<bool> DoesUserExist(string email)
+        {
+            return await GetByEmail(email) is not null;
+        }
 
         public Task<List<User>> GetUsersWithNoConsentToken()
         {

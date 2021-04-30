@@ -7,6 +7,7 @@ namespace Airslip.Identity.MongoDb.Contracts
     {
         Task<User> Get(string id);
         Task<User?> GetByEmail(string email);
+        Task<bool> DoesUserExist(string email);
         Task<List<User>> GetUsersWithNoConsentToken();
         Task Create(User user);
         Task Update(User userIn);

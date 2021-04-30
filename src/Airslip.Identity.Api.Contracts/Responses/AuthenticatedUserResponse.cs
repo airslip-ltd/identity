@@ -1,10 +1,12 @@
 ﻿using Airslip.Common.Contracts;
 using Airslip.Common.Types.Hateoas;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace Airslip.Identity.Api.Contracts.Responses
 {
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public class AuthenticatedUserResponse : LinkResourceBase, ISuccess
     {
         public string BearerToken { get; }
