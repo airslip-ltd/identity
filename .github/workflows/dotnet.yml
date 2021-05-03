@@ -18,9 +18,7 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
-      run: |
-        dotnet nuget add source https://nuget.pkg.github.com/airslip-ltd/index.json -n "airslip-packages" -u ${{secrets.PACKAGES_USER}} -p ${{secrets.PACKAGES_TOKEN}} --store-password-in-clear-text
-        dotnet restore 
+      run: dotnet restore 
       working-directory: src
     - name: Build
       run: dotnet build --no-restore
