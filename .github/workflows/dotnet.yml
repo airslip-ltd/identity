@@ -18,7 +18,9 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
-      run: dotnet restore 
+      run: |
+        nuget sources add -name "private-packages" -source https://nuget.pkg.github.com/airslip-ltd/index.json -username ${env:PACKAGES_TOKEN} -password ${env:PACKAGES_TOKEN} -StorePasswordInClearText
+        dotnet restore 
       working-directory: src
     - name: Build
       run: dotnet build --no-restore
