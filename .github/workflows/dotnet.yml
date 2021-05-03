@@ -19,7 +19,7 @@ jobs:
         dotnet-version: 5.0.x
     - name: Restore dependencies
       run: |
-        nuget sources add -name "private-packages" -source https://nuget.pkg.github.com/airslip-ltd/index.json -username ${env:PACKAGES_TOKEN} -password ${env:PACKAGES_TOKEN} -StorePasswordInClearText
+        dotnet nuget add source https://nuget.pkg.github.com/airslip-ltd/index.json -n "private-packages" -u ${env:PACKAGES_USER} -p ${env:PACKAGES_TOKEN} --store-password-in-clear-text
         dotnet restore 
       working-directory: src
     - name: Build
