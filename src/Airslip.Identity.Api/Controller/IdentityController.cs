@@ -128,6 +128,12 @@ namespace Airslip.Identity.Api.Controller
             };
         }
         
+        [HttpGet("logout")]
+        public IActionResult IdentityLogout()
+        {
+            return Ok();
+        }
+        
         private static ExternalLoginResponse GetExternalLoginResponse(ClaimsIdentity claimIdentity,
             DateTimeOffset? expires)
         {

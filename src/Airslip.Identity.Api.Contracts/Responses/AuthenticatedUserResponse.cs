@@ -26,7 +26,7 @@ namespace Airslip.Identity.Api.Contracts.Responses
             {
                 Links = new List<Link>
                 {
-                    new ($"{baseUri}/v1/authenticate/login", "self", "POST"),
+                    new ($"{baseUri}/v1/identity/login", "self", "POST"),
                     new ($"{baseUri}/v1/accounts", "next", "GET")
                 };
             }
@@ -34,7 +34,7 @@ namespace Airslip.Identity.Api.Contracts.Responses
             {
                 Links = new List<Link>
                 {
-                    new ($"{baseUri}/v1/authenticate/login", "self", "POST"),
+                    new ($"{baseUri}/v1/identity/login", "self", "POST"),
                     new ($"{baseUri}/v1/institutions/{countryCode}", "next", "GET")
 
                 };
