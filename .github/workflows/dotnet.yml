@@ -11,18 +11,6 @@ jobs:
 
     runs-on: ubuntu-latest
     
-    permissions:
-      actions: write
-      checks: write
-      contents: write
-      deployments: write
-      issues: write
-      packages: read
-      pullrequests: write
-      repositoryprojects: write
-      securityevents: write
-      statuses: write
-    
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
