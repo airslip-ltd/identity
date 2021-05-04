@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace Airslip.BankTransactions.MongoDb.Contracts
+namespace Airslip.Identity.MongoDb.Contracts
 {
     public static class CompositeId
     {

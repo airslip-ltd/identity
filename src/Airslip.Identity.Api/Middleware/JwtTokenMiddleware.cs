@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace Airslip.Identity.Api.Middleware
 {
-    public class JwtTest
+    public class JwtTokenMiddleware
     {
         private readonly ILogger _logger;
         private readonly RequestDelegate _next;
 
-        public JwtTest(RequestDelegate next, ILogger logger)
+        public JwtTokenMiddleware(RequestDelegate next, ILogger logger)
         {
             _next = next;
             _logger = logger;
@@ -23,7 +23,7 @@ namespace Airslip.Identity.Api.Middleware
             try
             {
                 IIdentity? identity = httpContext.User.Identity;
-                if ((identity != null ? !identity.IsAuthenticated ? 1 : 0 : 1) != 0)
+                if (identity is { IsAuthenticated: true })
                 {
                     AuthenticateResult authenticateResult = await httpContext.AuthenticateAsync("Bearer");
                     if (authenticateResult.Succeeded && authenticateResult.Principal != null)

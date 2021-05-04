@@ -12,8 +12,9 @@ namespace Airslip.Identity.Infrastructure.MongoDb
     public class AirslipMongoDbContext
     {
         private readonly IMongoDatabase _database;
-        //private readonly string _applicationUserCollection = $"{nameof(ApplicationUser)}s".ToCamelCase();
+      
         private readonly string _userCollection = $"{nameof(User)}s".ToCamelCase();
+        private readonly string _accountCollection = $"{nameof(Account)}s".ToCamelCase();
 
         public AirslipMongoDbContext(IOptions<MongoDbSettings> settings)
         {
@@ -25,7 +26,8 @@ namespace Airslip.Identity.Infrastructure.MongoDb
         }
 
         public IMongoCollection<User> Users => _database.GetCollection<User>(_userCollection);
-        //public IMongoCollection<ApplicationUser> ApplicationUsers => _database.GetCollection<ApplicationUser>(_applicationUserCollection);
+        public IMongoCollection<Account> Accounts => _database.GetCollection<Account>(_accountCollection);
+
         private void CreateCollections()
         {
             if (!CheckCollection(_userCollection))

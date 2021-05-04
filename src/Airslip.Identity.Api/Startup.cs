@@ -55,7 +55,6 @@ namespace Airslip.Identity.Api
             services
                 .AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>()
                 .AddScoped<Token>()
-                .AddScoped<JwtBearerToken>()
                 .Configure<JwtSettings>(Configuration.GetSection(nameof(JwtSettings)))
                 .AddAuthorization()
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -147,6 +146,7 @@ namespace Airslip.Identity.Api
                 .UseAuthentication()
                 .UseAuthorization()
                 .UseMiddleware<ErrorHandlingMiddleware>()
+                .UseMiddleware<JwtTokenMiddleware>()
                 .UseCors(builder => builder
                     .AllowAnyOrigin()
                     .AllowAnyHeader()

@@ -1,6 +1,6 @@
 ﻿using Airslip.Common.Contracts;
 
-namespace Airslip.BankTransactions.Api.Contracts.Responses
+namespace Airslip.Identity.Api.Contracts.Responses
 {
     public record YapilyUserAccountResponse(
         string Id,

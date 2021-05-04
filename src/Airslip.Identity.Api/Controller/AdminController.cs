@@ -1,26 +1,24 @@
-﻿using Airslip.BankTransactions.Api.Application.Admin;
-using Airslip.BankTransactions.Api.Application.Transactions;
-using Airslip.BankTransactions.Api.Auth;
-using Airslip.BankTransactions.Api.Contracts.Requests;
-using Airslip.BankTransactions.Api.Contracts.Responses;
-using Airslip.Common.Contracts;
+﻿using Airslip.Common.Contracts;
 using Airslip.Common.Types;
 using Airslip.Common.Types.Failures;
+using Airslip.Identity.Api.Application.Queries;
+using Airslip.Identity.Api.Auth;
+using Airslip.Identity.Api.Contracts.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Swashbuckle.AspNetCore.Annotations;
 using System.Threading.Tasks;
 
-namespace Airslip.BankTransactions.Api.Controllers
+namespace Airslip.Identity.Api.Controller
 {
     [ApiController]
-    [Route("v1/admin")]
+    [ApiVersion(ApiConstants.VersionOne)]
+    // ReSharper disable once RouteTemplates.RouteParameterConstraintNotResolved
+    [Route("v{version:apiVersion}/admin")]
     [ApiExplorerSettings(IgnoreApi = true)]
     // TODO: Add Admin role
-    [AllowAnonymous]
     public class AdminController : ApiResponse
     {
         private readonly IMediator _mediator;
@@ -33,43 +31,9 @@ namespace Airslip.BankTransactions.Api.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost("merchants/{merchantName}/logo")]
-        [SwaggerResponse(StatusCodes.Status200OK, "A successful response, returning an AccountsResponse.    ",
-            typeof(AccountTransactionsResponse))]
-        public async Task<IActionResult> UploadCompanyLogo(string merchantName,
-            [FromForm(Name = "merchant-logo")] IFormFile merchantLogo)
-        {
-            AddMerchantLogoCommand command = new(
-                Token.CorrelationId,
-                merchantName,
-                merchantLogo);
-
-            IResponse response = await _mediator.Send(command);
-
-            return response is ISuccess
-                ? NoContent()
-                : BadRequest(response);
-        }
-
-        [HttpPost("institutions/{countryCode}")]
-        [SwaggerResponse(StatusCodes.Status204NoContent, "A successful response, returning no content.")]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, "Returned if there is an issue with the request.",
-            typeof(ErrorResponse))]
-        public async Task<IActionResult> CreateInstitutions([FromRoute] string countryCode)
-        {
-            CreateInstitutionsCommand command = new(countryCode);
-
-            IResponse response = await _mediator.Send(command);
-
-            return response is ISuccess
-                ? NoContent()
-                : BadRequest(response);
-        }
-
         [HttpGet("user")]
-        [SwaggerResponse(StatusCodes.Status204NoContent, "A successful response, returning no content.")]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, "Returned if there is an issue with the request.",
-            typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType( typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetYapilyUser()
         {
             GetYapilyUserQuery command = new(Token.UserId);
@@ -78,26 +42,6 @@ namespace Airslip.BankTransactions.Api.Controllers
 
             return response is YapilyUserResponse yapilyUserResponse
                 ? Ok(yapilyUserResponse.AddHateoasLinks<YapilyUserResponse>(BaseUri, Token.UserId))
-                : BadRequest(response);
-        }
-
-        [HttpPost("retry-indexing-transactions")]
-        [SwaggerResponse(StatusCodes.Status200OK, "A successful response.",
-            typeof(AccountResponse))]
-        [SwaggerResponse(StatusCodes.Status400BadRequest, "Returned if there is an issue with the request.",
-            typeof(ErrorResponse))]
-        public async Task<IActionResult> RetryIndexing([FromBody] AdminRetryTransactionIndexingRequest request)
-        {
-            RetryTransactionIndexingCommand command = new(
-                request.UserId,
-                request.AccountId,
-                request.CorrelationId,
-                request.Metadata);
-
-            IResponse response = await _mediator.Send(command);
-
-            return response is ISuccess
-                ? Ok()
                 : BadRequest(response);
         }
     }

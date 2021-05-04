@@ -1,7 +1,7 @@
-﻿using Airslip.BankTransactions.Api.Contracts.Responses;
-using Airslip.BankTransactions.Common;
-using Airslip.BankTransactions.MongoDb.Contracts;
-using Airslip.Common.Contracts;
+﻿using Airslip.Common.Contracts;
+using Airslip.Identity.Api.Contracts.Responses;
+using Airslip.Identity.MongoDb.Contracts;
+using Airslip.Yapily.Client.Contracts;
 using JetBrains.Annotations;
 using MediatR;
 using System;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Airslip.BankTransactions.Api.Application.Admin
+namespace Airslip.Identity.Api.Application.Queries
 {
     [UsedImplicitly(ImplicitUseTargetFlags.Itself)]
     public class GetYapilyUserQueryHandler : IRequestHandler<GetYapilyUserQuery, IResponse>
@@ -22,14 +22,14 @@ namespace Airslip.BankTransactions.Api.Application.Admin
             _accountService = accountService;
         }
 
-        public async Task<IResponse> Handle(GetYapilyUserQuery query, CancellationToken cancellationToken)
+        public async Task<IResponse> Handle(GetYapilyUserQuery request, CancellationToken cancellationToken)
         {
-            List<Account> accounts = await _accountService.GetAccountsForUser(query.UserId);
+            List<Account> accounts = await _accountService.GetAccountsForUser(request.UserId);
 
             IEnumerable<YapilyUserAccountResponse> yapilyUserAccounts = accounts
                 .Select(account => new YapilyUserAccountResponse(
                     account.Id.Substring(account.Id.IndexOf("|", StringComparison.Ordinal) + 1),
-                    query.UserId,
+                    request.UserId,
                     account.Institution!.Id,
                     account.InstitutionConsentToken,
                     account.Institution!.Id.ToAccountNickname(account.UsageType, account.AccountType)));

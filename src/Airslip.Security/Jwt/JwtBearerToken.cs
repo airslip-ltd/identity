@@ -8,9 +8,9 @@ using System.Text;
 
 namespace Airslip.Security.Jwt
 {
-    public class JwtBearerToken
+    public static class JwtBearerToken
     {
-        public string Generate(string privateKey, string audience, string issuer, int expiresTime, string userId)
+        public static string Generate(string privateKey, string audience, string issuer, int expiresTime, string userId)
         {
             if (string.IsNullOrWhiteSpace(privateKey))
                 throw new ArgumentNullException(nameof(privateKey), "private key must be set");

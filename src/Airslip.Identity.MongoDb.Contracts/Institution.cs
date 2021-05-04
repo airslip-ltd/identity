@@ -2,7 +2,7 @@
 using MongoDB.Bson.Serialization.Attributes;
 using System.Collections.Generic;
 
-namespace Airslip.BankTransactions.MongoDb.Contracts
+namespace Airslip.Identity.MongoDb.Contracts
 {
     public class Institution
     {
