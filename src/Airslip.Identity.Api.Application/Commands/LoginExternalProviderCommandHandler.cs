@@ -19,18 +19,15 @@ namespace Airslip.Identity.Api.Application.Commands
     {
         private readonly IUserService _userService;
         private readonly IYapilyClient _yapilyApis;
-        private readonly JwtBearerToken _jwtBearerToken;
         private readonly JwtSettings _jwtSettings;
 
         public LoginExternalProviderCommandHandler(
             IUserService userService,
             IYapilyClient yapilyApis,
-            JwtBearerToken jwtBearerToken,
             IOptions<JwtSettings> jwtSettingsOptions)
         {
             _userService = userService;
             _yapilyApis = yapilyApis;
-            _jwtBearerToken = jwtBearerToken;
             _jwtSettings = jwtSettingsOptions.Value;
         }
 
@@ -85,7 +82,7 @@ namespace Airslip.Identity.Api.Application.Commands
                 }
             }
 
-            string jwtBearerToken = _jwtBearerToken.Generate(
+            string jwtBearerToken = JwtBearerToken.Generate(
                 _jwtSettings.Key,
                 _jwtSettings.Audience,
                 _jwtSettings.Issuer,

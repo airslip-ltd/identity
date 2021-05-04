@@ -14,17 +14,14 @@ namespace Airslip.Identity.Api.Application.Commands
     {
         private readonly IUserService _userService;
         private readonly IUserManagerService _userManagerService;
-        private readonly JwtBearerToken _jwtBearerToken;
         private readonly JwtSettings _jwtSettings;
 
         public GenerateJwtBearerTokenCommandHandler(
             IUserService userService,
-            JwtBearerToken jwtBearerToken,
             IOptions<JwtSettings> jwtSettingsOptions,
             IUserManagerService userManagerService)
         {
             _userService = userService;
-            _jwtBearerToken = jwtBearerToken;
             _userManagerService = userManagerService;
             _jwtSettings = jwtSettingsOptions.Value;
         }
@@ -49,7 +46,7 @@ namespace Airslip.Identity.Api.Application.Commands
             if (user == null)
                 return new InvalidResource(nameof(User), "Unable to find user");
             
-            string jwtBearerToken = _jwtBearerToken.Generate(
+            string jwtBearerToken = JwtBearerToken.Generate(
                 _jwtSettings.Key,
                 _jwtSettings.Audience,
                 _jwtSettings.Issuer,

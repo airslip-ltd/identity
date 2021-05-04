@@ -1,7 +1,7 @@
 ﻿using Airslip.Common.Contracts;
 using MediatR;
 
-namespace Airslip.BankTransactions.Api.Application.Admin
+namespace Airslip.Identity.Api.Application.Queries
 {
     public class GetYapilyUserQuery : IRequest<IResponse>
     {

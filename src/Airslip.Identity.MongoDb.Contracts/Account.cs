@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 
-namespace Airslip.BankTransactions.MongoDb.Contracts
+namespace Airslip.Identity.MongoDb.Contracts
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public class Account

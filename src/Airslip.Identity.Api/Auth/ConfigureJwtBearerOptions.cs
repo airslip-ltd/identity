@@ -28,11 +28,6 @@ namespace Airslip.Identity.Api.Auth
             {
                 OnAuthenticationFailed = context =>
                 {
-                    if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                    {
-                        context.Response.Headers.Add("Token-Expired", "true");
-                    }
-
                     Log
                         .ForContext("CorrelationId", context.HttpContext.TraceIdentifier)
                         .Error(context.Exception, "Authentication failed");

@@ -3,7 +3,7 @@ using Airslip.Common.Types.Hateoas;
 using JetBrains.Annotations;
 using System.Collections.Generic;
 
-namespace Airslip.BankTransactions.Api.Contracts.Responses
+namespace Airslip.Identity.Api.Contracts.Responses
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public class YapilyUserResponse : LinkResourceBase, ISuccess
