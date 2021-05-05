@@ -128,7 +128,6 @@ namespace Airslip.Identity.Api
                 .AddYapily();
         }
 
-
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
@@ -148,7 +147,7 @@ namespace Airslip.Identity.Api
                 .UseMiddleware<ErrorHandlingMiddleware>()
                 .UseMiddleware<JwtTokenMiddleware>()
                 .UseCors(builder => builder
-                    .AllowAnyOrigin()
+                    .WithOrigins(Configuration["AllowedHosts"])
                     .AllowAnyHeader()
                     .AllowAnyMethod())
                 .UseEndpoints(endpoints =>
