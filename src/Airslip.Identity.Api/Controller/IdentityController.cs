@@ -111,7 +111,8 @@ namespace Airslip.Identity.Api.Controller
                 result.Properties?.ExpiresUtc);
             
             LoginExternalProviderCommand loginExternalProviderCommand = new(
-                externalLoginResponse.Email
+                externalLoginResponse.Email,
+                GoogleDefaults.AuthenticationScheme
             );
         
             IResponse loginExternalProviderResponse = await _mediator.Send(loginExternalProviderCommand);
