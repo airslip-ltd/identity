@@ -22,6 +22,7 @@ namespace Airslip.Identity.Api.Application.Commands
         private readonly IYapilyClient _yapilyApis;
         private readonly JwtSettings _jwtSettings;
         private readonly IUserManagerService _userManagerService;
+        private readonly ILogger _logger;
 
         public RegisterUserCommandHandler(
             IUserService userService,
@@ -33,6 +34,7 @@ namespace Airslip.Identity.Api.Application.Commands
             _yapilyApis = yapilyApis;
             _jwtSettings = jwtSettingsOptions.Value;
             _userManagerService = userManagerService;
+            _logger = Log.Logger;
         }
 
         public async Task<IResponse> Handle(RegisterUserCommand command, CancellationToken cancellationToken)
@@ -86,6 +88,8 @@ namespace Airslip.Identity.Api.Application.Commands
                         };
 
                     User user = await _userService.Get(yapilyUser.Uuid!);
+                    
+                    _logger.Debug("User {UserId} successfully registered", user.Id);
 
                     string jwtBearerToken = JwtBearerToken.Generate(
                         _jwtSettings.Key,

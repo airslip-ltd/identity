@@ -20,6 +20,7 @@ namespace Airslip.Identity.Api.Application.Commands
         private readonly IUserService _userService;
         private readonly IYapilyClient _yapilyApis;
         private readonly JwtSettings _jwtSettings;
+        private readonly ILogger _logger;
 
         public LoginExternalProviderCommandHandler(
             IUserService userService,
@@ -29,12 +30,12 @@ namespace Airslip.Identity.Api.Application.Commands
             _userService = userService;
             _yapilyApis = yapilyApis;
             _jwtSettings = jwtSettingsOptions.Value;
+            _logger = Log.Logger;
         }
 
         public async Task<IResponse> Handle(LoginExternalProviderCommand command, CancellationToken cancellationToken)
         {
-            ILogger logger = Log
-                .ForContext(nameof(command.Email), command.Email);
+            _logger.ForContext(nameof(command.Email), command.Email);
 
             User? user = await _userService.GetByEmail(command.Email);
 
@@ -52,7 +53,7 @@ namespace Airslip.Identity.Api.Application.Commands
                                 return new ConflictResponse(nameof(command.Email), command.Email,
                                     "User already exists");
                             default:
-                                logger.Fatal("UNHANDLED_YAPILY_ERROR. ErrorMessage : {ErrorMessage}",
+                                _logger.Fatal("UNHANDLED_YAPILY_ERROR. ErrorMessage : {ErrorMessage}",
                                     apiError.Error.Message);
                                 throw new InvalidOperationException();
                         }
@@ -75,6 +76,10 @@ namespace Airslip.Identity.Api.Application.Commands
                                     new UserInstitution(yapilyInstitutionConsent.InstitutionId!)).ToList()));
 
                         user = await _userService.Get(yapilyUser.Uuid!);
+                        
+                        _logger.Debug("User {UserId} successfully logged in with {ExternalProvider}", 
+                            user.Id, 
+                            command.Provider);
 
                         break;
                     default:

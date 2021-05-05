@@ -5,6 +5,7 @@ using Airslip.Identity.MongoDb.Contracts;
 using Airslip.Security.Jwt;
 using MediatR;
 using Microsoft.Extensions.Options;
+using Serilog;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,7 +16,8 @@ namespace Airslip.Identity.Api.Application.Commands
         private readonly IUserService _userService;
         private readonly IUserManagerService _userManagerService;
         private readonly JwtSettings _jwtSettings;
-
+        private readonly ILogger _logger;
+        
         public GenerateJwtBearerTokenCommandHandler(
             IUserService userService,
             IOptions<JwtSettings> jwtSettingsOptions,
@@ -24,6 +26,7 @@ namespace Airslip.Identity.Api.Application.Commands
             _userService = userService;
             _userManagerService = userManagerService;
             _jwtSettings = jwtSettingsOptions.Value;
+            _logger = Log.Logger;
         }
 
         public async Task<IResponse> Handle(LoginUserCommand command, CancellationToken cancellationToken)
@@ -42,9 +45,10 @@ namespace Airslip.Identity.Api.Application.Commands
             }
 
             User? user = await _userService.GetByEmail(command.Email);
-
             if (user == null)
                 return new InvalidResource(nameof(User), "Unable to find user");
+            
+            _logger.Debug("User {UserId} successfully logged in", user.Id);
             
             string jwtBearerToken = JwtBearerToken.Generate(
                 _jwtSettings.Key,
