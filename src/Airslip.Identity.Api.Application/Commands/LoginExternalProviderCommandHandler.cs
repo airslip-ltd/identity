@@ -77,7 +77,7 @@ namespace Airslip.Identity.Api.Application.Commands
 
                         user = await _userService.Get(yapilyUser.Uuid!);
                         
-                        _logger.Debug("User {UserId} successfully logged in with {ExternalProvider}", 
+                        _logger.Information("User {UserId} successfully logged in with {ExternalProvider}", 
                             user.Id, 
                             command.Provider);
 
