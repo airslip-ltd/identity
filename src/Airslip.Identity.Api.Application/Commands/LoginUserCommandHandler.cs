@@ -48,7 +48,7 @@ namespace Airslip.Identity.Api.Application.Commands
             if (user == null)
                 return new InvalidResource(nameof(User), "Unable to find user");
             
-            _logger.Debug("User {UserId} successfully logged in", user.Id);
+            _logger.Information("User {UserId} successfully logged in", user.Id);
             
             string jwtBearerToken = JwtBearerToken.Generate(
                 _jwtSettings.Key,

@@ -89,7 +89,7 @@ namespace Airslip.Identity.Api.Application.Commands
 
                     User user = await _userService.Get(yapilyUser.Uuid!);
                     
-                    _logger.Debug("User {UserId} successfully registered", user.Id);
+                    _logger.Information("User {UserId} successfully registered", user.Id);
 
                     string jwtBearerToken = JwtBearerToken.Generate(
                         _jwtSettings.Key,
