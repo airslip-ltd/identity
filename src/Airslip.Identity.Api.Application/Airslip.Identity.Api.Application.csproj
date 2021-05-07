@@ -1,8 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
-	<PropertyGroup>
-	  <OutputType>Library</OutputType>
-	</PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<Import Project="..\common.props" />
 
@@ -15,17 +11,17 @@
 		<PackageReference Include="Serilog.AspNetCore" Version="$(SerilogAspNetCore)" />
 		<PackageReference Include="Serilog.Sinks.Logz.Io" Version="$(SerilogSinkLogzIo)" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
 		<PackageReference Include="Airslip.Common.Contracts" Version="$(AirslipCommonContracts)" />
 		<PackageReference Include="Airslip.Common.Types" Version="$(AirslipCommonTypes)" />
 		<PackageReference Include="Airslip.Yapily.Client.Contracts" Version="$(AirslipYapilyClientContracts)" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
-	  <ProjectReference Include="..\Airslip.Identity.Api.Contracts\Airslip.Identity.Api.Contracts.csproj" />
-	  <ProjectReference Include="..\Airslip.Identity.MongoDb.Contracts\Airslip.Identity.MongoDb.Contracts.csproj" />
-	  <ProjectReference Include="..\Airslip.Security\Airslip.Security.csproj" />
+		<ProjectReference Include="..\Airslip.Identity.Api.Contracts\Airslip.Identity.Api.Contracts.csproj" />
+		<ProjectReference Include="..\Airslip.Identity.MongoDb.Contracts\Airslip.Identity.MongoDb.Contracts.csproj" />
+		<ProjectReference Include="..\Airslip.Security\Airslip.Security.csproj" />
 	</ItemGroup>
 
 </Project>
