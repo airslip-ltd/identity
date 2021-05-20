@@ -39,6 +39,7 @@ namespace Airslip.Identity.Infrastructure.MongoDb
 
         public Task Create(User user)
         {
+            
             return _context.Users.InsertOneAsync(user);
         }
 
