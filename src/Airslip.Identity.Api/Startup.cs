@@ -123,7 +123,7 @@ namespace Airslip.Identity.Api
                     options.SubstituteApiVersionInUrl = true;
                 });
 
-            services    
+            services
                 .AddMongoServices()
                 .AddYapily();
         }

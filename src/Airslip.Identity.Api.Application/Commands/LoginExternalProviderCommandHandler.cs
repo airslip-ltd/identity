@@ -2,6 +2,7 @@
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Contracts.Responses;
 using Airslip.Identity.MongoDb.Contracts;
+using Airslip.Security;
 using Airslip.Security.Jwt;
 using Airslip.Yapily.Client.Contracts;
 using MediatR;
@@ -35,14 +36,16 @@ namespace Airslip.Identity.Api.Application.Commands
 
         public async Task<IResponse> Handle(LoginExternalProviderCommand command, CancellationToken cancellationToken)
         {
-            _logger.ForContext(nameof(command.Email), command.Email);
+            string encryptedEmail = Cryptography.GenerateSHA256String(command.Email);
 
-            User? user = await _userService.GetByEmail(command.Email);
+            _logger.ForContext(nameof(encryptedEmail), encryptedEmail);
+
+            User? user = await _userService.GetByEmail(encryptedEmail);
 
             if (user is null)
             {
                 IYapilyResponse response =
-                    await _yapilyApis.CreateUser(command.Email, command.ReferenceId, cancellationToken);
+                    await _yapilyApis.CreateUser(encryptedEmail, command.ReferenceId, cancellationToken);
 
                 switch (response)
                 {
@@ -76,9 +79,9 @@ namespace Airslip.Identity.Api.Application.Commands
                                     new UserInstitution(yapilyInstitutionConsent.InstitutionId!)).ToList()));
 
                         user = await _userService.Get(yapilyUser.Uuid!);
-                        
-                        _logger.Information("User {UserId} successfully logged in with {ExternalProvider}", 
-                            user.Id, 
+
+                        _logger.Information("User {UserId} successfully logged in with {ExternalProvider}",
+                            user.Id,
                             command.Provider);
 
                         break;

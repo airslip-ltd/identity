@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="..\common.props" />
+
+	<ItemGroup>
+		<PackageReference Include="Moq" Version="$(Moq)" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(NetTestSdk)" />
+		<PackageReference Include="xunit" Version="$(Xunit)" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="$(Xunit)" />
+		<PackageReference Include="FluentAssertions" Version="$(FluentAssertions)" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Airslip.Security\Airslip.Security.csproj" />
+	</ItemGroup>
+
+</Project>

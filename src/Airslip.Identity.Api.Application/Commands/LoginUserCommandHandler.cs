@@ -2,6 +2,7 @@
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Contracts.Responses;
 using Airslip.Identity.MongoDb.Contracts;
+using Airslip.Security;
 using Airslip.Security.Jwt;
 using MediatR;
 using Microsoft.Extensions.Options;
@@ -17,7 +18,7 @@ namespace Airslip.Identity.Api.Application.Commands
         private readonly IUserManagerService _userManagerService;
         private readonly JwtSettings _jwtSettings;
         private readonly ILogger _logger;
-        
+
         public GenerateJwtBearerTokenCommandHandler(
             IUserService userService,
             IOptions<JwtSettings> jwtSettingsOptions,
@@ -31,25 +32,27 @@ namespace Airslip.Identity.Api.Application.Commands
 
         public async Task<IResponse> Handle(LoginUserCommand command, CancellationToken cancellationToken)
         {
-            bool canLogin = await _userManagerService.TryToLogin(command.Email, command.Password);
+            string encryptedEmail = Cryptography.GenerateSHA256String(command.Email);
+
+            bool canLogin = await _userManagerService.TryToLogin(encryptedEmail, command.Password);
 
             if (!canLogin)
             {
-                User? possibleUser = await _userService.GetByEmail(command.Email);
+                User? possibleUser = await _userService.GetByEmail(encryptedEmail);
                 return possibleUser == null
                     ? new NotFoundResponse(
-                        nameof(command.Email), 
-                        command.Email, 
+                        nameof(command.Email),
+                        command.Email,
                         "A user with this email doesn't exist")
                     : new ErrorResponse("INCORRECT_PASSWORD", "Password is incorrect");
             }
 
-            User? user = await _userService.GetByEmail(command.Email);
+            User? user = await _userService.GetByEmail(encryptedEmail);
             if (user == null)
                 return new InvalidResource(nameof(User), "Unable to find user");
-            
+
             _logger.Information("User {UserId} successfully logged in", user.Id);
-            
+
             string jwtBearerToken = JwtBearerToken.Generate(
                 _jwtSettings.Key,
                 _jwtSettings.Audience,
@@ -58,7 +61,7 @@ namespace Airslip.Identity.Api.Application.Commands
                 user.Id);
 
             bool hasAddedInstitution = user.Institutions.Count > 0;
-            
+
             return new AuthenticatedUserResponse(jwtBearerToken, hasAddedInstitution);
         }
     }
