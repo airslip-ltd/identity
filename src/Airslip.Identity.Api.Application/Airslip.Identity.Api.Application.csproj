@@ -14,7 +14,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="Airslip.Common.Contracts" Version="$(AirslipCommonContracts)" />
-		<PackageReference Include="Airslip.Common.Types" Version="$(AirslipCommonTypes)" />
 		<PackageReference Include="Airslip.Yapily.Client.Contracts" Version="$(AirslipYapilyClientContracts)" />
 	</ItemGroup>
 

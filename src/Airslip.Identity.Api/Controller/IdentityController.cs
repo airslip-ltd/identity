@@ -1,5 +1,4 @@
 ﻿using Airslip.Common.Contracts;
-using Airslip.Common.Types;
 using Airslip.Common.Types.Enums;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.Commands;
@@ -52,7 +51,8 @@ namespace Airslip.Identity.Api.Controller
             return getUserByEmailResponse switch
             {
                 AuthenticatedUserResponse response => Ok(response.AddHateoasLinks(
-                    BaseUri,
+                    _publicApiSettings.BaseUri,
+                    _publicApiSettings.BankTransactionsUri,
                     response.HasAddedInstitution,
                     Alpha2CountryCodes.GB.ToString())),
                 NotFoundResponse response => NotFound(response),
@@ -78,7 +78,8 @@ namespace Airslip.Identity.Api.Controller
             return createUserResponse switch
             {
                 AuthenticatedUserResponse response => Ok(response.AddHateoasLinks(
-                    BaseUri,
+                    _publicApiSettings.BaseUri,
+                    _publicApiSettings.BankTransactionsUri,
                     response.HasAddedInstitution,
                     Alpha2CountryCodes.GB.ToString())),
                 ConflictResponse response => Conflict(response),
@@ -120,7 +121,8 @@ namespace Airslip.Identity.Api.Controller
             return loginExternalProviderResponse switch
             {
                 AuthenticatedUserResponse response => Ok(response.AddHateoasLinks(
-                    BaseUri,
+                    _publicApiSettings.BaseUri,
+                    _publicApiSettings.BankTransactionsUri,
                     response.HasAddedInstitution,
                     Alpha2CountryCodes.GB.ToString())),
                 ErrorResponse response => BadRequest(response),

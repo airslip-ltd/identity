@@ -43,7 +43,7 @@ namespace Airslip.Identity.Api.Middleware
 
                 IFail[] errors = exception.Errors
                     .Select(error => new ErrorResponse(error.ErrorCode, error.ErrorMessage,
-                        new RouteValueDictionary(error.CustomState)))
+                        new RouteValueDictionary(error.CustomState)!))
                     .Cast<IFail>()
                     .ToArray();
 
