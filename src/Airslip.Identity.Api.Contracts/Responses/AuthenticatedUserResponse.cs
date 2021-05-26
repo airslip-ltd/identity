@@ -20,14 +20,14 @@ namespace Airslip.Identity.Api.Contracts.Responses
             HasAddedInstitution = hasAddedInstitution;
         }
         
-        public AuthenticatedUserResponse AddHateoasLinks(string baseUri, bool hasAddedInstitution, string? countryCode)
+        public AuthenticatedUserResponse AddHateoasLinks(string baseUri, string bankTransactionsUri, bool hasAddedInstitution, string? countryCode)
         {
             if (hasAddedInstitution)
             {
                 Links = new List<Link>
                 {
                     new ($"{baseUri}/v1/identity/login", "self", "POST"),
-                    new ($"{baseUri}/v1/accounts", "next", "GET")
+                    new ($"{bankTransactionsUri}/v1/accounts", "next", "GET")
                 };
             }
             else
@@ -35,7 +35,7 @@ namespace Airslip.Identity.Api.Contracts.Responses
                 Links = new List<Link>
                 {
                     new ($"{baseUri}/v1/identity/login", "self", "POST"),
-                    new ($"{baseUri}/v1/institutions/{countryCode}", "next", "GET")
+                    new ($"{bankTransactionsUri}/v1/institutions/{countryCode}", "next", "GET")
 
                 };
             }

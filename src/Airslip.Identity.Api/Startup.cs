@@ -1,9 +1,10 @@
-using Airslip.Common.Types;
+using Airslip.Common.Contracts;
 using Airslip.Identity.Api.Application;
 using Airslip.Identity.Api.Auth;
 using Airslip.Identity.Api.Middleware;
 using Airslip.Identity.MongoDb.Contracts;
 using Airslip.Identity.MongoDb.Contracts.Identity;
+using Airslip.Infrastructure.BlobStorage;
 using Airslip.Security.Jwt;
 using Airslip.Yapily.Client;
 using Airslip.Yapily.Client.Contracts;
@@ -88,6 +89,10 @@ namespace Airslip.Identity.Api
                     })
                 .AddTransientHttpErrorPolicy(p =>
                     p.WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))));
+            
+            services.AddSingleton<IStorage<BlobStorageModel>, BlobStorageRepository>(_ => new BlobStorageRepository(
+                Configuration["BlobStorageSettings:ConnectionString"],
+                Configuration["BlobStorageSettings:Container"]));
 
             services.AddMediatR(ApplicationAssembly.Reference);
             // For all the validators, register them with dependency injection as scoped

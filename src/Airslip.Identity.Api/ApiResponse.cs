@@ -1,5 +1,4 @@
 ﻿using Airslip.Common.Contracts;
-using Airslip.Common.Types;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Auth;
 using JetBrains.Annotations;
@@ -14,13 +13,13 @@ namespace Airslip.Identity.Api
 {
     public class ApiResponse : ControllerBase
     {
-        protected readonly string BaseUri;
+        protected readonly PublicApiSettings _publicApiSettings;
         protected readonly Token Token;
 
         public ApiResponse(Token token, IOptions<PublicApiSettings> publicApiOptions)
         {
             Token = token;
-            BaseUri = publicApiOptions.Value.BaseUri;
+            _publicApiSettings = publicApiOptions.Value;
         }
 
         protected IActionResult Ok(IResponse response)
