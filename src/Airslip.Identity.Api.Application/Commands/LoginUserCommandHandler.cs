@@ -2,7 +2,6 @@
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Contracts.Responses;
 using Airslip.Identity.MongoDb.Contracts;
-using Airslip.Security;
 using Airslip.Security.Jwt;
 using MediatR;
 using Microsoft.Extensions.Options;
@@ -32,13 +31,13 @@ namespace Airslip.Identity.Api.Application.Commands
 
         public async Task<IResponse> Handle(LoginUserCommand command, CancellationToken cancellationToken)
         {
-            string encryptedEmail = Cryptography.GenerateSHA256String(command.Email);
+            //string encryptedEmail = Cryptography.GenerateSHA256String(command.Email);
 
-            bool canLogin = await _userManagerService.TryToLogin(encryptedEmail, command.Password);
+            bool canLogin = await _userManagerService.TryToLogin(command.Email, command.Password);
 
             if (!canLogin)
             {
-                User? possibleUser = await _userService.GetByEmail(encryptedEmail);
+                User? possibleUser = await _userService.GetByEmail(command.Email);
                 return possibleUser == null
                     ? new NotFoundResponse(
                         nameof(command.Email),
@@ -47,7 +46,7 @@ namespace Airslip.Identity.Api.Application.Commands
                     : new ErrorResponse("INCORRECT_PASSWORD", "Password is incorrect");
             }
 
-            User? user = await _userService.GetByEmail(encryptedEmail);
+            User? user = await _userService.GetByEmail(command.Email);
             if (user == null)
                 return new InvalidResource(nameof(User), "Unable to find user");
 
