@@ -13,6 +13,19 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
+    - name: Setup .NET Core SDK 5.0.x
+      uses: actions/setup-dotnet@v1.7.2
+      with:
+        dotnet-version: 5.0.x
+    - name: Install dependencies
+      run: dotnet restore
+      working-directory: src
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+      working-directory: src
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+      working-directory: src
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
       with:
