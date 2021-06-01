@@ -18,14 +18,11 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Install dependencies
-      run: dotnet restore
-      working-directory: src
+      run: dotnet restore .\src\Airslip.Identity.sln
     - name: Build
-      run: dotnet build --configuration Release --no-restore
-      working-directory: src
+      run: dotnet build .\src\Airslip.Identity.sln --no-restore
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
-      working-directory: src
+      run: dotnet test .\src\Airslip.Identity.sln --no-build --verbosity normal
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
       with:
