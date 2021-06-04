@@ -48,18 +48,41 @@ namespace Airslip.Identity.Api.Controller
 
             IResponse getUserByEmailResponse = await _mediator.Send(loginUserCommand);
 
-            return getUserByEmailResponse switch
+            switch (getUserByEmailResponse)
             {
-                AuthenticatedUserResponse response => Ok(response.AddHateoasLinks(
-                    _publicApiSettings.BaseUri,
-                    _publicApiSettings.BankTransactionsUri,
-                    response.HasAddedInstitution,
-                    Alpha2CountryCodes.GB.ToString())),
-                NotFoundResponse response => NotFound(response),
-                ErrorResponse response => BadRequest(response),
-                IFail response => BadRequest(response),
-                _ => throw new NotSupportedException()
-            };
+                case AuthenticatedUserResponse response:
+                    return Ok(response.AddHateoasLinks(_publicApiSettings.BaseUri,
+                        _publicApiSettings.BankTransactionsUri, response.HasAddedInstitution,
+                        Alpha2CountryCodes.GB.ToString()));
+                case NotFoundResponse _:
+                {
+                    RegisterUserCommand registerUserCommand = new(
+                        request.Email,
+                        request.Password
+                    );
+        
+                    IResponse createUserResponse = await _mediator.Send(registerUserCommand);
+
+                    return createUserResponse switch
+                    {
+                        AuthenticatedUserResponse response => Ok(response.AddHateoasLinks(
+                            _publicApiSettings.BaseUri,
+                            _publicApiSettings.BankTransactionsUri,
+                            response.HasAddedInstitution,
+                            Alpha2CountryCodes.GB.ToString())),
+                        ConflictResponse response => Conflict(response),
+                        ErrorResponse response => BadRequest(response),
+                        IFail response => BadRequest(response),
+                        _ => throw new NotSupportedException()
+                    };
+                }
+                case ErrorResponse response:
+                    return BadRequest(response);
+                case IFail response:
+                    return BadRequest(response);
+                default:
+                    throw new NotSupportedException();
+            }
         }
 
         [HttpPost("register")]
