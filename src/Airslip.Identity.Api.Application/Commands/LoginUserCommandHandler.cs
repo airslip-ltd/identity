@@ -48,7 +48,7 @@ namespace Airslip.Identity.Api.Application.Commands
 
             User? user = await _userService.GetByEmail(command.Email);
             if (user == null)
-                return new InvalidResource(nameof(User), "Unable to find user");
+                return new NotFoundResponse(nameof(command.Email), command.Email, "Unable to find user");
 
             _logger.Information("User {UserId} successfully logged in", user.Id);
 
