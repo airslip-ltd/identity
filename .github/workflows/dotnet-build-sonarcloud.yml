@@ -30,7 +30,7 @@ jobs:
     - name: Begin SonarScanner
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: dotnet sonarscanner begin /k:"${{ env.BUILD_PATH }}" /o:"airslip-ltd" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+      run: dotnet sonarscanner begin /k:"${{ env.SONAR_PROJECT_KEY }}" /o:"airslip-ltd" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
     - name: Install dependencies
       run: dotnet restore ${{ env.BUILD_PATH }}
     - name: Build
