@@ -1,0 +1,40 @@
+name: Dotnet Build with SonarCloud
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [ main ]
+
+jobs:
+  sonarcloud:
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_CORE_VERSION: 5.0.x
+      BUILD_PATH: ./src/Airslip.Identity.sln
+      BASE_PATH: src
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v1.7.2
+      with:
+        dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+    - name: Add nuget feed
+      run: dotnet nuget add source --username ${{ secrets.PACKAGE_USER }} --password ${{ secrets.PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/airslip-ltd/index.json"
+    - name: Install dependencies
+      run: dotnet restore ${{ env.BUILD_PATH }}
+    - name: Build
+      run: dotnet build ${{ env.BUILD_PATH }} --no-restore
+    - name: Test
+      run: dotnet test ${{ env.BUILD_PATH }} --no-build --verbosity normal
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      with:
+        projectBaseDir: ${{ env.BASE_PATH }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
