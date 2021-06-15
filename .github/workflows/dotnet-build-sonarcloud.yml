@@ -14,7 +14,7 @@ jobs:
     env:
       DOTNET_CORE_VERSION: 5.0.x
       BUILD_PATH: ./src/Airslip.Identity.sln
-      BASE_PATH: src
+      SONAR_PROJECT_KEY: airslip-ltd_identity
     steps:
     - uses: actions/checkout@v2
       with:
@@ -23,18 +23,21 @@ jobs:
       uses: actions/setup-dotnet@v1.7.2
       with:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+    - name: Add SonarCloud Scanner
+      run: dotnet tool install --global dotnet-sonarscanner
     - name: Add nuget feed
       run: dotnet nuget add source --username ${{ secrets.PACKAGE_USER }} --password ${{ secrets.PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/airslip-ltd/index.json"
+    - name: Begin SonarScanner
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: dotnet sonarscanner begin /k:"${{ env.BUILD_PATH }}" /o:"airslip-ltd" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
     - name: Install dependencies
       run: dotnet restore ${{ env.BUILD_PATH }}
     - name: Build
       run: dotnet build ${{ env.BUILD_PATH }} --no-restore
     - name: Test
       run: dotnet test ${{ env.BUILD_PATH }} --no-build --verbosity normal
-    - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@master
-      with:
-        projectBaseDir: ${{ env.BASE_PATH }}
+    - name: End SonarScanner
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
