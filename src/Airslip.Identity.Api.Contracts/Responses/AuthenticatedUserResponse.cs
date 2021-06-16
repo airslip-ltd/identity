@@ -13,11 +13,13 @@ namespace Airslip.Identity.Api.Contracts.Responses
         
         [JsonIgnore]
         public bool HasAddedInstitution { get; }
+        public UserSettingsResponse Settings { get; }
 
-        public AuthenticatedUserResponse(string bearerToken, bool hasAddedInstitution)
+        public AuthenticatedUserResponse(string bearerToken, bool hasAddedInstitution,UserSettingsResponse settings)
         {
             BearerToken = bearerToken;
             HasAddedInstitution = hasAddedInstitution;
+            Settings = settings;
         }
         
         public AuthenticatedUserResponse AddHateoasLinks(string baseUri, string bankTransactionsUri, bool hasAddedInstitution, string? countryCode)
