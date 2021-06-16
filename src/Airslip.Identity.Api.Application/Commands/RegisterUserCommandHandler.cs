@@ -101,7 +101,7 @@ namespace Airslip.Identity.Api.Application.Commands
 
                     bool hasAddedInstitution = user.Institutions.Count > 0;
 
-                    return new AuthenticatedUserResponse(jwtBearerToken, hasAddedInstitution);
+                    return new AuthenticatedUserResponse(jwtBearerToken, hasAddedInstitution, new UserSettingsResponse(user.Settings?.HasFaceId, true));
 
                 default:
                     throw new InvalidOperationException();

@@ -40,7 +40,7 @@ namespace Airslip.Identity.Api.Application.Commands
             _logger.ForContext(nameof(command.Email), command.Email);
 
             User? user = await _userService.GetByEmail(command.Email);
-
+            bool isNewUser = user is null;
             if (user is null)
             {
                 IYapilyResponse response =
@@ -98,7 +98,7 @@ namespace Airslip.Identity.Api.Application.Commands
 
             bool hasAddedInstitution = user.Institutions.Count > 0;
 
-            return new AuthenticatedUserResponse(jwtBearerToken, hasAddedInstitution);
+            return new AuthenticatedUserResponse(jwtBearerToken, hasAddedInstitution, new UserSettingsResponse(user.Settings?.HasFaceId, isNewUser));
         }
     }
 }
