@@ -39,7 +39,7 @@ namespace Airslip.Identity.Api.Middleware
                 string[] errorCodes = exception.Errors.Select(e => e.ErrorCode).ToArray();
                 string compressed = string.Join(",", errorCodes);
 
-                _logger.Error("ErrorMessages {Compressed}", compressed);
+                _logger.Warning("ErrorMessages {Compressed}", compressed);
 
                 IFail[] errors = exception.Errors
                     .Select(error => new ErrorResponse(error.ErrorCode, error.ErrorMessage,

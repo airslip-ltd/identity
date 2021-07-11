@@ -43,9 +43,9 @@ namespace Airslip.Identity.MongoDb.Contracts
         [BsonElement("city")] public string? City { get; private set; }
         [BsonElement("county")] public string? County { get; private set; }
         [BsonElement("country")] public string? Country { get; private set; }
-        [BsonElement("settings")] public UserSettings? Settings { get; private set; }
+        [BsonElement("settings")] public UserSettings Settings { get; private set; } = new();
 
-        public string? PreviousViewedAccountId { get; set; }
+        [BsonElement("previousViewedAccountId")]  public string? PreviousViewedAccountId { get; set; }
     }
     
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
@@ -61,14 +61,20 @@ namespace Airslip.Identity.MongoDb.Contracts
         [BsonElement("consentToken")] public string? ConsentToken { get; private set; }
 
         [BsonElement("isAuthorised")] public bool IsAuthorised { get; private set; }
+        [BsonElement("expiresAt")] public long? ExpiresAt { get; private set; }
     }
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public class UserSettings
     {
         [BsonElement("hasFaceId")]
-        public bool? HasFaceId { get; }
+        public bool HasFaceId { get; internal set; }
 
-        public UserSettings(bool? hasFaceId)
+        public UserSettings()
+        {
+            
+        }
+
+        public UserSettings(bool hasFaceId)
         {
             HasFaceId = hasFaceId;
         }
