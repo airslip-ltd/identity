@@ -10,35 +10,43 @@ namespace Airslip.Identity.Api.Contracts.Responses
     public class AuthenticatedUserResponse : LinkResourceBase, ISuccess
     {
         public string BearerToken { get; }
-        
-        [JsonIgnore]
-        public bool HasAddedInstitution { get; }
+        public string RefreshToken { get; }
+
+        [JsonIgnore] public bool HasAddedInstitution { get; }
         public UserSettingsResponse Settings { get; }
 
-        public AuthenticatedUserResponse(string bearerToken, bool hasAddedInstitution,UserSettingsResponse settings)
+        public AuthenticatedUserResponse(
+            string bearerToken,
+            string refreshToken,
+            bool hasAddedInstitution,
+            UserSettingsResponse settings)
         {
             BearerToken = bearerToken;
+            RefreshToken = refreshToken;
             HasAddedInstitution = hasAddedInstitution;
             Settings = settings;
         }
-        
-        public AuthenticatedUserResponse AddHateoasLinks(string baseUri, string bankTransactionsUri, bool hasAddedInstitution, string? countryCode)
+
+        public AuthenticatedUserResponse AddHateoasLinks(
+            string baseUri,
+            string bankTransactionsUri,
+            bool hasAddedInstitution,
+            string? countryCode)
         {
             if (hasAddedInstitution)
             {
                 Links = new List<Link>
                 {
-                    new ($"{baseUri}/v1/identity/login", "self", "POST"),
-                    new ($"{bankTransactionsUri}/v1/accounts", "next", "GET")
+                    new($"{baseUri}/v1/identity/login", "self", "POST"),
+                    new($"{bankTransactionsUri}/v1/accounts", "next", "GET")
                 };
             }
             else
             {
                 Links = new List<Link>
                 {
-                    new ($"{baseUri}/v1/identity/login", "self", "POST"),
-                    new ($"{bankTransactionsUri}/v1/institutions/{countryCode}", "next", "GET")
-
+                    new($"{baseUri}/v1/identity/login", "self", "POST"),
+                    new($"{bankTransactionsUri}/v1/institutions/{countryCode}", "next", "GET")
                 };
             }
 

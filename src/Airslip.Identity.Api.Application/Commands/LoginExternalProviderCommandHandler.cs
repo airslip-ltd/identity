@@ -2,6 +2,7 @@
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Contracts.Responses;
 using Airslip.Identity.MongoDb.Contracts;
+using Airslip.Security;
 using Airslip.Security.Jwt;
 using Airslip.Yapily.Client.Contracts;
 using MediatR;
@@ -98,7 +99,15 @@ namespace Airslip.Identity.Api.Application.Commands
 
             bool hasAddedInstitution = user.Institutions.Count > 0;
 
-            return new AuthenticatedUserResponse(jwtBearerToken, hasAddedInstitution, new UserSettingsResponse(user.Settings?.HasFaceId, isNewUser));
+            string refreshToken = RefreshToken.Generate();
+
+            await _userService.UpdateRefreshToken(user.Id, refreshToken);
+
+            return new AuthenticatedUserResponse(
+                jwtBearerToken,
+                refreshToken, 
+                hasAddedInstitution, 
+                new UserSettingsResponse(user.Settings.HasFaceId, isNewUser));
         }
     }
 }

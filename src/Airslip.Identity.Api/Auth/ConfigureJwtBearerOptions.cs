@@ -41,7 +41,8 @@ namespace Airslip.Identity.Api.Auth
                 ValidIssuer = _settings.Issuer,
                 ValidAudience = _settings.Audience,
                 IssuerSigningKey = _signingCredentials.Key,
-                ClockSkew = TimeSpan.Zero
+                ClockSkew = TimeSpan.Zero,
+                ValidateLifetime = false
             };
         }
 

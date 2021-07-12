@@ -53,5 +53,12 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             UpdateDefinition<User> update = Builders<User>.Update.Set(user => user.PreviousViewedAccountId, accountId);
             return _context.Users.UpdateOneAsync(filter, update);
         }
+
+        public Task UpdateRefreshToken(string userId, string refreshToken)
+        {
+            FilterDefinition<User> filter = Builders<User>.Filter.Eq(user => user.Id, userId);
+            UpdateDefinition<User> update = Builders<User>.Update.Set(user => user.RefreshToken, refreshToken);
+            return _context.Users.UpdateOneAsync(filter, update);
+        }
     }
 }
