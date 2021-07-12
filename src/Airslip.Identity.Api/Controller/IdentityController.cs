@@ -60,7 +60,7 @@ namespace Airslip.Identity.Api.Controller
                         request.Email,
                         request.Password
                     );
-        
+
                     IResponse createUserResponse = await _mediator.Send(registerUserCommand);
 
                     return createUserResponse switch
@@ -85,33 +85,31 @@ namespace Airslip.Identity.Api.Controller
             }
         }
 
-        [HttpPost("register")]
+        [Authorize]
+        [HttpPost("refresh")]
         [ProducesResponseType(typeof(AuthenticatedUserResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ConflictResponse), StatusCodes.Status409Conflict)]
-        public async Task<IActionResult> IdentityRegister(LoginRequest request)
+        public async Task<IActionResult> GenerateRefreshToken(RefreshTokenRequest request)
         {
-            RegisterUserCommand registerUserCommand = new(
-                request.Email,
-                request.Password
-            );
-        
-            IResponse createUserResponse = await _mediator.Send(registerUserCommand);
+            GenerateRefreshTokenCommand command = new(
+                Token.UserId,
+                request.RefreshToken);
 
-            return createUserResponse switch
+            IResponse response = await _mediator.Send(command);
+
+            return response switch
             {
-                AuthenticatedUserResponse response => Ok(response.AddHateoasLinks(
+                AuthenticatedUserResponse r => Ok(r.AddHateoasLinks(
                     _publicApiSettings.BaseUri,
                     _publicApiSettings.BankTransactionsUri,
-                    response.HasAddedInstitution,
+                    r.HasAddedInstitution,
                     Alpha2CountryCodes.GB.ToString())),
-                ConflictResponse response => Conflict(response),
-                ErrorResponse response => BadRequest(response),
-                IFail response => BadRequest(response),
+                ErrorResponse r => BadRequest(r),
+                IFail r => BadRequest(r),
                 _ => throw new NotSupportedException()
             };
         }
-        
+
         [HttpGet("google-login")]
         public IActionResult GoogleLogin()
         {
@@ -131,16 +129,16 @@ namespace Airslip.Identity.Api.Controller
                 return BadRequest(new ExternalLoginFailed(GoogleDefaults.AuthenticationScheme));
 
             ExternalLoginResponse externalLoginResponse = GetExternalLoginResponse(
-                claimIdentity, 
+                claimIdentity,
                 result.Properties?.ExpiresUtc);
-            
+
             LoginExternalProviderCommand loginExternalProviderCommand = new(
                 externalLoginResponse.Email,
                 GoogleDefaults.AuthenticationScheme
             );
-        
+
             IResponse loginExternalProviderResponse = await _mediator.Send(loginExternalProviderCommand);
-            
+
             return loginExternalProviderResponse switch
             {
                 AuthenticatedUserResponse response => Ok(response.AddHateoasLinks(
@@ -153,14 +151,15 @@ namespace Airslip.Identity.Api.Controller
                 _ => throw new NotSupportedException()
             };
         }
-        
+
         [HttpGet("logout")]
         public IActionResult IdentityLogout()
         {
             return Ok();
         }
-        
-        private static ExternalLoginResponse GetExternalLoginResponse(ClaimsIdentity claimIdentity,
+
+        private static ExternalLoginResponse GetExternalLoginResponse(
+            ClaimsIdentity claimIdentity,
             DateTimeOffset? expires)
         {
             var claims = claimIdentity.Claims.Select(claim => new

@@ -46,6 +46,7 @@ namespace Airslip.Identity.MongoDb.Contracts
         [BsonElement("settings")] public UserSettings Settings { get; private set; } = new();
 
         [BsonElement("previousViewedAccountId")]  public string? PreviousViewedAccountId { get; set; }
+        [BsonElement("refreshToken")]  public string? RefreshToken { get; set; }
     }
     
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
