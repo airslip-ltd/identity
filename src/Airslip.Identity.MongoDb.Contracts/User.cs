@@ -13,14 +13,12 @@ namespace Airslip.Identity.MongoDb.Contracts
             string id, 
             string applicationId, 
             string emailAddress, 
-            string referenceId,
-            List<UserInstitution> institutions)
+            string referenceId)
         {
             Id = id;
             ApplicationId = applicationId;
             EmailAddress = emailAddress;
             ReferenceId = referenceId;
-            Institutions = institutions;
             CreatedDate = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         }
 
@@ -31,7 +29,9 @@ namespace Airslip.Identity.MongoDb.Contracts
         [BsonElement("applicationId")] public string ApplicationId { get; init; }
         [BsonElement("emailAddress")] public string EmailAddress { get; init; }
         [BsonElement("referenceId")] public string ReferenceId { get; init; }
-        [BsonElement("institutions")] public List<UserInstitution> Institutions { get; init; }
+
+        [BsonElement("institutions")]
+        public List<UserInstitution> Institutions { get; init; } = new();
         [BsonElement("createdDate")] public long CreatedDate { get; init; }
         [BsonElement("firstName")] public string? FirstName { get; private set; }
         [BsonElement("surname")] public string? Surname { get; private set; }
@@ -52,17 +52,12 @@ namespace Airslip.Identity.MongoDb.Contracts
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public class UserInstitution
     {
-        public UserInstitution(string description)
-        {
-            Description = description;
-        }
-
-        [BsonElement("description")] public string Description { get; init; }
-
+        [BsonElement("consentId")] public string ConsentId { get; private set; } = string.Empty;
+        [BsonElement("description")] public string Description { get; private set; } = string.Empty;
         [BsonElement("consentToken")] public string? ConsentToken { get; private set; }
-
         [BsonElement("isAuthorised")] public bool IsAuthorised { get; private set; }
         [BsonElement("expiresAt")] public long? ExpiresAt { get; private set; }
+        [BsonElement("dateAdded")] public long DateAdded { get; init; }
     }
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public class UserSettings

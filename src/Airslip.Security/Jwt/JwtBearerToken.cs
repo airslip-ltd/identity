@@ -10,7 +10,7 @@ namespace Airslip.Security.Jwt
 {
     public static class JwtBearerToken
     {
-        public static string Generate(string privateKey, string audience, string issuer, int expiresTime, string userId)
+        public static string Generate(string privateKey, string audience, string issuer, DateTime expiresTime, string userId)
         {
             if (string.IsNullOrWhiteSpace(privateKey))
                 throw new ArgumentNullException(nameof(privateKey), "private key must be set");
@@ -35,11 +35,21 @@ namespace Airslip.Security.Jwt
                 issuer,
                 audience,
                 claims,
-                expires: DateTime.Now.AddSeconds(expiresTime),
+                expires: expiresTime,
                 signingCredentials: credentials);
 
             JwtSecurityTokenHandler tokenHandler = new();
             return tokenHandler.WriteToken(token);
+        }
+
+        public static DateTime GetExpiry(int expirySeconds)
+        {
+            return DateTime.Now.AddSeconds(expirySeconds);
+        }
+        
+        public static long GetExpiryInEpoch(DateTime expiryDate)
+        {
+            return ((DateTimeOffset) expiryDate).ToUnixTimeMilliseconds();
         }
     }
 }

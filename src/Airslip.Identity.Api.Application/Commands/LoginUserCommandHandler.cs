@@ -7,6 +7,7 @@ using Airslip.Security.Jwt;
 using MediatR;
 using Microsoft.Extensions.Options;
 using Serilog;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -53,11 +54,13 @@ namespace Airslip.Identity.Api.Application.Commands
 
             _logger.Information("User {UserId} successfully logged in", user.Id);
 
+            DateTime bearerTokenExpiryDate = JwtBearerToken.GetExpiry(_jwtSettings.ExpiresTime);
+
             string jwtBearerToken = JwtBearerToken.Generate(
                 _jwtSettings.Key,
                 _jwtSettings.Audience,
                 _jwtSettings.Issuer,
-                _jwtSettings.ExpiresTime,
+                bearerTokenExpiryDate,
                 user.Id);
 
             bool hasAddedInstitution = user.Institutions.Count > 0;
@@ -68,6 +71,7 @@ namespace Airslip.Identity.Api.Application.Commands
 
             return new AuthenticatedUserResponse(
                 jwtBearerToken,
+                JwtBearerToken.GetExpiryInEpoch(bearerTokenExpiryDate),
                 refreshToken,
                 hasAddedInstitution,
                 new UserSettingsResponse(user.Settings.HasFaceId, false));

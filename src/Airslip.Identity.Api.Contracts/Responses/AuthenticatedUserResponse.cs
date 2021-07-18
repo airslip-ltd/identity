@@ -10,18 +10,20 @@ namespace Airslip.Identity.Api.Contracts.Responses
     public class AuthenticatedUserResponse : LinkResourceBase, ISuccess
     {
         public string BearerToken { get; }
+        public long Expiry { get; }
         public string RefreshToken { get; }
-
         [JsonIgnore] public bool HasAddedInstitution { get; }
         public UserSettingsResponse Settings { get; }
 
         public AuthenticatedUserResponse(
             string bearerToken,
+            long expiry,
             string refreshToken,
             bool hasAddedInstitution,
             UserSettingsResponse settings)
         {
             BearerToken = bearerToken;
+            Expiry = expiry;
             RefreshToken = refreshToken;
             HasAddedInstitution = hasAddedInstitution;
             Settings = settings;

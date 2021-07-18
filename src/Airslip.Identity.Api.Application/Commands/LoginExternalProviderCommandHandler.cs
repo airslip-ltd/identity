@@ -9,7 +9,6 @@ using MediatR;
 using Microsoft.Extensions.Options;
 using Serilog;
 using System;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -52,7 +51,7 @@ namespace Airslip.Identity.Api.Application.Commands
                     case YapilyApiResponseError apiError:
                         switch (apiError.Error.Code)
                         {
-                            case (int) HttpStatusCode.Conflict:
+                            case (int)HttpStatusCode.Conflict:
                                 return new ConflictResponse(nameof(command.Email), command.Email,
                                     "User already exists");
                             default:
@@ -74,9 +73,7 @@ namespace Airslip.Identity.Api.Application.Commands
                                 yapilyUser.Uuid!,
                                 yapilyUser.ApplicationUuid!,
                                 yapilyUser.ApplicationUserId!,
-                                yapilyUser.ReferenceId!,
-                                yapilyUser.InstitutionConsents.Select(yapilyInstitutionConsent =>
-                                    new UserInstitution(yapilyInstitutionConsent.InstitutionId!)).ToList()));
+                                yapilyUser.ReferenceId!));
 
                         user = await _userService.Get(yapilyUser.Uuid!);
 
@@ -90,11 +87,13 @@ namespace Airslip.Identity.Api.Application.Commands
                 }
             }
 
+            DateTime bearerTokenExpiryDate = DateTime.Now.AddSeconds(_jwtSettings.ExpiresTime);
+
             string jwtBearerToken = JwtBearerToken.Generate(
                 _jwtSettings.Key,
                 _jwtSettings.Audience,
                 _jwtSettings.Issuer,
-                _jwtSettings.ExpiresTime,
+                bearerTokenExpiryDate,
                 user.Id);
 
             bool hasAddedInstitution = user.Institutions.Count > 0;
@@ -105,8 +104,9 @@ namespace Airslip.Identity.Api.Application.Commands
 
             return new AuthenticatedUserResponse(
                 jwtBearerToken,
-                refreshToken, 
-                hasAddedInstitution, 
+                ((DateTimeOffset)bearerTokenExpiryDate).ToUnixTimeMilliseconds(),
+                refreshToken,
+                hasAddedInstitution,
                 new UserSettingsResponse(user.Settings.HasFaceId, isNewUser));
         }
     }
