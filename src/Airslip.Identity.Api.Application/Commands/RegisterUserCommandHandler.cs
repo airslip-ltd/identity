@@ -53,7 +53,7 @@ namespace Airslip.Identity.Api.Application.Commands
                 case YapilyApiResponseError apiError:
                     switch (apiError.Error.Code)
                     {
-                        case (int) HttpStatusCode.Conflict:
+                        case (int)HttpStatusCode.Conflict:
                             return new ConflictResponse(nameof(command.Email), command.Email, "User already exists");
                         default:
                             logger.Fatal("UNHANDLED_YAPILY_ERROR. ErrorMessage : {ErrorMessage}",
@@ -74,9 +74,7 @@ namespace Airslip.Identity.Api.Application.Commands
                             yapilyUser.Uuid!,
                             yapilyUser.ApplicationUuid!,
                             yapilyUser.ApplicationUserId!,
-                            yapilyUser.ReferenceId!,
-                            yapilyUser.InstitutionConsents.Select(yapilyInstitutionConsent =>
-                                new UserInstitution(yapilyInstitutionConsent.InstitutionId!)).ToList()));
+                            yapilyUser.ReferenceId!));
 
                     IdentityResult result = await _userManagerService.Create(command.Email, command.Password);
 
@@ -95,11 +93,13 @@ namespace Airslip.Identity.Api.Application.Commands
 
                     _logger.Information("User {UserId} successfully registered", user.Id);
 
+                    DateTime bearerTokenExpiryDate = JwtBearerToken.GetExpiry(_jwtSettings.ExpiresTime);
+
                     string jwtBearerToken = JwtBearerToken.Generate(
                         _jwtSettings.Key,
                         _jwtSettings.Audience,
                         _jwtSettings.Issuer,
-                        _jwtSettings.ExpiresTime,
+                        bearerTokenExpiryDate,
                         user.Id);
 
                     bool hasAddedInstitution = user.Institutions.Count > 0;
@@ -109,8 +109,9 @@ namespace Airslip.Identity.Api.Application.Commands
                     await _userService.UpdateRefreshToken(user.Id, refreshToken);
 
                     return new AuthenticatedUserResponse(
-                        jwtBearerToken, 
-                        refreshToken, 
+                        jwtBearerToken,
+                        JwtBearerToken.GetExpiryInEpoch(bearerTokenExpiryDate),
+                        refreshToken,
                         hasAddedInstitution,
                         new UserSettingsResponse(user.Settings.HasFaceId, true));
 

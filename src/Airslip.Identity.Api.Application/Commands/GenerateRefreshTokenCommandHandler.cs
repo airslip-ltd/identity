@@ -6,7 +6,7 @@ using Airslip.Security;
 using Airslip.Security.Jwt;
 using MediatR;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,22 +30,25 @@ namespace Airslip.Identity.Api.Application.Commands
             User user = await _userService.Get(request.UserId);
             if (user.RefreshToken != request.Token)
                 return new ResourceNotFound(nameof(user.RefreshToken), "An incorrect refresh token has been used");
-            
+
+            DateTime bearerTokenExpiryDate = JwtBearerToken.GetExpiry(_jwtSettings.ExpiresTime);
+
             string jwtBearerToken = JwtBearerToken.Generate(
                 _jwtSettings.Key,
                 _jwtSettings.Audience,
                 _jwtSettings.Issuer,
-                _jwtSettings.ExpiresTime,
+               bearerTokenExpiryDate,
                 request.UserId);
 
             string newRefreshToken = RefreshToken.Generate();
             await _userService.UpdateRefreshToken(request.UserId, newRefreshToken);
-         
+
             bool hasAddedInstitution = user.Institutions.Count > 0;
 
             return new AuthenticatedUserResponse(
-                jwtBearerToken, 
-                newRefreshToken, 
+                jwtBearerToken,
+                JwtBearerToken.GetExpiryInEpoch(bearerTokenExpiryDate),
+                newRefreshToken,
                 hasAddedInstitution,
                 new UserSettingsResponse(user.Settings.HasFaceId, false));
         }

@@ -14,4 +14,4 @@ namespace Airslip.Identity.Api.Application.Commands
             Token = refreshToken ?? string.Empty;
         }
     }
-}   
+}

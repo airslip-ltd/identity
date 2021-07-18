@@ -2,11 +2,11 @@ using Airslip.Common.Contracts;
 using Airslip.Identity.Api.Application;
 using Airslip.Identity.Api.Auth;
 using Airslip.Identity.Api.Middleware;
+using Airslip.Identity.Infrastructure.MongoDb;
 using Airslip.Identity.MongoDb.Contracts;
 using Airslip.Identity.MongoDb.Contracts.Identity;
 using Airslip.Infrastructure.BlobStorage;
 using Airslip.Security.Jwt;
-using Airslip.Yapily.Client;
 using Airslip.Yapily.Client.Contracts;
 using FluentValidation;
 using MediatR;
@@ -51,7 +51,8 @@ namespace Airslip.Identity.Api
             services
                 .AddOptions()
                 .Configure<MongoDbSettings>(Configuration.GetSection(nameof(MongoDbSettings)))
-                .Configure<PublicApiSettings>(Configuration.GetSection(nameof(PublicApiSettings)));
+                .Configure<PublicApiSettings>(Configuration.GetSection(nameof(PublicApiSettings)))
+                .Configure<YapilySettings>(Configuration.GetSection(nameof(YapilySettings)));
 
             services
                 .AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>()
@@ -80,16 +81,19 @@ namespace Airslip.Identity.Api
                 .AddDefaultTokenProviders();
 
             services.AddHttpClient<IYapilyClient>(nameof(IYapilyClient),
-                    yapilyHttpClient =>
+                    (serviceProvider, yapilyHttpClient) =>
                     {
+                        IOptions<YapilySettings> yapilySettingsOptions =
+                            serviceProvider.GetRequiredService<IOptions<YapilySettings>>();
+
                         yapilyHttpClient.AddDefaults(
-                            Configuration["YapilySettings:BaseUri"],
-                            Configuration["YapilySettings:ApiKey"],
-                            Configuration["YapilySettings:ApiSecret"]);
+                            yapilySettingsOptions.Value.BaseUri,
+                            "Basic",
+                            $"{yapilySettingsOptions.Value.ApiKey}:{yapilySettingsOptions.Value.ApiSecret}");
                     })
                 .AddTransientHttpErrorPolicy(p =>
                     p.WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))));
-            
+
             services.AddSingleton<IStorage<BlobStorageModel>, BlobStorageRepository>(_ => new BlobStorageRepository(
                 Configuration["BlobStorageSettings:ConnectionString"],
                 Configuration["BlobStorageSettings:Container"]));
@@ -133,7 +137,7 @@ namespace Airslip.Identity.Api
                 .AddYapily();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
 
@@ -160,6 +164,12 @@ namespace Airslip.Identity.Api
                     endpoints.MapControllers()
                         .RequireAuthorization();
                 });
+
+#if !DEBUG
+            DatabaseSetup
+                .Warm(serviceProvider)
+                .Wait();
+#endif
         }
     }
 }
