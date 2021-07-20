@@ -32,4 +32,4 @@ jobs:
     - name: Install toolset
       run: dotnet tool install -g --version 6.1.4 Swashbuckle.AspNetCore.Cli
     - name: Generate Swagger.json
-      run: dotnet swagger tofile --output ${{ env.OUTPUT_PATH }} ${{ env.STARTUP_ASSEMBLY }} ${{ env.SWAGGER_DOC_NAME }}
+      run: swagger tofile --output ${{ env.OUTPUT_PATH }} ${{ env.STARTUP_ASSEMBLY }} ${{ env.SWAGGER_DOC_NAME }}
