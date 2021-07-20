@@ -44,17 +44,22 @@ jobs:
         cd ${{ runner.temp }}
         ls
 
-    - name: Checkout infrastructure
+    - name: Checkout private tools
       uses: actions/checkout@v2
-    - name: Commit and Push to Infrastructure
-      uses: dmnemec/copy_file_to_another_repo_action@main
-      env:
-        API_TOKEN_GITHUB: ${{ secrets.INFRA_CHECKOUT_PAT }}
       with:
-        source_file: '${{ runner.temp }}/${{ env.SWAGGER_FILENAME }}'
-        destination_repo: 'airslip-ltd/infrastructure'
-        destination_folder: 'Swagger'
-        user_email: 'github-actions@github.com'
-        user_name: 'github-actions'
-        commit_message: 'Generated ${{ env.OUTPUT_PATH }}'
-        destination_branch_create: 'new-branch'
+        repository: airslip-ltd/infrastructure
+        token: ${{ secrets.INFRA_CHECKOUT_PAT }} # `GitHub_PAT` is a secret that contains your PAT
+        path: 'infrastructure'
+    
+    - name: Commit and Push to Infrastructure
+      uses: actions/checkout@v2
+      run: |
+        cd '${{ github.workspace }}/infrastructure'
+        mkdir -v 'Swagger'
+        cp '${{ runner.temp }}/${{ env.SWAGGER_FILENAME }}' 'Swagger'
+        git checkout -b new-branch
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add .
+        git commit -m "generated"
+        git push -f
