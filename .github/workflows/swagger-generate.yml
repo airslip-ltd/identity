@@ -35,7 +35,7 @@ jobs:
     - name: Build
       run: dotnet build ${{ env.BUILD_PATH }} --no-restore
     - name: Generate Swagger.json
-      run: swagger tofile --output '${{ github.workspace }}/${{ env.SWAGGER_FILENAME }}' ${{ env.STARTUP_ASSEMBLY }} ${{ env.SWAGGER_DOC_NAME }}
+      run: swagger tofile --output '${{ runner.temp }}/${{ env.SWAGGER_FILENAME }}' ${{ env.STARTUP_ASSEMBLY }} ${{ env.SWAGGER_DOC_NAME }}
       working-directory: ${{ env.BUILD_OUTPUT_PATH }}
 
     - name: Checkout infrastructure
@@ -45,7 +45,7 @@ jobs:
       env:
         API_TOKEN_GITHUB: ${{ secrets.INFRA_CHECKOUT_PAT }}
       with:
-        source_file: '${{ github.workspace }}/${{ env.SWAGGER_FILENAME }}'
+        source_file: '${{ runner.temp }}/${{ env.SWAGGER_FILENAME }}'
         destination_repo: 'airslip-ltd/infrastructure'
         destination_folder: 'Swagger'
         user_email: 'github-actions@github.com'
