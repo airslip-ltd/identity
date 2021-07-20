@@ -45,10 +45,11 @@ jobs:
       env:
         API_TOKEN_GITHUB: ${{ secrets.INFRA_CHECKOUT_PAT }}
       with:
-        source_file: '${{ github.workspace }}/${{ env.BUILD_OUTPUT_PATH }}/${{ env.OUTPUT_PATH }}'
+        source_file: '${{ env.OUTPUT_PATH }}'
         destination_repo: 'airslip-ltd/infrastructure'
         destination_folder: 'Swagger'
         user_email: 'github-actions@github.com'
         user_name: 'github-actions'
         commit_message: 'Generated ${{ env.OUTPUT_PATH }}'
-        destination_branch_create: 'new-branch-${{ github.job }}'
+        destination_branch_create: 'new-branch'
+      working-directory: ${{ env.BUILD_OUTPUT_PATH }}
