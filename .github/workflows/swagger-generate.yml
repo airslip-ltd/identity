@@ -16,8 +16,9 @@ jobs:
       BUILD_PATH: ./src/Airslip.Identity.sln
       BUILD_OUTPUT_PATH: ./src/Airslip.Identity.Api/bin/Debug/net5.0
       STARTUP_ASSEMBLY: Airslip.Identity.Api.dll
-      SWAGGER_FILENAME: Airslip.Identity.json
+      SWAGGER_FILENAME: Airslip.Identity.Api.json
       SWAGGER_DOC_NAME: v1
+      BRANCH_NAME_PREFIX: identity
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
@@ -44,7 +45,7 @@ jobs:
         cd ${{ runner.temp }}
         ls
 
-    - name: Checkout private tools
+    - name: Checkout Infrastructure Repo
       uses: actions/checkout@v2
       with:
         repository: airslip-ltd/infrastructure
@@ -56,9 +57,9 @@ jobs:
         cd '${{ github.workspace }}/infrastructure'
         mkdir -v 'Swagger'
         cp '${{ runner.temp }}/${{ env.SWAGGER_FILENAME }}' 'Swagger'
-        git checkout -b new-branch
+        git checkout -b ${{ env.BRANCH_NAME_PREFIX }}-${{ github.run_id }}
         git config user.name github-actions
         git config user.email github-actions@github.com
         git add .
-        git commit -m "generated"
-        git push --set-upstream origin new-branch
+        git commit -m "Updated ${{ env.SWAGGER_FILENAME }}"
+        git push --set-upstream origin ${{ env.BRANCH_NAME_PREFIX }}-${{ github.run_id }}
