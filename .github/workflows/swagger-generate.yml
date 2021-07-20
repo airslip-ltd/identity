@@ -1,0 +1,30 @@
+name: .NET
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_CORE_VERSION: 5.0.x
+      BUILD_PATH: ./src/Airslip.Identity.sln
+      STARTUP_ASSEMBLY: ./src/Airslip.Identity.Api/bin/Debug/net5.0/Airslip.Identity.Api.dll
+      OUTPUT_PATH: ./docs
+      SWAGGER_DOC_NAME: Airslip.Identity.json
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+    - name: Install dependencies
+      run: dotnet restore ${{ env.BUILD_PATH }}
+    - name: Build
+      run: dotnet build ${{ env.BUILD_PATH }} --no-restore
+    - name: Install toolset
+      run: dotnet tool install -g --version 6.1.4 Swashbuckle.AspNetCore.Cli
+    - name: Generate Swagger.json
+      run: swagger tofile --output ${{ env.OUTPUT_PATH }} ${{ env.STARTUP_ASSEMBLY }} ${{ env.SWAGGER_DOC_NAME }}
