@@ -16,7 +16,7 @@ jobs:
       BUILD_PATH: ./src/Airslip.Identity.sln
       BUILD_OUTPUT_PATH: ./src/Airslip.Identity.Api/bin/Debug/net5.0
       STARTUP_ASSEMBLY: Airslip.Identity.Api.dll
-      OUTPUT_PATH: Airslip.Identity.json
+      SWAGGER_FILENAME: Airslip.Identity.json
       SWAGGER_DOC_NAME: v1
     steps:
     - uses: actions/checkout@v2
@@ -29,13 +29,13 @@ jobs:
       run: dotnet nuget add source --username ${{ secrets.PACKAGE_USER }} --password ${{ secrets.PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/airslip-ltd/index.json"
     - name: Install toolset
       run: dotnet tool install -g --version 6.1.4 Swashbuckle.AspNetCore.Cli
-    
+
     - name: Install dependencies
       run: dotnet restore ${{ env.BUILD_PATH }}
     - name: Build
       run: dotnet build ${{ env.BUILD_PATH }} --no-restore
     - name: Generate Swagger.json
-      run: swagger tofile --output ${{ env.OUTPUT_PATH }} ${{ env.STARTUP_ASSEMBLY }} ${{ env.SWAGGER_DOC_NAME }}
+      run: swagger tofile --output '${{ github.workspace }}/${{ env.SWAGGER_FILENAME }}' ${{ env.STARTUP_ASSEMBLY }} ${{ env.SWAGGER_DOC_NAME }}
       working-directory: ${{ env.BUILD_OUTPUT_PATH }}
 
     - name: Checkout infrastructure
@@ -45,11 +45,10 @@ jobs:
       env:
         API_TOKEN_GITHUB: ${{ secrets.INFRA_CHECKOUT_PAT }}
       with:
-        source_file: '${{ env.OUTPUT_PATH }}'
+        source_file: '${{ github.workspace }}/${{ env.SWAGGER_FILENAME }}'
         destination_repo: 'airslip-ltd/infrastructure'
         destination_folder: 'Swagger'
         user_email: 'github-actions@github.com'
         user_name: 'github-actions'
         commit_message: 'Generated ${{ env.OUTPUT_PATH }}'
         destination_branch_create: 'new-branch'
-      working-directory: ${{ env.BUILD_OUTPUT_PATH }}
