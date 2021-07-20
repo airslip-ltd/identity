@@ -52,7 +52,6 @@ jobs:
         path: 'infrastructure'
     
     - name: Commit and Push to Infrastructure
-      uses: actions/checkout@v2
       run: |
         cd '${{ github.workspace }}/infrastructure'
         mkdir -v 'Swagger'
