@@ -51,4 +51,4 @@ jobs:
         user_email: 'github-actions@github.com'
         user_name: 'github-actions'
         commit_message: 'Generated ${{ env.OUTPUT_PATH }}'
-        destination_branch: 'new-branch'
+        destination_branch_create: 'new-branch'
