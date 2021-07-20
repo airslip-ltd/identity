@@ -1,0 +1,57 @@
+name: Generate Swagger Documentation
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  generate-swagger:
+
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_CORE_VERSION: 5.0.x
+      BUILD_PATH: ./src/Airslip.Identity.sln
+      BUILD_OUTPUT_PATH: ./src/Airslip.Identity.Api/bin/Debug/net5.0
+      STARTUP_ASSEMBLY: Airslip.Identity.Api.dll
+      SWAGGER_FILENAME: Airslip.Identity.Api.json
+      SWAGGER_DOC_NAME: v1
+      BRANCH_NAME_PREFIX: identity
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+
+    - name: Add nuget feed
+      run: dotnet nuget add source --username ${{ secrets.PACKAGE_USER }} --password ${{ secrets.PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/airslip-ltd/index.json"
+    - name: Install Swagger toolset
+      run: dotnet tool install -g --version 6.1.4 Swashbuckle.AspNetCore.Cli
+
+    - name: Install dependencies
+      run: dotnet restore ${{ env.BUILD_PATH }}
+    - name: Build
+      run: dotnet build ${{ env.BUILD_PATH }} --no-restore
+    - name: Generate Swagger.json
+      run: |
+        cd ${{ env.BUILD_OUTPUT_PATH }}
+        swagger tofile --output '${{ runner.temp }}/${{ env.SWAGGER_FILENAME }}' ${{ env.STARTUP_ASSEMBLY }} ${{ env.SWAGGER_DOC_NAME }}
+
+    - name: Checkout Infrastructure Repo
+      uses: actions/checkout@v2
+      with:
+        repository: airslip-ltd/infrastructure
+        token: ${{ secrets.INFRA_CHECKOUT_PAT }} # `GitHub_PAT` is a secret that contains your PAT
+        path: 'infrastructure'
+    
+    - name: Commit and Push to Infrastructure
+      run: |
+        cd '${{ github.workspace }}/infrastructure'
+        mkdir -v 'Swagger'
+        cp '${{ runner.temp }}/${{ env.SWAGGER_FILENAME }}' 'Swagger'
+        git checkout -b ${{ env.BRANCH_NAME_PREFIX }}-${{ github.run_id }}
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add .
+        git commit -m "Updated ${{ env.SWAGGER_FILENAME }}"
+        git push --set-upstream origin ${{ env.BRANCH_NAME_PREFIX }}-${{ github.run_id }}
