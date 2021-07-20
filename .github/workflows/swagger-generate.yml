@@ -35,8 +35,14 @@ jobs:
     - name: Build
       run: dotnet build ${{ env.BUILD_PATH }} --no-restore
     - name: Generate Swagger.json
-      run: swagger tofile --output '${{ runner.temp }}/${{ env.SWAGGER_FILENAME }}' ${{ env.STARTUP_ASSEMBLY }} ${{ env.SWAGGER_DOC_NAME }}
-      working-directory: ${{ env.BUILD_OUTPUT_PATH }}
+      run: |
+        cd ${{ env.BUILD_OUTPUT_PATH }}
+        swagger tofile --output '${{ runner.temp }}/${{ env.SWAGGER_FILENAME }}' ${{ env.STARTUP_ASSEMBLY }} ${{ env.SWAGGER_DOC_NAME }}
+
+    - name: List files in temp folder
+      run: |
+        cd ${{ runner.temp }}
+        ls
 
     - name: Checkout infrastructure
       uses: actions/checkout@v2
