@@ -23,6 +23,8 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+    - name: Add nuget feed
+      run: dotnet nuget add source --username ${{ secrets.PACKAGE_USER }} --password ${{ secrets.PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/airslip-ltd/index.json"
     - name: Install dependencies
       run: dotnet restore ${{ env.BUILD_PATH }}
     - name: Build
