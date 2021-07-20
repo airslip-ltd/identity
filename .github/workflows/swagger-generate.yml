@@ -25,13 +25,6 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
 
-    - name: Checkout infrastructure
-      uses: actions/checkout@v2
-      with:
-        repository: airslip-ltd/infrastructure
-        token: ${{ secrets.INFRA_CHECKOUT_PAT }} # `GitHub_PAT` is a secret that contains your PAT
-        path: infrastructure
-
     - name: Add nuget feed
       run: dotnet nuget add source --username ${{ secrets.PACKAGE_USER }} --password ${{ secrets.PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/airslip-ltd/index.json"
     - name: Install toolset
@@ -45,14 +38,16 @@ jobs:
       run: swagger tofile --output ${{ env.OUTPUT_PATH }} ${{ env.STARTUP_ASSEMBLY }} ${{ env.SWAGGER_DOC_NAME }}
       working-directory: ${{ env.BUILD_OUTPUT_PATH }}
 
+    - name: Checkout infrastructure
+      uses: actions/checkout@v2
     - name: Commit and Push to Infrastructure
       uses: dmnemec/copy_file_to_another_repo_action@main
       env:
         API_TOKEN_GITHUB: ${{ secrets.INFRA_CHECKOUT_PAT }}
       with:
         source_file: '${{ env.BUILD_OUTPUT_PATH }}/${{ env.OUTPUT_PATH }}'
-        destination_repo: 'infrastructure'
-        destination_folder: 'Swagger'
+        destination_repo: 'airslip-ltd/infrastructure'
+        destination_folder: 'infrastructure'
         user_email: 'github-actions@github.com'
         user_name: 'github-actions'
         commit_message: 'Generated ${{ env.OUTPUT_PATH }}'
