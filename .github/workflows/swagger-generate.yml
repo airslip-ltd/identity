@@ -15,8 +15,8 @@ jobs:
       DOTNET_CORE_VERSION: 5.0.x
       BUILD_PATH: ./src/Airslip.Identity.sln
       STARTUP_ASSEMBLY: ./src/Airslip.Identity.Api/bin/Debug/net5.0/Airslip.Identity.Api.dll
-      OUTPUT_PATH: ./docs
-      SWAGGER_DOC_NAME: Airslip.Identity.json
+      OUTPUT_PATH: ./Airslip.Identity.json
+      SWAGGER_DOC_NAME: v1
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
@@ -32,4 +32,4 @@ jobs:
     - name: Install toolset
       run: dotnet tool install -g --version 6.1.4 Swashbuckle.AspNetCore.Cli
     - name: Generate Swagger.json
-      run: swagger tofile --output ${{ env.OUTPUT_PATH }} ${{ env.STARTUP_ASSEMBLY }} ${{ env.SWAGGER_DOC_NAME }}
+      run: dotnet swagger tofile --output ${{ env.OUTPUT_PATH }} ${{ env.STARTUP_ASSEMBLY }} ${{ env.SWAGGER_DOC_NAME }}
