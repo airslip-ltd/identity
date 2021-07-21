@@ -2,7 +2,6 @@
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Contracts.Responses;
 using Airslip.Identity.MongoDb.Contracts;
-using Airslip.Security;
 using Airslip.Security.Jwt;
 using Airslip.Yapily.Client.Contracts;
 using MediatR;
@@ -33,18 +32,18 @@ namespace Airslip.Identity.Api.Application.Commands
             _logger = Log.Logger;
         }
 
-        public async Task<IResponse> Handle(LoginExternalProviderCommand command, CancellationToken cancellationToken)
+        public async Task<IResponse> Handle(LoginExternalProviderCommand request, CancellationToken cancellationToken)
         {
             //string encryptedEmail = Cryptography.GenerateSHA256String(command.Email);
 
-            _logger.ForContext(nameof(command.Email), command.Email);
+            _logger.ForContext(nameof(request.Email), request.Email);
 
-            User? user = await _userService.GetByEmail(command.Email);
+            User? user = await _userService.GetByEmail(request.Email);
             bool isNewUser = user is null;
             if (user is null)
             {
                 IYapilyResponse response =
-                    await _yapilyApis.CreateUser(command.Email, command.ReferenceId, cancellationToken);
+                    await _yapilyApis.CreateUser(request.Email, request.ReferenceId, cancellationToken);
 
                 switch (response)
                 {
@@ -52,7 +51,7 @@ namespace Airslip.Identity.Api.Application.Commands
                         switch (apiError.Error.Code)
                         {
                             case (int)HttpStatusCode.Conflict:
-                                return new ConflictResponse(nameof(command.Email), command.Email,
+                                return new ConflictResponse(nameof(request.Email), request.Email,
                                     "User already exists");
                             default:
                                 _logger.Fatal("UNHANDLED_YAPILY_ERROR. ErrorMessage : {ErrorMessage}",
@@ -79,7 +78,7 @@ namespace Airslip.Identity.Api.Application.Commands
 
                         _logger.Information("User {UserId} successfully logged in with {ExternalProvider}",
                             user.Id,
-                            command.Provider);
+                            request.Provider);
 
                         break;
                     default:
@@ -98,9 +97,9 @@ namespace Airslip.Identity.Api.Application.Commands
 
             bool hasAddedInstitution = user.Institutions.Count > 0;
 
-            string refreshToken = RefreshToken.Generate();
+            string refreshToken = JwtBearerToken.GenerateRefreshToken();
 
-            await _userService.UpdateRefreshToken(user.Id, refreshToken);
+            await _userService.UpdateRefreshToken(user.Id,  string.Empty,refreshToken);
 
             return new AuthenticatedUserResponse(
                 jwtBearerToken,

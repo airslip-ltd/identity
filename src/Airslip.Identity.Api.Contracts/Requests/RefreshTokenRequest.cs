@@ -7,5 +7,6 @@ namespace Airslip.Identity.Api.Contracts.Requests
     public record RefreshTokenRequest
     {
         [Required] public string? RefreshToken { get; init; }
+        [Required] public string? DeviceId { get; init; }
     }
 }

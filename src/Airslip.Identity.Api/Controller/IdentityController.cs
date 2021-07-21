@@ -44,7 +44,8 @@ namespace Airslip.Identity.Api.Controller
         {
             LoginUserCommand loginUserCommand = new(
                 request.Email,
-                request.Password);
+                request.Password,
+                request.DeviceId);
 
             IResponse getUserByEmailResponse = await _mediator.Send(loginUserCommand);
 
@@ -58,8 +59,8 @@ namespace Airslip.Identity.Api.Controller
                 {
                     RegisterUserCommand registerUserCommand = new(
                         request.Email,
-                        request.Password
-                    );
+                        request.Password,
+                        request.DeviceId);
 
                     IResponse createUserResponse = await _mediator.Send(registerUserCommand);
 
@@ -93,6 +94,7 @@ namespace Airslip.Identity.Api.Controller
         {
             GenerateRefreshTokenCommand command = new(
                 Token.UserId,
+                request.DeviceId,
                 request.RefreshToken);
 
             IResponse response = await _mediator.Send(command);
@@ -171,11 +173,13 @@ namespace Airslip.Identity.Api.Controller
             var firstNameClaim = claims.FirstOrDefault(x => x.Type.Contains("givenname"))!;
             var surnameClaim = claims.FirstOrDefault(x => x.Type.Contains("surname"))!;
             var emailAddressClaim = claims.FirstOrDefault(x => x.Type.Contains("emailaddress"))!;
+            var nameIdentifier = claims.FirstOrDefault(x => x.Type.Contains("nameidentifier"))!;
 
             return new ExternalLoginResponse(
                 firstNameClaim.Value,
                 surnameClaim.Value,
                 emailAddressClaim.Value,
+                nameIdentifier.Value,
                 expires);
         }
     }

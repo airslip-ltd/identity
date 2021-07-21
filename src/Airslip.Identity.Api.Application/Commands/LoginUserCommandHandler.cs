@@ -2,7 +2,6 @@
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Contracts.Responses;
 using Airslip.Identity.MongoDb.Contracts;
-using Airslip.Security;
 using Airslip.Security.Jwt;
 using MediatR;
 using Microsoft.Extensions.Options;
@@ -31,26 +30,26 @@ namespace Airslip.Identity.Api.Application.Commands
             _logger = Log.Logger;
         }
 
-        public async Task<IResponse> Handle(LoginUserCommand command, CancellationToken cancellationToken)
+        public async Task<IResponse> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
             //string encryptedEmail = Cryptography.GenerateSHA256String(command.Email);
 
-            bool canLogin = await _userManagerService.TryToLogin(command.Email, command.Password);
+            bool canLogin = await _userManagerService.TryToLogin(request.Email, request.Password);
 
             if (!canLogin)
             {
-                User? possibleUser = await _userService.GetByEmail(command.Email);
+                User? possibleUser = await _userService.GetByEmail(request.Email);
                 return possibleUser == null
                     ? new NotFoundResponse(
-                        nameof(command.Email),
-                        command.Email,
+                        nameof(request.Email),
+                        request.Email,
                         "A user with this email doesn't exist")
                     : new ErrorResponse("INCORRECT_PASSWORD", "Password is incorrect");
             }
 
-            User? user = await _userService.GetByEmail(command.Email);
+            User? user = await _userService.GetByEmail(request.Email);
             if (user == null)
-                return new NotFoundResponse(nameof(command.Email), command.Email, "Unable to find user");
+                return new NotFoundResponse(nameof(request.Email), request.Email, "Unable to find user");
 
             _logger.Information("User {UserId} successfully logged in", user.Id);
 
@@ -65,9 +64,9 @@ namespace Airslip.Identity.Api.Application.Commands
 
             bool hasAddedInstitution = user.Institutions.Count > 0;
 
-            string refreshToken = RefreshToken.Generate();
+            string refreshToken = JwtBearerToken.GenerateRefreshToken();
 
-            await _userService.UpdateRefreshToken(user.Id, refreshToken);
+            await _userService.UpdateRefreshToken(user.Id, request.DeviceId, refreshToken);
 
             return new AuthenticatedUserResponse(
                 jwtBearerToken,

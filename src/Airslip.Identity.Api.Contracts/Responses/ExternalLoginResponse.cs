@@ -7,5 +7,6 @@ namespace Airslip.Identity.Api.Contracts.Responses
         string FirstName,
         string Surname,
         string Email,
+        string DeviceId,
         DateTimeOffset? ExpiryDate) : ISuccess;
 }
