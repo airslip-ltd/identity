@@ -2,7 +2,6 @@
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Contracts.Responses;
 using Airslip.Identity.MongoDb.Contracts;
-using Airslip.Security;
 using Airslip.Security.Jwt;
 using MediatR;
 using Microsoft.Extensions.Options;
@@ -28,8 +27,10 @@ namespace Airslip.Identity.Api.Application.Commands
         public async Task<IResponse> Handle(GenerateRefreshTokenCommand request, CancellationToken cancellationToken)
         {
             User user = await _userService.Get(request.UserId);
-            if (user.RefreshToken != request.Token)
-                return new ResourceNotFound(nameof(user.RefreshToken), "An incorrect refresh token has been used");
+            if (user.RefreshTokens == null ||
+                !user.RefreshTokens.Contains(new RefreshToken(request.DeviceId, request.Token)))
+                return new ResourceNotFound(nameof(RefreshToken),
+                    "An incorrect refresh token has been used for this device");
 
             DateTime bearerTokenExpiryDate = JwtBearerToken.GetExpiry(_jwtSettings.ExpiresTime);
 
@@ -37,11 +38,11 @@ namespace Airslip.Identity.Api.Application.Commands
                 _jwtSettings.Key,
                 _jwtSettings.Audience,
                 _jwtSettings.Issuer,
-               bearerTokenExpiryDate,
+                bearerTokenExpiryDate,
                 request.UserId);
 
-            string newRefreshToken = RefreshToken.Generate();
-            await _userService.UpdateRefreshToken(request.UserId, newRefreshToken);
+            string newRefreshToken = JwtBearerToken.GenerateRefreshToken();
+            await _userService.UpdateRefreshToken(request.UserId, request.DeviceId, newRefreshToken);
 
             bool hasAddedInstitution = user.Institutions.Count > 0;
 

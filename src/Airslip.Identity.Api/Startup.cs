@@ -2,7 +2,6 @@ using Airslip.Common.Contracts;
 using Airslip.Identity.Api.Application;
 using Airslip.Identity.Api.Auth;
 using Airslip.Identity.Api.Middleware;
-using Airslip.Identity.Infrastructure.MongoDb;
 using Airslip.Identity.MongoDb.Contracts;
 using Airslip.Identity.MongoDb.Contracts.Identity;
 using Airslip.Infrastructure.BlobStorage;

@@ -6,12 +6,14 @@ namespace Airslip.Identity.Api.Application.Commands
     public class GenerateRefreshTokenCommand : IRequest<IResponse>
     {
         public string UserId { get; }
+        public string DeviceId { get; }
         public string Token { get; }
 
-        public GenerateRefreshTokenCommand(string userId, string? refreshToken)
+        public GenerateRefreshTokenCommand(string userId, string? deviceId, string? token)
         {
             UserId = userId;
-            Token = refreshToken ?? string.Empty;
+            DeviceId = deviceId ?? string.Empty;
+            Token =token ?? string.Empty;
         }
     }
 }

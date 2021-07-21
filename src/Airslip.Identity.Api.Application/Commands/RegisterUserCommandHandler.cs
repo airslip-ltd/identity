@@ -2,7 +2,6 @@
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Contracts.Responses;
 using Airslip.Identity.MongoDb.Contracts;
-using Airslip.Security;
 using Airslip.Security.Jwt;
 using Airslip.Yapily.Client.Contracts;
 using MediatR;
@@ -38,15 +37,15 @@ namespace Airslip.Identity.Api.Application.Commands
             _logger = Log.Logger;
         }
 
-        public async Task<IResponse> Handle(RegisterUserCommand command, CancellationToken cancellationToken)
+        public async Task<IResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             //string encryptedEmail = Cryptography.GenerateSHA256String(command.Email);
 
             ILogger logger = Log
-                .ForContext(nameof(command.Email), command.Email);
+                .ForContext(nameof(request.Email), request.Email);
 
             IYapilyResponse response =
-                await _yapilyApis.CreateUser(command.Email, command.ReferenceId, cancellationToken);
+                await _yapilyApis.CreateUser(request.Email, request.ReferenceId, cancellationToken);
 
             switch (response)
             {
@@ -54,7 +53,7 @@ namespace Airslip.Identity.Api.Application.Commands
                     switch (apiError.Error.Code)
                     {
                         case (int)HttpStatusCode.Conflict:
-                            return new ConflictResponse(nameof(command.Email), command.Email, "User already exists");
+                            return new ConflictResponse(nameof(request.Email), request.Email, "User already exists");
                         default:
                             logger.Fatal("UNHANDLED_YAPILY_ERROR. ErrorMessage : {ErrorMessage}",
                                 apiError.Error.Message);
@@ -76,14 +75,14 @@ namespace Airslip.Identity.Api.Application.Commands
                             yapilyUser.ApplicationUserId!,
                             yapilyUser.ReferenceId!));
 
-                    IdentityResult result = await _userManagerService.Create(command.Email, command.Password);
+                    IdentityResult result = await _userManagerService.Create(request.Email, request.Password);
 
                     if (result.Succeeded is false)
                         return result.Errors.First().Code switch
                         {
                             "DuplicateUserName" => new ConflictResponse(
-                                nameof(command.Email),
-                                command.Email,
+                                nameof(request.Email),
+                                request.Email,
                                 "User already exists"),
                             _ => new ErrorResponse(result.Errors.First().Code,
                                 result.Errors.First().Description)
@@ -104,9 +103,9 @@ namespace Airslip.Identity.Api.Application.Commands
 
                     bool hasAddedInstitution = user.Institutions.Count > 0;
 
-                    string refreshToken = RefreshToken.Generate();
+                    string refreshToken = JwtBearerToken.GenerateRefreshToken();
 
-                    await _userService.UpdateRefreshToken(user.Id, refreshToken);
+                    await _userService.UpdateRefreshToken(user.Id, request.DeviceId, refreshToken);
 
                     return new AuthenticatedUserResponse(
                         jwtBearerToken,

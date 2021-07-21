@@ -7,6 +7,6 @@ namespace Airslip.Identity.MongoDb.Contracts
         Task<User> Get(string id);
         Task<User?> GetByEmail(string email);
         Task Create(User user);
-        Task UpdateRefreshToken(string userId, string refreshToken);
+        Task UpdateRefreshToken(string userId, string deviceId, string token);
     }
 }

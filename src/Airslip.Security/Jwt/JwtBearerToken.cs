@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Airslip.Security.Jwt
@@ -40,6 +41,14 @@ namespace Airslip.Security.Jwt
 
             JwtSecurityTokenHandler tokenHandler = new();
             return tokenHandler.WriteToken(token);
+        }
+        
+        public static string GenerateRefreshToken()
+        {
+            byte[] randomNumber = new byte[32];
+            using RandomNumberGenerator numberGenerator = RandomNumberGenerator.Create();
+            numberGenerator.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
         }
 
         public static DateTime GetExpiry(int expirySeconds)

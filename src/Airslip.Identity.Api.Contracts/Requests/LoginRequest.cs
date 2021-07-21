@@ -11,5 +11,8 @@ namespace Airslip.Identity.Api.Contracts.Requests
         [Required]
         [DataType(DataType.Password)]
         public string? Password { get; init; }
+        
+        [Required]
+        public string? DeviceId { get; init; }
     }
 }

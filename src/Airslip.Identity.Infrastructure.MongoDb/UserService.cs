@@ -1,6 +1,7 @@
 ﻿using Airslip.Identity.MongoDb.Contracts;
 using MongoDB.Driver;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Airslip.Identity.Infrastructure.MongoDb
@@ -23,7 +24,7 @@ namespace Airslip.Identity.Infrastructure.MongoDb
         {
             return await _context.Users.Find(user => user.EmailAddress == email).FirstOrDefaultAsync();
         }
-        
+
         public async Task<bool> DoesUserExist(string email)
         {
             return await GetByEmail(email) is not null;
@@ -54,11 +55,21 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             return _context.Users.UpdateOneAsync(filter, update);
         }
 
-        public Task UpdateRefreshToken(string userId, string refreshToken)
+        public async Task UpdateRefreshToken(string userId, string deviceId, string token)
         {
-            FilterDefinition<User> filter = Builders<User>.Filter.Eq(user => user.Id, userId);
-            UpdateDefinition<User> update = Builders<User>.Update.Set(user => user.RefreshToken, refreshToken);
-            return _context.Users.UpdateOneAsync(filter, update);
+            FilterDefinition<User> filter = Builders<User>.Filter.Eq(u => u.Id, userId);
+            User userIn = await _context.Users.Find(filter).FirstOrDefaultAsync();
+
+            RefreshToken? refreshToken = userIn.RefreshTokens?.FirstOrDefault(rt => rt.DeviceId == deviceId);
+
+            if (refreshToken != null)
+                userIn.RefreshTokens?.Remove(refreshToken);
+
+            userIn.AddRefreshToken(deviceId, token);
+
+            await _context.Users.ReplaceOneAsync(
+                user => user.Id == userId, userIn,
+                new ReplaceOptions { IsUpsert = true });
         }
     }
 }
