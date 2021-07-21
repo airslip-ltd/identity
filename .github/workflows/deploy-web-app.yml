@@ -34,15 +34,15 @@ jobs:
       id: publishprofile
       uses: aliencube/publish-profile-actions@v1
       env:
-        AZURE_CREDENTIALS: $\{\{ secrets.AZURE_NON_PROD_DEPLOY \}\}
+        AZURE_CREDENTIALS: ${{ secrets.AZURE_NON_PROD_DEPLOY }}
       with:
-        resourceGroupName: $\{\{ env.RESOURCE_GROUP_NAME \}\}
-        appName: $\{\{ env.APPSERVICE_NAME \}\}
+        resourceGroupName: ${{ env.RESOURCE_GROUP_NAME }}
+        appName: ${{ env.APPSERVICE_NAME }}
 
     - name: 'Run Azure webapp deploy action using publish profile credentials'
       uses: azure/webapps-deploy@v2
       with: 
-        app-name: $\{\{ env.APPSERVICE_NAME \}\}
+        app-name: ${{ env.APPSERVICE_NAME }}
         package: ./MyWebApp
-        publish-profile: $\{\{ steps.publishprofile.outputs.profile \}\}
+        publish-profile: ${{ steps.publishprofile.outputs.profile }}
 
