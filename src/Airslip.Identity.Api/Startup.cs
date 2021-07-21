@@ -163,12 +163,6 @@ namespace Airslip.Identity.Api
                     endpoints.MapControllers()
                         .RequireAuthorization();
                 });
-
-#if !DEBUG
-            DatabaseSetup
-                .Warm(serviceProvider)
-                .Wait();
-#endif
         }
     }
 }
