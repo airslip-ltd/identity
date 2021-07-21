@@ -47,7 +47,6 @@ jobs:
     - name: Commit and Push to Infrastructure
       run: |
         cd '${{ github.workspace }}/infrastructure'
-        mkdir -v 'Swagger'
         cp '${{ runner.temp }}/${{ env.SWAGGER_FILENAME }}' 'Swagger'
         git checkout -b ${{ env.BRANCH_NAME_PREFIX }}-${{ github.run_id }}
         git config user.name github-actions
