@@ -1,0 +1,48 @@
+name: Deploy dotnet Web Application
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [ main ]
+
+jobs:
+  sonarcloud:
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_CORE_VERSION: 5.0.x
+      PUBLISH_PATH: ./src/Airslip.Identity.Api
+      RESOURCE_GROUP_NAME: airslip-dev-resources
+      APPSERVICE_NAME: airslip-dev-identity-api
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v1.7.2
+      with:
+        dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+
+    - name: Add nuget feed
+      run: dotnet nuget add source --username ${{ secrets.PACKAGE_USER }} --password ${{ secrets.PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/airslip-ltd/index.json"
+    - name: Install dependencies
+      run: dotnet publish ${{ env.PUBLISH_PATH }} -c Release -o MyWebApp
+
+    - name: Get AppService publish profile
+        id: publishprofile
+        uses: aliencube/publish-profile-actions@v1
+        env:
+          AZURE_CREDENTIALS: $\{\{ secrets.AZURE_NON_PROD_DEPLOY \}\}
+        with:
+          resourceGroupName: $\{\{ env.RESOURCE_GROUP_NAME \}\}
+          appName: $\{\{ env.APPSERVICE_NAME \}\}
+
+    - name: 'Run Azure webapp deploy action using publish profile credentials'
+      uses: azure/webapps-deploy@v2
+      with: 
+        app-name: $\{\{ env.APPSERVICE_NAME \}\}
+        package: ./MyWebApp
+        publish-profile: $\{\{ steps.publishprofile.outputs.profile \}\}
+
