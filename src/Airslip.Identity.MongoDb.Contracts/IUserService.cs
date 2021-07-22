@@ -8,5 +8,6 @@ namespace Airslip.Identity.MongoDb.Contracts
         Task<User?> GetByEmail(string email);
         Task Create(User user);
         Task UpdateRefreshToken(string userId, string deviceId, string token);
+        Task ToggleBiometric(string userId, bool biometricOn);
     }
 }

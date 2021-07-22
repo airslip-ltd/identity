@@ -1,28 +1,27 @@
-﻿using Airslip.BankTransactions.MongoDb.Contracts;
-using Airslip.Common.Contracts;
+﻿using Airslip.Common.Contracts;
+using Airslip.Identity.MongoDb.Contracts;
 using JetBrains.Annotations;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Airslip.BankTransactions.Api.Application.UserProfiles
+namespace Airslip.Identity.Api.Application.UserProfiles
 {
     [UsedImplicitly(ImplicitUseTargetFlags.Itself)]
     public class UpdateUserProfileCommandHandler : IRequestHandler<UpdateUserProfileCommand, IResponse>
     {
-        private readonly IUserService _userService;
+        private readonly IUserProfileService _userProfileService;
 
-        public UpdateUserProfileCommandHandler(
-            IUserService userService)
+        public UpdateUserProfileCommandHandler(IUserProfileService userProfileService)
         {
-            _userService = userService;
+            _userProfileService = userProfileService;
         }
 
         public async Task<IResponse> Handle(UpdateUserProfileCommand command, CancellationToken cancellationToken)
         {
-            User user = await _userService.Get(command.UserId);
+            UserProfile userProfile = await _userProfileService.Get(command.UserId);
 
-            user.UpdateUserProfile(
+            userProfile.Update(
                 command.FirstName,
                 command.Surname,
                 command.Gender,
@@ -34,7 +33,7 @@ namespace Airslip.BankTransactions.Api.Application.UserProfiles
                 command.County,
                 command.Country);
 
-            await _userService.Update(user);
+            await _userProfileService.Update(userProfile);
 
             return Success.Instance;
         }

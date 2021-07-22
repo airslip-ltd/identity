@@ -1,7 +1,7 @@
 ﻿using Airslip.Common.Contracts;
 using System.IO;
 
-namespace Airslip.BankTransactions.Api.Contracts.Responses
+namespace Airslip.Identity.Api.Contracts.Responses
 {
     public record StreamResponse : ISuccess
     {

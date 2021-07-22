@@ -1,7 +1,7 @@
 ﻿using Airslip.Common.Types.Validator;
 using FluentValidation;
 
-namespace Airslip.Identity.Api.Application.Commands
+namespace Airslip.Identity.Api.Application.Identity
 {
     public class GenerateRefreshTokenCommandValidator : AbstractValidator<GenerateRefreshTokenCommand>
     {

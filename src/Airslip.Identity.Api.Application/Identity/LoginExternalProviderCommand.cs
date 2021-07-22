@@ -2,7 +2,7 @@
 using MediatR;
 using System;
 
-namespace Airslip.Identity.Api.Application.Commands
+namespace Airslip.Identity.Api.Application.Identity
 {
     public class LoginExternalProviderCommand : IRequest<IResponse>
     {

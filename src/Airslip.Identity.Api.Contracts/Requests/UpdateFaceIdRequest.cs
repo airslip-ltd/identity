@@ -1,5 +1,4 @@
-namespace Airslip.BankTransactions.Api.Contracts.Requests
+namespace Airslip.Identity.Api.Contracts.Requests
 {
-    public record UpdateFaceIdRequest(
-        bool HasFaceId);
+    public record UpdateBiometricRequest(bool BiometricOn);
 }

@@ -1,39 +1,21 @@
-﻿using Airslip.Common.Types.Extensions;
-using Airslip.Common.Types.Validator;
+﻿using Airslip.Common.Types.Validator;
 using FluentValidation;
 
-namespace Airslip.Identity.Api.Application.Commands
+namespace Airslip.Identity.Api.Application.Identity
 {
     public class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>
     {
         public RegisterUserCommandValidator()
         {
-            RuleFor(command => command.Email).Cascade(CascadeMode.Stop)
-                .NotEmpty()
-                .WithMessage(RequiredConstants.Message)
-                .WithState(x => new
-                {
-                    Attribute = nameof(x.Email),
-                    Value = x.Email
-                })
-                .WithErrorCode(RequiredConstants.ErrorCode)
-                .Must(s => s.IsValidEmail())
-                .WithMessage(InvalidConstants.Message)
-                .WithState(x => new
-                {
-                    Attribute = nameof(x.Email),
-                    Value = x.Email,
-                    Validation = InvalidConstants.MustBeValidEmail
-                })
-                .WithErrorCode(InvalidConstants.ErrorCode);
-
+            RuleFor(command => command).SetValidator(new AuthenticateCommandValidator());
+            
             RuleFor(command => command.ReferenceId).Cascade(CascadeMode.Stop)
                 .NotEmpty()
                 .WithMessage(RequiredConstants.Message)
-                .WithState(x => new
+                .WithState(command => new
                 {
-                    Attribute = nameof(x.ReferenceId),
-                    Value = x.ReferenceId
+                    Attribute = nameof(command.ReferenceId),
+                    Value = command.ReferenceId
                 })
                 .WithErrorCode(RequiredConstants.ErrorCode);
         }

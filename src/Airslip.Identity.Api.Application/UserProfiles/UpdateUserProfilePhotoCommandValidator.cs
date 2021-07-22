@@ -2,7 +2,7 @@
 using FluentValidation;
 using JetBrains.Annotations;
 
-namespace Airslip.BankTransactions.Api.Application.UserProfiles
+namespace Airslip.Identity.Api.Application.UserProfiles
 {
     [UsedImplicitly(ImplicitUseTargetFlags.Itself)]
     public class UpdateUserProfilePhotoCommandValidator : AbstractValidator<UpdateUserProfilePhotoCommand>

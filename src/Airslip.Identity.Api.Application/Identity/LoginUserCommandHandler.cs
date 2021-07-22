@@ -10,7 +10,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Airslip.Identity.Api.Application.Commands
+namespace Airslip.Identity.Api.Application.Identity
 {
     public class GenerateJwtBearerTokenCommandHandler : IRequestHandler<LoginUserCommand, IResponse>
     {
@@ -32,8 +32,6 @@ namespace Airslip.Identity.Api.Application.Commands
 
         public async Task<IResponse> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
-            //string encryptedEmail = Cryptography.GenerateSHA256String(command.Email);
-
             bool canLogin = await _userManagerService.TryToLogin(request.Email, request.Password);
 
             if (!canLogin)

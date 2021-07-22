@@ -5,8 +5,10 @@ using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 
 namespace Airslip.Identity.Api
@@ -15,17 +17,19 @@ namespace Airslip.Identity.Api
     {
         protected readonly PublicApiSettings _publicApiSettings;
         protected readonly Token Token;
+        protected readonly ILogger _logger;
 
-        public ApiResponse(Token token, IOptions<PublicApiSettings> publicApiOptions)
+        public ApiResponse(Token token, IOptions<PublicApiSettings> publicApiOptions, ILogger logger)
         {
             Token = token;
             _publicApiSettings = publicApiOptions.Value;
+            _logger = logger;
         }
 
         protected IActionResult Ok(IResponse response)
         {
             return response is ISuccess
-                ? new ObjectResult(response) {StatusCode = (int) HttpStatusCode.OK}
+                ? new ObjectResult(response) { StatusCode = (int) HttpStatusCode.OK }
                 : BadRequest(response);
         }
 
@@ -33,29 +37,36 @@ namespace Airslip.Identity.Api
         {
             return response switch
             {
-                ISuccess _ => new ObjectResult(response) {StatusCode = (int) HttpStatusCode.Created},
+                ISuccess _ => new ObjectResult(response) { StatusCode = (int) HttpStatusCode.Created },
                 _ => BadRequest(response)
             };
         }
 
         protected IActionResult Conflict(IResponse response)
         {
-            return response is ConflictResponse
-                ? new ObjectResult(response) {StatusCode = StatusCodes.Status409Conflict}
-                : BadRequest(response);
+            if (response is not ConflictResponse conflictResponse)
+                return BadRequest(response);
+
+            _logger.Warning("Conflict error: {ErrorMessage}", conflictResponse.Message);
+            return new ObjectResult(response) { StatusCode = StatusCodes.Status409Conflict };
         }
 
         protected IActionResult Unauthorised(IResponse response)
         {
-            return response is UnauthorisedResponse
-                ? new ObjectResult(response) {StatusCode = StatusCodes.Status401Unauthorized}
-                : BadRequest(response);
+            switch (response)
+            {
+                case UnauthorisedResponse unauthorisedResponse:
+                    _logger.Error("Unauthorised error: {ErrorMessage}", unauthorisedResponse.Message);
+                    return new ObjectResult(response) { StatusCode = StatusCodes.Status401Unauthorized };
+                default:
+                    return BadRequest(response);
+            }
         }
 
         protected IActionResult NotFound(IResponse response)
         {
             return response is NotFoundResponse
-                ? new ObjectResult(response) {StatusCode = StatusCodes.Status404NotFound}
+                ? new ObjectResult(response) { StatusCode = StatusCodes.Status404NotFound }
                 : BadRequest(response);
         }
 
@@ -69,41 +80,35 @@ namespace Airslip.Identity.Api
         protected IActionResult NoContent(IResponse response)
         {
             return response is ISuccess
-                ? new ObjectResult(null) {StatusCode = (int) HttpStatusCode.NoContent}
+                ? new ObjectResult(null) { StatusCode = (int) HttpStatusCode.NoContent }
                 : BadRequest(response);
-        }
-
-        protected IActionResult MethodNotAllowed(IResponse response)
-        {
-            return new ObjectResult(null)
-                {StatusCode = (int) HttpStatusCode.MethodNotAllowed};
         }
 
         protected IActionResult BadRequest(IResponse failure)
         {
-            return failure switch
+            switch (failure)
             {
-                ErrorResponse response => new BadRequestObjectResult(new ApiErrorResponse(Token, response)),
-                ErrorResponses response => new BadRequestObjectResult(new ApiErrorResponse(Token, response.Errors)),
-                IFail response => new BadRequestObjectResult(
-                    new ApiErrorResponse(Token, new ErrorResponse(response.ErrorCode))),
-                _ => throw new ArgumentException("Unknown response type.", nameof(failure))
-            };
+                case ErrorResponse response:
+                    _logger.Error("Bad request error: {ErrorMessage}", response.Message);
+                    return new BadRequestObjectResult(new ApiErrorResponse(Token, response));
+                case ErrorResponses response:
+                    _logger.Error("Bad request errors: {ErrorMessages}",
+                        string.Join(",", response.Errors.Select(errorResponse => errorResponse.Message)));
+                    return new BadRequestObjectResult(new ApiErrorResponse(Token, response.Errors));
+                case IFail response:
+                    _logger.Error("Fail errors: {ErrorMessages}", response.ErrorCode);
+                    return new BadRequestObjectResult(
+                        new ApiErrorResponse(Token, new ErrorResponse(response.ErrorCode)));
+                default:
+                    throw new ArgumentException("Unknown response type.", nameof(failure));
+            }
         }
-
-        // protected async Task AddClaims(string userId)
-        // {
-        //     ClaimsIdentity identity = new(IdentityConstants.ApplicationScheme);
-        //     identity.AddClaim(new Claim("userid", userId));
-        //
-        //     await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, new ClaimsPrincipal(identity));
-        // }
 
         [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
         public class ApiErrorResponse
         {
             public ApiErrorResponse(Token token, ErrorResponse error)
-                : this(token, new[] {error})
+                : this(token, new[] { error })
             {
             }
 

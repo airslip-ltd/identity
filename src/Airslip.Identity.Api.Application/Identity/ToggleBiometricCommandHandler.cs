@@ -5,7 +5,7 @@ using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Airslip.Identity.Api.Application.UserProfiles
+namespace Airslip.Identity.Api.Application.Identity
 {
     [UsedImplicitly(ImplicitUseTargetFlags.Itself)]
     public class ToggleBiometricCommandHandler : IRequestHandler<ToggleBiometricCommand, IResponse>

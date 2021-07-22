@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Airslip.BankTransactions.Api.Contracts.Requests
+namespace Airslip.Identity.Api.Contracts.Requests
 {
     public record UpdateUserProfileRequest(
         string? FirstName,

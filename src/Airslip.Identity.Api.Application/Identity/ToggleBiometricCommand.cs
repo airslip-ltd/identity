@@ -1,7 +1,7 @@
 ﻿using Airslip.Common.Contracts;
 using MediatR;
 
-namespace Airslip.Identity.Api.Application.UserProfiles
+namespace Airslip.Identity.Api.Application.Identity
 {
     public class ToggleBiometricCommand : IRequest<IResponse>
     {

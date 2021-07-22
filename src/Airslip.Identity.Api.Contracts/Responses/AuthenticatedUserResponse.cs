@@ -1,7 +1,6 @@
 ﻿using Airslip.Common.Contracts;
 using Airslip.Common.Types.Hateoas;
 using JetBrains.Annotations;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace Airslip.Identity.Api.Contracts.Responses
@@ -12,30 +11,25 @@ namespace Airslip.Identity.Api.Contracts.Responses
         public string BearerToken { get; }
         public long Expiry { get; }
         public string RefreshToken { get; }
-        [JsonIgnore] public bool HasAddedInstitution { get; }
-        public UserSettingsResponse Settings { get; }
+        public bool BiometricOn { get; }
+        public bool IsNewUser { get; }
 
-        public AuthenticatedUserResponse(
-            string bearerToken,
-            long expiry,
-            string refreshToken,
-            bool hasAddedInstitution,
-            UserSettingsResponse settings)
+        public AuthenticatedUserResponse(string bearerToken, long expiry, string refreshToken, bool biometricOn, bool isNewUser)
         {
             BearerToken = bearerToken;
             Expiry = expiry;
             RefreshToken = refreshToken;
-            HasAddedInstitution = hasAddedInstitution;
-            Settings = settings;
+            BiometricOn = biometricOn;
+            IsNewUser = isNewUser;
         }
 
         public AuthenticatedUserResponse AddHateoasLinks(
             string baseUri,
             string bankTransactionsUri,
-            bool hasAddedInstitution,
+            bool isNewUser,
             string? countryCode)
         {
-            if (hasAddedInstitution)
+            if (isNewUser)
             {
                 Links = new List<Link>
                 {

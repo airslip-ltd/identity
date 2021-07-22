@@ -1,10 +1,8 @@
 ﻿using Airslip.Common.Types.Extensions;
 using Airslip.Identity.MongoDb.Contracts;
 using JetBrains.Annotations;
-using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System.Collections.Generic;
 
 namespace Airslip.Identity.Infrastructure.MongoDb
 {
@@ -14,24 +12,24 @@ namespace Airslip.Identity.Infrastructure.MongoDb
         private readonly IMongoDatabase _database;
       
         private readonly string _userCollection = $"{nameof(User)}s".ToCamelCase();
-        private readonly string _accountCollection = $"{nameof(Account)}s".ToCamelCase();
+        private readonly string _userProfileCollection = $"{nameof(UserProfile)}s".ToCamelCase();
 
-        public AirslipMongoDbContext(IOptions<MongoDbSettings> settings)
+        public AirslipMongoDbContext(IMongoDatabase database)
         {
-            MongoClient client = new(settings.Value.ConnectionString);
-            _database = client.GetDatabase(settings.Value.DatabaseName);
+            _database = database;
 
             CreateCollections();
-            SetupIndexes();
         }
 
         public IMongoCollection<User> Users => _database.GetCollection<User>(_userCollection);
-        public IMongoCollection<Account> Accounts => _database.GetCollection<Account>(_accountCollection);
+        public IMongoCollection<UserProfile> UserProfiles => _database.GetCollection<UserProfile>(_userProfileCollection);
 
         private void CreateCollections()
         {
             if (!CheckCollection(_userCollection))
                 _database.CreateCollection(_userCollection);
+            if (!CheckCollection(_userProfileCollection))
+                _database.CreateCollection(_userProfileCollection);
         }
 
         private bool CheckCollection(string collectionName)
@@ -40,17 +38,6 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             IAsyncCursor<BsonDocument>? collectionCursor =
                 _database.ListCollections(new ListCollectionsOptions {Filter = filter});
             return collectionCursor.Any();
-        }
-
-        private void SetupIndexes()
-        {
-            CreateIndexOptions indexOptions = new();
-            IndexKeysDefinitionBuilder<User>? userBuilders = Builders<User>.IndexKeys;
-
-            Users.Indexes.CreateManyAsync(new List<CreateIndexModel<User>>
-            {
-                new(userBuilders.Ascending("Institutions.Description"), indexOptions)
-            });
         }
     }
 }
