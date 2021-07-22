@@ -62,8 +62,6 @@ namespace Airslip.Identity.Api.Application.Commands
                 bearerTokenExpiryDate,
                 user.Id);
 
-            bool hasAddedInstitution = user.Institutions.Count > 0;
-
             string refreshToken = JwtBearerToken.GenerateRefreshToken();
 
             await _userService.UpdateRefreshToken(user.Id, request.DeviceId, refreshToken);
@@ -72,8 +70,8 @@ namespace Airslip.Identity.Api.Application.Commands
                 jwtBearerToken,
                 JwtBearerToken.GetExpiryInEpoch(bearerTokenExpiryDate),
                 refreshToken,
-                hasAddedInstitution,
-                new UserSettingsResponse(user.Settings.HasFaceId, false));
+                user.BiometricOn, 
+                true);
         }
     }
 }

@@ -34,8 +34,6 @@ namespace Airslip.Identity.Api.Application.Commands
 
         public async Task<IResponse> Handle(LoginExternalProviderCommand request, CancellationToken cancellationToken)
         {
-            //string encryptedEmail = Cryptography.GenerateSHA256String(command.Email);
-
             _logger.ForContext(nameof(request.Email), request.Email);
 
             User? user = await _userService.GetByEmail(request.Email);
@@ -50,7 +48,7 @@ namespace Airslip.Identity.Api.Application.Commands
                     case YapilyApiResponseError apiError:
                         switch (apiError.Error.Code)
                         {
-                            case (int)HttpStatusCode.Conflict:
+                            case (int) HttpStatusCode.Conflict:
                                 return new ConflictResponse(nameof(request.Email), request.Email,
                                     "User already exists");
                             default:
@@ -95,18 +93,16 @@ namespace Airslip.Identity.Api.Application.Commands
                 bearerTokenExpiryDate,
                 user.Id);
 
-            bool hasAddedInstitution = user.Institutions.Count > 0;
-
             string refreshToken = JwtBearerToken.GenerateRefreshToken();
 
-            await _userService.UpdateRefreshToken(user.Id,  string.Empty,refreshToken);
+            await _userService.UpdateRefreshToken(user.Id, request.DeviceId, refreshToken);
 
             return new AuthenticatedUserResponse(
                 jwtBearerToken,
-                ((DateTimeOffset)bearerTokenExpiryDate).ToUnixTimeMilliseconds(),
+                JwtBearerToken.GetExpiryInEpoch(bearerTokenExpiryDate),
                 refreshToken,
-                hasAddedInstitution,
-                new UserSettingsResponse(user.Settings.HasFaceId, isNewUser));
+                user.BiometricOn,
+                isNewUser);
         }
     }
 }
