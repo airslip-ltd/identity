@@ -2,9 +2,9 @@
 using MediatR;
 using System;
 
-namespace Airslip.Identity.Api.Application.Commands
+namespace Airslip.Identity.Api.Application.Identity
 {
-    public class RegisterUserCommand : IRequest<IResponse>
+    public class RegisterUserCommand : IRequest<IResponse>, IAuthenticateRequest
     {
         public RegisterUserCommand(string? applicationUserId, string? password, string? deviceId)
         {

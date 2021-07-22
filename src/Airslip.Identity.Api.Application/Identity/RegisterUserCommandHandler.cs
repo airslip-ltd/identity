@@ -14,7 +14,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Airslip.Identity.Api.Application.Commands
+namespace Airslip.Identity.Api.Application.Identity
 {
     public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, IResponse>
     {
@@ -23,24 +23,25 @@ namespace Airslip.Identity.Api.Application.Commands
         private readonly JwtSettings _jwtSettings;
         private readonly IUserManagerService _userManagerService;
         private readonly ILogger _logger;
+        private readonly IUserProfileService _userProfileService;
 
         public RegisterUserCommandHandler(
             IUserService userService,
             IYapilyClient yapilyApis,
             IOptions<JwtSettings> jwtSettingsOptions,
-            IUserManagerService userManagerService)
+            IUserManagerService userManagerService,
+            IUserProfileService userProfileService)
         {
             _userService = userService;
             _yapilyApis = yapilyApis;
             _jwtSettings = jwtSettingsOptions.Value;
             _userManagerService = userManagerService;
+            _userProfileService = userProfileService;
             _logger = Log.Logger;
         }
 
         public async Task<IResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            //string encryptedEmail = Cryptography.GenerateSHA256String(command.Email);
-
             ILogger logger = Log
                 .ForContext(nameof(request.Email), request.Email);
 
@@ -68,13 +69,18 @@ namespace Airslip.Identity.Api.Application.Commands
                         return new ResourceNotFound(nameof(User), "Unable to create with all the required fields");
                     }
 
+                    string email = yapilyUser.ApplicationUserId!;
+                    string userId = yapilyUser.Uuid!;
+                    
                     await _userService.Create(
                         new User(
-                            yapilyUser.Uuid!,
+                            userId,
                             yapilyUser.ApplicationUuid!,
-                            yapilyUser.ApplicationUserId!,
+                            email,
                             yapilyUser.ReferenceId!));
 
+                    await _userProfileService.Create(new UserProfile(userId, request.Email));
+                    
                     IdentityResult result = await _userManagerService.Create(request.Email, request.Password);
 
                     if (result.Succeeded is false)

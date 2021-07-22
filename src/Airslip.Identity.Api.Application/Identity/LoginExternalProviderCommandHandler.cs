@@ -12,7 +12,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Airslip.Identity.Api.Application.Commands
+namespace Airslip.Identity.Api.Application.Identity
 {
     public class LoginExternalProviderCommandHandler : IRequestHandler<LoginExternalProviderCommand, IResponse>
     {
@@ -20,14 +20,17 @@ namespace Airslip.Identity.Api.Application.Commands
         private readonly IYapilyClient _yapilyApis;
         private readonly JwtSettings _jwtSettings;
         private readonly ILogger _logger;
+        private readonly IUserProfileService _userProfileService;
 
         public LoginExternalProviderCommandHandler(
             IUserService userService,
             IYapilyClient yapilyApis,
-            IOptions<JwtSettings> jwtSettingsOptions)
+            IOptions<JwtSettings> jwtSettingsOptions,
+            IUserProfileService userProfileService)
         {
             _userService = userService;
             _yapilyApis = yapilyApis;
+            _userProfileService = userProfileService;
             _jwtSettings = jwtSettingsOptions.Value;
             _logger = Log.Logger;
         }
@@ -65,12 +68,17 @@ namespace Airslip.Identity.Api.Application.Commands
                             return new ResourceNotFound(nameof(User), "Unable to create with all the required fields");
                         }
 
+                        string email = yapilyUser.ApplicationUserId!;
+                        string userId = yapilyUser.Uuid!;
+                        
                         await _userService.Create(
                             new User(
-                                yapilyUser.Uuid!,
+                                userId,
                                 yapilyUser.ApplicationUuid!,
-                                yapilyUser.ApplicationUserId!,
+                                email,
                                 yapilyUser.ReferenceId!));
+
+                        await _userProfileService.Create(new UserProfile(userId, request.Email));
 
                         user = await _userService.Get(yapilyUser.Uuid!);
 

@@ -1,13 +1,12 @@
-﻿using Airslip.BankTransactions.Api.Contracts.Responses;
-using Airslip.BankTransactions.Domain;
-using Airslip.Common.Contracts;
+﻿using Airslip.Common.Contracts;
+using Airslip.Identity.Api.Contracts.Responses;
 using JetBrains.Annotations;
 using MediatR;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Airslip.BankTransactions.Api.Application.UserProfiles
+namespace Airslip.Identity.Api.Application.UserProfiles
 {
     [UsedImplicitly(ImplicitUseTargetFlags.Itself)]
     public class GetUserProfilePhotoQueryHandler : IRequestHandler<GetUserProfilePhotoQuery, IResponse>

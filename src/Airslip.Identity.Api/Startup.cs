@@ -2,6 +2,7 @@ using Airslip.Common.Contracts;
 using Airslip.Identity.Api.Application;
 using Airslip.Identity.Api.Auth;
 using Airslip.Identity.Api.Middleware;
+using Airslip.Identity.Infrastructure.MongoDb;
 using Airslip.Identity.MongoDb.Contracts;
 using Airslip.Identity.MongoDb.Contracts.Identity;
 using Airslip.Infrastructure.BlobStorage;
@@ -20,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
 using System;
 using System.IO;
 using System.Reflection;
@@ -52,6 +54,24 @@ namespace Airslip.Identity.Api
                 .Configure<MongoDbSettings>(Configuration.GetSection(nameof(MongoDbSettings)))
                 .Configure<PublicApiSettings>(Configuration.GetSection(nameof(PublicApiSettings)))
                 .Configure<YapilySettings>(Configuration.GetSection(nameof(YapilySettings)));
+            
+            services.AddSingleton<IMongoClient>(serviceProvider =>
+            {
+                IOptions<MongoDbSettings> mongoDbSettingsOptions =
+                    serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>();
+
+                return new MongoClient(mongoDbSettingsOptions.Value.ConnectionString);
+            });
+
+            services.AddSingleton<IMongoDatabase>(serviceProvider =>
+            {
+                IOptions<MongoDbSettings> mongoDbSettingsOptions =
+                    serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>();
+
+                IMongoClient mongoClient = serviceProvider.GetRequiredService<IMongoClient>();
+
+                return mongoClient.GetDatabase(mongoDbSettingsOptions.Value.DatabaseName);
+            });
 
             services
                 .AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>()
@@ -160,15 +180,12 @@ namespace Airslip.Identity.Api
                     .AllowAnyMethod())
                 .UseEndpoints(endpoints =>
                 {
-                    endpoints.MapControllers()
-                        .RequireAuthorization();
+                    endpoints.MapControllers();
                 });
 
-#if !DEBUG
             DatabaseSetup
                 .Warm(serviceProvider)
                 .Wait();
-#endif
         }
     }
 }

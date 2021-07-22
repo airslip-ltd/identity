@@ -1,7 +1,7 @@
 ﻿using Airslip.Common.Contracts;
 using MediatR;
 
-namespace Airslip.Identity.Api.Application.Commands
+namespace Airslip.Identity.Api.Application.Identity
 {
     public class GenerateRefreshTokenCommand : IRequest<IResponse>
     {

@@ -1,11 +1,10 @@
-﻿using Airslip.BankTransactions.Api.Contracts.Requests;
-using Airslip.Common.Contracts;
+﻿using Airslip.Common.Contracts;
 using Airslip.Common.Types.Hateoas;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 
-namespace Airslip.BankTransactions.Api.Contracts.Responses
+namespace Airslip.Identity.Api.Contracts.Responses
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public class UserProfileResponse : LinkResourceBase, ISuccess
@@ -21,7 +20,6 @@ namespace Airslip.BankTransactions.Api.Contracts.Responses
         public string? City { get; }
         public string? County { get; }
         public string? Country { get; }
-        public UserSettingsRequest? Settings { get; }
 
         public UserProfileResponse(
             string? email,
@@ -34,8 +32,7 @@ namespace Airslip.BankTransactions.Api.Contracts.Responses
             string? secondLineAddress,
             string? city,
             string? county,
-            string? country,
-            UserSettingsRequest? settings)
+            string? country)
         {
             Email = email;
             FirstName = firstName;
@@ -48,7 +45,6 @@ namespace Airslip.BankTransactions.Api.Contracts.Responses
             City = city;
             County = county;
             Country = country;
-            Settings = settings;
         }
 
         public override T AddHateoasLinks<T>(string baseUri, params string[] identifiers)

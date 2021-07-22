@@ -1,9 +1,9 @@
 ﻿using Airslip.Common.Contracts;
 using MediatR;
 
-namespace Airslip.Identity.Api.Application.Commands
+namespace Airslip.Identity.Api.Application.Identity
 {
-    public class LoginUserCommand : IRequest<IResponse>
+    public class LoginUserCommand : IRequest<IResponse>, IAuthenticateRequest
     {
         public string Email { get; }
         public string Password { get; } 
@@ -15,5 +15,10 @@ namespace Airslip.Identity.Api.Application.Commands
             Password = password ?? string.Empty;
             DeviceId = deviceId ?? string.Empty;
         }
+    }
+
+    public interface IAuthenticateRequest
+    {
+        public string Email { get; }
     }
 }

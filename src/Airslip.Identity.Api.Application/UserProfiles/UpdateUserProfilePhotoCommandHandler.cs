@@ -1,12 +1,11 @@
-﻿using Airslip.BankTransactions.Domain;
-using Airslip.Common.Contracts;
+﻿using Airslip.Common.Contracts;
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Airslip.BankTransactions.Api.Application.UserProfiles
+namespace Airslip.Identity.Api.Application.UserProfiles
 {
     [UsedImplicitly(ImplicitUseTargetFlags.Itself)]
     public class UpdateUserProfilePhotoCommandHandler : IRequestHandler<UpdateUserProfilePhotoCommand, IResponse>

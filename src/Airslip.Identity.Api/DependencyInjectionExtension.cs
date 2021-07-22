@@ -14,7 +14,7 @@ namespace Airslip.Identity.Api
             services.AddSingleton<AirslipMongoDbContext>();
             services.AddSingleton<IUserService, UserService>();
             services.AddScoped<IUserManagerService, UserManagerService>();
-            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IUserProfileService, UserProfileService>();
             return services;
         }
         

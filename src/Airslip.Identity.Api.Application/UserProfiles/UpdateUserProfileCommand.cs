@@ -2,7 +2,7 @@
 using MediatR;
 using System;
 
-namespace Airslip.BankTransactions.Api.Application.UserProfiles
+namespace Airslip.Identity.Api.Application.UserProfiles
 {
     public class UpdateUserProfileCommand : IRequest<IResponse>
     {
