@@ -27,8 +27,7 @@ namespace Airslip.Identity.Api.Application.Commands
         public async Task<IResponse> Handle(GenerateRefreshTokenCommand request, CancellationToken cancellationToken)
         {
             User user = await _userService.Get(request.UserId);
-            if (user.RefreshTokens == null ||
-                !user.RefreshTokens.Contains(new RefreshToken(request.DeviceId, request.Token)))
+            if (!user.RefreshTokens.Contains(new RefreshToken(request.DeviceId, request.Token)))
                 return new ResourceNotFound(nameof(RefreshToken),
                     "An incorrect refresh token has been used for this device");
 
@@ -44,14 +43,12 @@ namespace Airslip.Identity.Api.Application.Commands
             string newRefreshToken = JwtBearerToken.GenerateRefreshToken();
             await _userService.UpdateRefreshToken(request.UserId, request.DeviceId, newRefreshToken);
 
-            bool hasAddedInstitution = user.Institutions.Count > 0;
-
             return new AuthenticatedUserResponse(
                 jwtBearerToken,
                 JwtBearerToken.GetExpiryInEpoch(bearerTokenExpiryDate),
                 newRefreshToken,
-                hasAddedInstitution,
-                new UserSettingsResponse(user.Settings.HasFaceId, false));
+                user.BiometricOn, 
+                false);
         }
     }
 }
