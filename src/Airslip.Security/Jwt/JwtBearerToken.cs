@@ -11,7 +11,7 @@ namespace Airslip.Security.Jwt
 {
     public static class JwtBearerToken
     {
-        public static string Generate(string privateKey, string audience, string issuer, DateTime expiresTime, string userId)
+        public static string Generate(string privateKey, string audience, string issuer, DateTime expiresTime, ICollection<Claim> claims)
         {
             if (string.IsNullOrWhiteSpace(privateKey))
                 throw new ArgumentNullException(nameof(privateKey), "private key must be set");
@@ -23,11 +23,6 @@ namespace Airslip.Security.Jwt
                     nameof(privateKey));
 
             SigningCredentials credentials = new(key, SecurityAlgorithms.HmacSha256);
-
-            List<Claim> claims = new()
-            {
-                new Claim("userid", userId)
-            };
 
             if (claims.All(c => c.Type != "jti"))
                 claims.Add(new Claim("jti", Guid.NewGuid().ToString("N")));
@@ -41,6 +36,15 @@ namespace Airslip.Security.Jwt
 
             JwtSecurityTokenHandler tokenHandler = new();
             return tokenHandler.WriteToken(token);
+        }
+
+        public static ICollection<Claim> GetClaims(string userId, string yapilyUserId)
+        {
+            return new List<Claim>
+            {
+                new("userid", userId),
+                new("yapilyuserid", yapilyUserId),
+            };
         }
         
         public static string GenerateRefreshToken()

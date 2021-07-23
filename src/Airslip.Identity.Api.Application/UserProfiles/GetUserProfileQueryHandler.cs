@@ -19,9 +19,9 @@ namespace Airslip.Identity.Api.Application.UserProfiles
             _userProfileService = userProfileService;
         }
         
-        public async Task<IResponse> Handle(GetUserProfileQuery query, CancellationToken cancellationToken)
+        public async Task<IResponse> Handle(GetUserProfileQuery request, CancellationToken cancellationToken)
         {
-            UserProfile userProfile = await _userProfileService.Get(query.UserId);
+            UserProfile userProfile = await _userProfileService.Get(request.UserId);
 
             return userProfile.ToUserProfileResponse();
         }
