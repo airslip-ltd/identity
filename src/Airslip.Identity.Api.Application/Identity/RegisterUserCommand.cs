@@ -6,7 +6,10 @@ namespace Airslip.Identity.Api.Application.Identity
 {
     public class RegisterUserCommand : IRequest<IResponse>, IAuthenticateRequest
     {
-        public RegisterUserCommand(string? applicationUserId, string? password, string? deviceId)
+        public RegisterUserCommand(
+            string? applicationUserId, 
+            string? password, 
+            string? deviceId)
         {
             Email = applicationUserId ?? string.Empty;
             Password = password ?? string.Empty;

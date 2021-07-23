@@ -19,19 +19,20 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             return _context.Users.Find(user => user.Id == id).FirstOrDefaultAsync();
         }
 
-        public async Task<User?> GetByEmail(string email)
+        public async Task<User> Create(User user)
         {
-            return await _context.Users.Find(user => user.EmailAddress == email).FirstOrDefaultAsync();
+            await _context.Users.InsertOneAsync(user);
+            return user;
         }
 
-        public Task Create(User user)
+        public Task Update(User userIn)
         {
-            return _context.Users.InsertOneAsync(user);
+            return _context.Users.ReplaceOneAsync(user => user.Id == userIn.Id, userIn);
         }
 
-        public async Task UpdateRefreshToken(string userId, string deviceId, string token)
+        public async Task UpdateRefreshToken(string id, string deviceId, string token)
         {
-            FilterDefinition<User> filter = Builders<User>.Filter.Eq(u => u.Id, userId);
+            FilterDefinition<User> filter = Builders<User>.Filter.Eq(u => u.Id, id);
             User userIn = await _context.Users.Find(filter).FirstOrDefaultAsync();
 
             RefreshToken? refreshToken = userIn.RefreshTokens.FirstOrDefault(rt => rt.DeviceId == deviceId);
@@ -42,13 +43,13 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             userIn.AddRefreshToken(deviceId, token);
 
             await _context.Users.ReplaceOneAsync(
-                user => user.Id == userId, userIn,
+                user => user.Id == id, userIn,
                 new ReplaceOptions { IsUpsert = true });
         }
-        
-        public Task ToggleBiometric(string userId, bool biometricOn)
+
+        public Task ToggleBiometric(string id, bool biometricOn)
         {
-            FilterDefinition<User> filter = Builders<User>.Filter.Eq(user => user.Id, userId);
+            FilterDefinition<User> filter = Builders<User>.Filter.Eq(user => user.Id, id);
             UpdateDefinition<User> update = Builders<User>.Update.Set(user => user.BiometricOn, biometricOn);
             return _context.Users.UpdateOneAsync(filter, update);
         }

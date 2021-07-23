@@ -17,21 +17,21 @@ namespace Airslip.Identity.Api.Application.UserProfiles
             _userProfileService = userProfileService;
         }
 
-        public async Task<IResponse> Handle(UpdateUserProfileCommand command, CancellationToken cancellationToken)
+        public async Task<IResponse> Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
         {
-            UserProfile userProfile = await _userProfileService.Get(command.UserId);
+            UserProfile userProfile = await _userProfileService.Get(request.UserId);
 
             userProfile.Update(
-                command.FirstName,
-                command.Surname,
-                command.Gender,
-                command.DateOfBirth?.ToUnixTimeMilliseconds(),
-                command.Postalcode,
-                command.FirstLineAddress,
-                command.SecondLineAddress,
-                command.City,
-                command.County,
-                command.Country);
+                request.FirstName,
+                request.Surname,
+                request.Gender,
+                request.DateOfBirth?.ToUnixTimeMilliseconds(),
+                request.Postalcode,
+                request.FirstLineAddress,
+                request.SecondLineAddress,
+                request.City,
+                request.County,
+                request.Country);
 
             await _userProfileService.Update(userProfile);
 
