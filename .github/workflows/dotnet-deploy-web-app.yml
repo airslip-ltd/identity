@@ -1,16 +1,15 @@
 name: Deploy dotnet Web Application
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches: [ main ]
 
 jobs:
-  sonarcloud:
+  deploy-web-app-dev:
     runs-on: ubuntu-latest
+    environment: Development
     env:
       DOTNET_CORE_VERSION: 5.0.x
       PUBLISH_PATH: ./src/Airslip.Identity.Api
@@ -45,4 +44,3 @@ jobs:
         app-name: ${{ env.APPSERVICE_NAME }}
         package: ./MyWebApp
         publish-profile: ${{ steps.publishprofile.outputs.profile }}
-
