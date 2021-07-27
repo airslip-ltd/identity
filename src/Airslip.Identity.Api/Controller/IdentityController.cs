@@ -1,17 +1,17 @@
 ﻿using Airslip.Common.Contracts;
 using Airslip.Common.Types.Enums;
 using Airslip.Common.Types.Failures;
-using Airslip.Identity.Api.Application.Commands;
+using Airslip.Identity.Api.Application.Identity;
 using Airslip.Identity.Api.Auth;
 using Airslip.Identity.Api.Contracts.Requests;
 using Airslip.Identity.Api.Contracts.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Serilog;
 using System;
 using System.Linq;
 using System.Security.Claims;
@@ -20,7 +20,6 @@ using System.Threading.Tasks;
 namespace Airslip.Identity.Api.Controller
 {
     [ApiController]
-    [AllowAnonymous]
     [ApiVersion(ApiConstants.VersionOne)]
     // ReSharper disable once RouteTemplates.RouteParameterConstraintNotResolved
     [Route("v{version:apiVersion}/identity")]
@@ -31,14 +30,16 @@ namespace Airslip.Identity.Api.Controller
 
         public IdentityController(
             Token token,
+            ILogger logger,
             IOptions<PublicApiSettings> publicApiOptions,
-            IMediator mediator) : base(token, publicApiOptions)
+            IMediator mediator) : base(token, publicApiOptions, logger)
         {
             _mediator = mediator;
         }
 
         [HttpPost("login")]
         [ProducesResponseType(typeof(AuthenticatedUserResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AuthenticatedUserResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> IdentityLogin(LoginRequest request)
         {
@@ -53,7 +54,7 @@ namespace Airslip.Identity.Api.Controller
             {
                 case AuthenticatedUserResponse response:
                     return Ok(response.AddHateoasLinks(_publicApiSettings.BaseUri,
-                        _publicApiSettings.BankTransactionsUri, response.HasAddedInstitution,
+                        _publicApiSettings.BankTransactionsUri, false,
                         Alpha2CountryCodes.GB.ToString()));
                 case NotFoundResponse _:
                 {
@@ -66,10 +67,10 @@ namespace Airslip.Identity.Api.Controller
 
                     return createUserResponse switch
                     {
-                        AuthenticatedUserResponse response => Ok(response.AddHateoasLinks(
+                        AuthenticatedUserResponse response => Created(response.AddHateoasLinks(
                             _publicApiSettings.BaseUri,
                             _publicApiSettings.BankTransactionsUri,
-                            response.HasAddedInstitution,
+                           true,
                             Alpha2CountryCodes.GB.ToString())),
                         ConflictResponse response => Conflict(response),
                         ErrorResponse response => BadRequest(response),
@@ -86,7 +87,6 @@ namespace Airslip.Identity.Api.Controller
             }
         }
 
-        [Authorize]
         [HttpPost("refresh")]
         [ProducesResponseType(typeof(AuthenticatedUserResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
@@ -104,7 +104,7 @@ namespace Airslip.Identity.Api.Controller
                 AuthenticatedUserResponse r => Ok(r.AddHateoasLinks(
                     _publicApiSettings.BaseUri,
                     _publicApiSettings.BankTransactionsUri,
-                    r.HasAddedInstitution,
+                    false,
                     Alpha2CountryCodes.GB.ToString())),
                 ErrorResponse r => BadRequest(r),
                 IFail r => BadRequest(r),
@@ -136,8 +136,8 @@ namespace Airslip.Identity.Api.Controller
 
             LoginExternalProviderCommand loginExternalProviderCommand = new(
                 externalLoginResponse.Email,
-                GoogleDefaults.AuthenticationScheme
-            );
+                GoogleDefaults.AuthenticationScheme,
+                externalLoginResponse.DeviceId);
 
             IResponse loginExternalProviderResponse = await _mediator.Send(loginExternalProviderCommand);
 
@@ -146,7 +146,7 @@ namespace Airslip.Identity.Api.Controller
                 AuthenticatedUserResponse response => Ok(response.AddHateoasLinks(
                     _publicApiSettings.BaseUri,
                     _publicApiSettings.BankTransactionsUri,
-                    response.HasAddedInstitution,
+                    response.IsNewUser,
                     Alpha2CountryCodes.GB.ToString())),
                 ErrorResponse response => BadRequest(response),
                 IFail response => BadRequest(response),
@@ -158,6 +158,22 @@ namespace Airslip.Identity.Api.Controller
         public IActionResult IdentityLogout()
         {
             return Ok();
+        }
+        
+        [HttpPut("biometric")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateBiometric([FromBody] UpdateBiometricRequest request)
+        {
+            ToggleBiometricCommand command = new(
+                Token.UserId,
+                request.BiometricOn);
+
+            IResponse response = await _mediator.Send(command);
+
+            return response is ISuccess
+                ? NoContent()
+                : BadRequest(response);
         }
 
         private static ExternalLoginResponse GetExternalLoginResponse(

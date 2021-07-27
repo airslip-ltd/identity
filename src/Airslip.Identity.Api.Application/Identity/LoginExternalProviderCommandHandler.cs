@@ -12,7 +12,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Airslip.Identity.Api.Application.Commands
+namespace Airslip.Identity.Api.Application.Identity
 {
     public class LoginExternalProviderCommandHandler : IRequestHandler<LoginExternalProviderCommand, IResponse>
     {
@@ -20,37 +20,45 @@ namespace Airslip.Identity.Api.Application.Commands
         private readonly IYapilyClient _yapilyApis;
         private readonly JwtSettings _jwtSettings;
         private readonly ILogger _logger;
+        private readonly IUserProfileService _userProfileService;
 
         public LoginExternalProviderCommandHandler(
             IUserService userService,
             IYapilyClient yapilyApis,
-            IOptions<JwtSettings> jwtSettingsOptions)
+            IOptions<JwtSettings> jwtSettingsOptions,
+            IUserProfileService userProfileService)
         {
             _userService = userService;
             _yapilyApis = yapilyApis;
+            _userProfileService = userProfileService;
             _jwtSettings = jwtSettingsOptions.Value;
             _logger = Log.Logger;
         }
 
         public async Task<IResponse> Handle(LoginExternalProviderCommand request, CancellationToken cancellationToken)
         {
-            //string encryptedEmail = Cryptography.GenerateSHA256String(command.Email);
+            UserProfile? userProfile = await _userProfileService.GetByEmail(request.Email);
+            bool isNewUser = userProfile is null;
 
-            _logger.ForContext(nameof(request.Email), request.Email);
+            User user = isNewUser 
+                ? await _userService.Create(new User())
+                : await _userService.Get(userProfile!.UserId);
 
-            User? user = await _userService.GetByEmail(request.Email);
-            bool isNewUser = user is null;
-            if (user is null)
+            string yapilyUserId = user.GetOpenBankingProviderId("Yapily") ?? string.Empty;
+
+            if (isNewUser)
             {
+                await _userProfileService.Create(new UserProfile(user.Id, request.Email));
+
                 IYapilyResponse response =
-                    await _yapilyApis.CreateUser(request.Email, request.ReferenceId, cancellationToken);
+                    await _yapilyApis.CreateUser(user.Id, request.ReferenceId, cancellationToken);
 
                 switch (response)
                 {
                     case YapilyApiResponseError apiError:
                         switch (apiError.Error.Code)
                         {
-                            case (int)HttpStatusCode.Conflict:
+                            case (int) HttpStatusCode.Conflict:
                                 return new ConflictResponse(nameof(request.Email), request.Email,
                                     "User already exists");
                             default:
@@ -60,22 +68,14 @@ namespace Airslip.Identity.Api.Application.Commands
                         }
 
                     case YapilyUser yapilyUser:
+                        yapilyUserId = yapilyUser.Uuid;
 
                         if (yapilyUser.IsInvalid())
                         {
-                            await _yapilyApis.DeleteUser(yapilyUser.Uuid!, cancellationToken);
+                            await _yapilyApis.DeleteUser(yapilyUserId, cancellationToken);
                             return new ResourceNotFound(nameof(User), "Unable to create with all the required fields");
                         }
-
-                        await _userService.Create(
-                            new User(
-                                yapilyUser.Uuid!,
-                                yapilyUser.ApplicationUuid!,
-                                yapilyUser.ApplicationUserId!,
-                                yapilyUser.ReferenceId!));
-
-                        user = await _userService.Get(yapilyUser.Uuid!);
-
+                        
                         _logger.Information("User {UserId} successfully logged in with {ExternalProvider}",
                             user.Id,
                             request.Provider);
@@ -93,20 +93,18 @@ namespace Airslip.Identity.Api.Application.Commands
                 _jwtSettings.Audience,
                 _jwtSettings.Issuer,
                 bearerTokenExpiryDate,
-                user.Id);
-
-            bool hasAddedInstitution = user.Institutions.Count > 0;
+                JwtBearerToken.GetClaims(user.Id, yapilyUserId));
 
             string refreshToken = JwtBearerToken.GenerateRefreshToken();
 
-            await _userService.UpdateRefreshToken(user.Id,  string.Empty,refreshToken);
+            await _userService.UpdateRefreshToken(user.Id, request.DeviceId, refreshToken);
 
             return new AuthenticatedUserResponse(
                 jwtBearerToken,
-                ((DateTimeOffset)bearerTokenExpiryDate).ToUnixTimeMilliseconds(),
+                JwtBearerToken.GetExpiryInEpoch(bearerTokenExpiryDate),
                 refreshToken,
-                hasAddedInstitution,
-                new UserSettingsResponse(user.Settings.HasFaceId, isNewUser));
+                user.BiometricOn,
+                isNewUser);
         }
     }
 }

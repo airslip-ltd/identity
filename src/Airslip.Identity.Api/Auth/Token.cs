@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,8 @@ namespace Airslip.Identity.Api.Auth
             string correlationId = claims.GetValue("correlation");
             CorrelationId = string.IsNullOrWhiteSpace(correlationId) ? Guid.NewGuid().ToString() : correlationId;
 
+            Log.Logger.ForContext(nameof(CorrelationId), CorrelationId);
+
             MerchantName = claims.GetValue("merchantname");
             Identity = claims.GetValue("identity");
             SessionId = claims.GetValue("jti");
@@ -37,7 +40,6 @@ namespace Airslip.Identity.Api.Auth
         }
 
         public bool? IsAuthenticated { get; init; }
-
         public string UserId { get; init; }
 
         // For whitelabel solution

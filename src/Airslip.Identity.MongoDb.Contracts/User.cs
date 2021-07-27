@@ -3,91 +3,62 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Airslip.Identity.MongoDb.Contracts
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public record User
     {
-        public User(
-            string id,
-            string applicationId,
-            string emailAddress,
-            string referenceId)
-        {
-            Id = id;
-            ApplicationId = applicationId;
-            EmailAddress = emailAddress;
-            ReferenceId = referenceId;
-            CreatedDate = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        }
-
         [BsonId]
         [BsonRepresentation(BsonType.String)]
-        [BsonElement("id")]
-        public string Id { get; private set; }
+        public string Id { get; init; } = Guid.NewGuid().ToString("N");
 
-        [BsonElement("applicationId")] public string ApplicationId { get; init; }
-        [BsonElement("emailAddress")] public string EmailAddress { get; init; }
-        [BsonElement("referenceId")] public string ReferenceId { get; init; }
+        [BsonElement("openBankingProviders")]
+        public ICollection<OpenBankingProvider> OpenBankingProviders { get; private set; } =
+            new List<OpenBankingProvider>(1);
 
-        [BsonElement("institutions")] public List<UserInstitution> Institutions { get; init; } = new();
-        [BsonElement("createdDate")] public long CreatedDate { get; init; }
-        [BsonElement("firstName")] public string? FirstName { get; private set; }
-        [BsonElement("surname")] public string? Surname { get; private set; }
-        [BsonElement("gender")] public string? Gender { get; private set; }
-        [BsonElement("dateOfBirth")] public long? DateOfBirth { get; private set; }
-        [BsonElement("postalcode")] public string? Postalcode { get; private set; }
-        [BsonElement("firstLineAddress")] public string? FirstLineAddress { get; private set; }
-        [BsonElement("secondLineAddress")] public string? SecondLineAddress { get; private set; }
-        [BsonElement("city")] public string? City { get; private set; }
-        [BsonElement("county")] public string? County { get; private set; }
-        [BsonElement("country")] public string? Country { get; private set; }
-        [BsonElement("settings")] public UserSettings Settings { get; private set; } = new();
+        [BsonElement("createdDate")]
+        public long CreatedDate { get; init; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-        [BsonElement("previousViewedAccountId")]
-        public string? PreviousViewedAccountId { get; set; }
+        [BsonElement("biometricOn")] public bool BiometricOn { get; private set; }
 
-        [BsonElement("refreshToken")]
-        public string? RefreshToken { get; set; } // Need deleting when destroying old subscription
-
-        [BsonElement("refreshTokens")] public List<RefreshToken>? RefreshTokens { get; set; } = new();
+        [BsonElement("refreshTokens")]
+        public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>(1);
 
         public void AddRefreshToken(string deviceId, string token)
         {
-            RefreshTokens ??= new List<RefreshToken>();
-
             RefreshTokens.Add(new RefreshToken(deviceId, token));
+        }
+        
+        public void AddOpenBankingProvider(OpenBankingProvider openBankingProvider)
+        {
+            OpenBankingProviders.Add(openBankingProvider);
+        }
+        
+        public string? GetOpenBankingProviderId(string name)
+        {
+            return OpenBankingProviders.FirstOrDefault(obp => obp.Name == name)?.Id;
+        }
+    }
+    
+    public record OpenBankingProvider
+    {
+        [BsonElement("name")] public string Name { get; }
+        [BsonElement("id")] public string Id { get; }
+        [BsonElement("applicationId")] public string ApplicationId { get; }
+        [BsonElement("referenceId")]  public string ReferenceId { get; }
+
+        public OpenBankingProvider(string name, string id, string applicationId, string referenceId)
+        {
+            Name = name;
+            Id = id;
+            ApplicationId = applicationId;
+            ReferenceId = referenceId;
         }
     }
 
     public record RefreshToken(
         [property: BsonElement("deviceId")] string DeviceId,
         [property: BsonElement("token")] string Token);
-
-    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    public class UserInstitution
-    {
-        [BsonElement("consentId")] public string ConsentId { get; private set; } = string.Empty;
-        [BsonElement("description")] public string Description { get; private set; } = string.Empty;
-        [BsonElement("consentToken")] public string? ConsentToken { get; private set; }
-        [BsonElement("isAuthorised")] public bool IsAuthorised { get; private set; }
-        [BsonElement("expiresAt")] public long? ExpiresAt { get; private set; }
-        [BsonElement("dateAdded")] public long DateAdded { get; init; }
-    }
-
-    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    public class UserSettings
-    {
-        [BsonElement("hasFaceId")] public bool HasFaceId { get; internal set; }
-
-        public UserSettings()
-        {
-        }
-
-        public UserSettings(bool hasFaceId)
-        {
-            HasFaceId = hasFaceId;
-        }
-    }
 }
