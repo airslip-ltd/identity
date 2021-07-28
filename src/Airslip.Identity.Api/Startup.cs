@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
@@ -26,6 +27,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using Polly;
+using Serilog;
 
 namespace Airslip.Identity.Api
 {
@@ -156,10 +158,12 @@ namespace Airslip.Identity.Api
                 .AddYapily();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider,  ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
 
+            loggerFactory.AddSerilog();
+            
             app.UseSwagger();
 
             app.UseSwaggerUI(c =>
@@ -174,6 +178,7 @@ namespace Airslip.Identity.Api
                 .UseAuthorization()
                 .UseMiddleware<ErrorHandlingMiddleware>()
                 .UseMiddleware<JwtTokenMiddleware>()
+                .UseMiddleware<CorrelationIdMiddleware>()
                 .UseCors(builder => builder
                     .WithOrigins(Configuration["AllowedHosts"])
                     .AllowAnyHeader()

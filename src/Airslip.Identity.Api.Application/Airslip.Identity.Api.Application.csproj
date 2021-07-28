@@ -10,6 +10,7 @@
 		<PackageReference Include="Airslip.Common.Types" Version="$(AirslipCommonTypes)" />
 		<PackageReference Include="Serilog.AspNetCore" Version="$(SerilogAspNetCore)" />
 		<PackageReference Include="Serilog.Sinks.Logz.Io" Version="$(SerilogSinkLogzIo)" />
+		<PackageReference Include="Serilog.Enrichers.CorrelationId" Version="$(SerilogEnrichersCorrelationId)" />
 	</ItemGroup>
 
 	<ItemGroup>

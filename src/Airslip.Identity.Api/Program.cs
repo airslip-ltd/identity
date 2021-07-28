@@ -7,7 +7,8 @@ Host.CreateDefaultBuilder(args)
     .ConfigureWebHostDefaults(webBuilder =>
     {
         webBuilder
-            .UseSerilog((context, config) => config.ReadFrom.Configuration(context.Configuration))
+            .UseSerilog((context, config) => config.ReadFrom.Configuration(context.Configuration)
+                .Enrich.WithCorrelationIdHeader(ApiConstants.CorrelationIdName))
             .UseStartup<Startup>();
     })
     .Build()

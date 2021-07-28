@@ -1,7 +1,5 @@
 ﻿using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
-using Serilog;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -23,10 +21,7 @@ namespace Airslip.Identity.Api.Auth
 
             UserId = claims.GetValue("userid");
 
-            string correlationId = claims.GetValue("correlation");
-            CorrelationId = string.IsNullOrWhiteSpace(correlationId) ? Guid.NewGuid().ToString() : correlationId;
-
-            Log.Logger.ForContext(nameof(CorrelationId), CorrelationId);
+            CorrelationId = httpContext.Request.Headers[ApiConstants.CorrelationIdName];
 
             MerchantName = claims.GetValue("merchantname");
             Identity = claims.GetValue("identity");
