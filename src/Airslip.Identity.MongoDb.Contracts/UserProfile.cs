@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System;
 
 namespace Airslip.Identity.MongoDb.Contracts
 {
@@ -9,7 +10,9 @@ namespace Airslip.Identity.MongoDb.Contracts
     {
         [BsonId]
         [BsonRepresentation(BsonType.String)]
-        public string UserId { get; init; }
+        public string Id { get; init; } = Guid.NewGuid().ToString("N");
+        
+        [BsonElement("userId")]  public string UserId { get; init; }
 
         [BsonElement("email")] public string Email { get; init; }
 
@@ -29,7 +32,6 @@ namespace Airslip.Identity.MongoDb.Contracts
         [BsonElement("city")] public string? City { get; private set; }
         [BsonElement("county")] public string? County { get; private set; }
         [BsonElement("country")] public string? Country { get; private set; }
-        [BsonElement("biometricOn")] public bool BiometricOn { get; private set; }
 
         public void Update(
             string? firstName,
@@ -53,11 +55,6 @@ namespace Airslip.Identity.MongoDb.Contracts
             City = city;
             County = county;
             Country = country;
-        }
-
-        public void UpdateBiometric(bool value)
-        {
-            BiometricOn = value;
         }
     }
 }
