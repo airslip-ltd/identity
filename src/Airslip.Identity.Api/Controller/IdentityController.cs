@@ -73,6 +73,7 @@ namespace Airslip.Identity.Api.Controller
                            true,
                             Alpha2CountryCodes.GB.ToString())),
                         ConflictResponse response => Conflict(response),
+                        NotFoundResponse r => NotFound(r),
                         ErrorResponse response => BadRequest(response),
                         IFail response => BadRequest(response),
                         _ => throw new NotSupportedException()
@@ -106,6 +107,7 @@ namespace Airslip.Identity.Api.Controller
                     _publicApiSettings.BankTransactionsUri,
                     false,
                     Alpha2CountryCodes.GB.ToString())),
+                NotFoundResponse r => NotFound(r),
                 ErrorResponse r => BadRequest(r),
                 IFail r => BadRequest(r),
                 _ => throw new NotSupportedException()

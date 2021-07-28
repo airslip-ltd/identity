@@ -42,7 +42,7 @@ namespace Airslip.Identity.Api.Contracts.Responses
                 Links = new List<Link>
                 {
                     new($"{baseUri}/v1/identity/login", "self", "POST"),
-                    new($"{bankTransactionsUri}/v1/institutions/{countryCode}", "next", "GET")
+                    new($"{bankTransactionsUri}/v1/banks/{countryCode}", "next", "GET")
                 };
             }
 
