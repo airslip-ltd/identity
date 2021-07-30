@@ -3,10 +3,10 @@ name: Dotnet Build with SonarCloud
 on:
   push:
     branches:
-      - maind
+      - main
   pull_request:
     types: [opened, synchronize, reopened]
-    branches: [ maind ]
+    branches: [ main ]
 
 jobs:
   sonarcloud:
@@ -15,6 +15,7 @@ jobs:
       DOTNET_CORE_VERSION: 5.0.x
       BUILD_PATH: ./src/Airslip.Identity.sln
       SONAR_PROJECT_KEY: airslip-ltd_identity
+      TEST_RESULT_NAME: Identity Test Results
     steps:
     - uses: actions/checkout@v2
       with:
@@ -30,13 +31,38 @@ jobs:
     - name: Begin SonarScanner
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: dotnet sonarscanner begin /k:"${{ env.SONAR_PROJECT_KEY }}" /o:"airslip-ltd" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+      run: |
+        dotnet sonarscanner begin \
+          /k:"${{ env.SONAR_PROJECT_KEY }}" \
+          /o:"airslip-ltd" \
+          /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+          /d:sonar.host.url="https://sonarcloud.io" \
+          /d:sonar.cs.vstest.reportsPaths=**/*.trx  \
+          /d:sonar.cs.opencover.reportsPaths=***/coverage.opencover.xml \
+          /d:sonar.coverage.exclusions="**Test*.cs" 
     - name: Install dependencies
       run: dotnet restore ${{ env.BUILD_PATH }}
     - name: Build
       run: dotnet build ${{ env.BUILD_PATH }} --no-restore
     - name: Test
-      run: dotnet test ${{ env.BUILD_PATH }} --no-build --verbosity normal
+      run: |
+        dotnet test ${{ env.BUILD_PATH }} \
+          --no-build \
+          --verbosity normal \
+          --collect:"XPlat Code Coverage" \
+          --results-directory TestResults/ \
+          --logger "trx;LogFileName=unittests.trx" \
+          -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+        cd TestResults
+        ls
+
+    - name: Generate Test Report
+      uses: dorny/test-reporter@v1
+      with:
+        name: ${{ env.TEST_RESULT_NAME }}
+        path: '**/*.trx'
+        reporter: dotnet-trx
+
     - name: End SonarScanner
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

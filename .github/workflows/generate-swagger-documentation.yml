@@ -3,7 +3,7 @@ name: Generate Swagger Documentation
 on:
   push:
     branches:
-      - maind
+      - main
 
 jobs:
   generate-swagger:
