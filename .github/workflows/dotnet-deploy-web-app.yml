@@ -26,7 +26,7 @@ jobs:
 
     - uses: cschleiden/replace-tokens@v1
       with:
-        files: '["**/appSettings.*.json"]'
+        files: '["${{ env.PUBLISH_PATH }}/*.json"]'
       env:
         LOGZ_IO_AUTH_TOKEN: ${{ secrets.LOGZ_IO_AUTH_TOKEN }}
         LOGZ_IO_LOG_LEVEL: Debug
