@@ -3,10 +3,10 @@ name: Dotnet Build with SonarCloud
 on:
   push:
     branches:
-      - main
+      - maind
   pull_request:
     types: [opened, synchronize, reopened]
-    branches: [ main ]
+    branches: [ maind ]
 
 jobs:
   sonarcloud:
