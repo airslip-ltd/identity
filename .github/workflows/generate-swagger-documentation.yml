@@ -2,7 +2,8 @@ name: Generate Swagger Documentation
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - maind
 
 jobs:
   generate-swagger:
