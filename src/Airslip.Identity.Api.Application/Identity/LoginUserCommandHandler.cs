@@ -44,7 +44,7 @@ namespace Airslip.Identity.Api.Application.Identity
             if (!canLogin)
                 return new ErrorResponse("INCORRECT_PASSWORD", "Password is incorrect");
 
-            User user = await _userService.Get(userprofile.UserId);
+            User user = (await _userService.Get(userprofile.UserId))!;
             
             string? yapilyUserId = user.GetOpenBankingProviderId("Yapily");
 
@@ -71,7 +71,7 @@ namespace Airslip.Identity.Api.Application.Identity
                 JwtBearerToken.GetExpiryInEpoch(bearerTokenExpiryDate),
                 refreshToken,
                 user.BiometricOn,
-                true);
+                false);
         }
     }
 }

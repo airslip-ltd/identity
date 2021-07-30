@@ -28,6 +28,7 @@
 		<NewtonsoftJson>13.0.1</NewtonsoftJson>
 		<SerilogAspNetCore>4.1.0</SerilogAspNetCore>
 		<SerilogSinkLogzIo>3.0.1</SerilogSinkLogzIo>
+		<SerilogEnrichersCorrelationId>3.0.1</SerilogEnrichersCorrelationId>
 		<Swashbuckle>6.1.4</Swashbuckle>
 		<Xunit>2.4.1</Xunit>
 		<XunitRunner>2.4.3</XunitRunner>

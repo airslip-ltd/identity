@@ -14,9 +14,9 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             _context = context;
         }
 
-        public Task<User> Get(string id)
+        public async Task<User?> Get(string id)
         {
-            return _context.Users.Find(user => user.Id == id).FirstOrDefaultAsync();
+            return await _context.Users.Find(user => user.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<User> Create(User user)

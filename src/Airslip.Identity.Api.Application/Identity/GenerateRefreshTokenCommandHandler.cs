@@ -26,7 +26,10 @@ namespace Airslip.Identity.Api.Application.Identity
 
         public async Task<IResponse> Handle(GenerateRefreshTokenCommand request, CancellationToken cancellationToken)
         {
-            User user = await _userService.Get(request.UserId);
+            User? user = await _userService.Get(request.UserId);
+
+            if (user is null)
+                return new NotFoundResponse(request.UserId, request.UserId, "Unable to find user");
             
             if (!user.RefreshTokens.Contains(new RefreshToken(request.DeviceId, request.Token)))
                 return new ResourceNotFound(nameof(RefreshToken),
