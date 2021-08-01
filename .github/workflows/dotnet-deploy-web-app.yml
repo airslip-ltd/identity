@@ -92,7 +92,7 @@ jobs:
       id: publishprofile
       uses: aliencube/publish-profile-actions@v1
       env:
-        AZURE_CREDENTIALS: ${{ secrets.AZURE_NON_PROD_DEPLOY }}
+        AZURE_CREDENTIALS: ${{ secrets.AZURE_PROD_DEPLOY }}
       with:
         resourceGroupName: ${{ env.RESOURCE_GROUP_NAME }}
         appName: ${{ env.APPSERVICE_NAME }}
