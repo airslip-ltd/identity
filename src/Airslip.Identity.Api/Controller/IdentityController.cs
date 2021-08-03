@@ -155,6 +155,30 @@ namespace Airslip.Identity.Api.Controller
                 _ => throw new NotSupportedException()
             };
         }
+        
+        [HttpPost("google")]
+        public async Task<IActionResult> GoogleSignin(GoogleSigninRequest request)
+        {
+            LoginExternalProviderCommand loginExternalProviderCommand = new(
+                request.Email,
+                GoogleDefaults.AuthenticationScheme,
+                request.DeviceId);
+
+            IResponse loginExternalProviderResponse = await _mediator.Send(loginExternalProviderCommand);
+
+            return loginExternalProviderResponse switch
+            {
+                AuthenticatedUserResponse response => Ok(response.AddHateoasLinks(
+                    _publicApiSettings.BaseUri,
+                    _publicApiSettings.BankTransactionsUri,
+                    response.IsNewUser,
+                    Alpha2CountryCodes.GB.ToString())),
+                ErrorResponse response => BadRequest(response),
+                IFail response => BadRequest(response),
+                _ => throw new NotSupportedException()
+            };
+        }
+
 
         [HttpGet("logout")]
         public IActionResult IdentityLogout()
