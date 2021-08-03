@@ -42,7 +42,7 @@ namespace Airslip.Identity.Api.Application.Identity
                 return new NotFoundResponse(nameof(request.Email), request.Email, "Unable to find user");
 
             if (!canLogin)
-                return new ErrorResponse("INCORRECT_PASSWORD", "Password is incorrect");
+                return new NotFoundResponse("INCORRECT_PASSWORD", "","Password is incorrect");
 
             User user = (await _userService.Get(userprofile.UserId))!;
             
