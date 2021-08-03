@@ -13,7 +13,6 @@ namespace Airslip.Identity.Api.Contracts.Requests
         [JsonPropertyName("locale")] public string? Locale { get; init; }
         [JsonPropertyName("family_name")] public string? FamilyName { get; init; }
         [JsonPropertyName("given_name")] public string? GivenName { get; init; }
-        [Required] public string? RefreshToken { get; init; }
         [Required] public string? DeviceId { get; init; }
     }
 }
