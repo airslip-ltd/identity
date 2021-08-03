@@ -32,7 +32,8 @@ namespace Airslip.Identity.Api.Application.Identity
                 return new NotFoundResponse(request.UserId, request.UserId, "Unable to find user");
             
             if (!user.RefreshTokens.Contains(new RefreshToken(request.DeviceId, request.Token)))
-                return new ResourceNotFound(nameof(RefreshToken),
+                return new NotFoundResponse(nameof(RefreshToken),
+                    request.Token,
                     "An incorrect refresh token has been used for this device");
 
             DateTime bearerTokenExpiryDate = JwtBearerToken.GetExpiry(_jwtSettings.ExpiresTime);
