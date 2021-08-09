@@ -2,19 +2,18 @@ name: Deploy dotnet Web Application
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
 
 jobs:
-  deploy-web-app-dev:
+  deploy-web-app-qa:
     runs-on: ubuntu-latest
-    environment: Development
+    environment: QA
     env:
       DOTNET_CORE_VERSION: 5.0.x
       PUBLISH_PATH: ./src/Airslip.Identity.Api
-      RESOURCE_GROUP_NAME: airslip-dev-resources
-      APPSERVICE_NAME: airslip-dev-identity-api
+      RESOURCE_GROUP_NAME: airslip-qa-resources
+      APPSERVICE_NAME: airslip-qa-identity-api
     steps:
     - uses: actions/checkout@v2
       with:
@@ -30,7 +29,7 @@ jobs:
       env:
         LOGZ_IO_AUTH_TOKEN: ${{ secrets.LOGZ_IO_AUTH_TOKEN }}
         LOGZ_IO_LOG_LEVEL: Debug
-        LOGZ_IO_ENVIRONMENT: Development
+        LOGZ_IO_ENVIRONMENT: QA
         LOGZ_IO_SERVICE_NAME: ${{ env.APPSERVICE_NAME }}
         LOGZ_IO_HOSTING_NAME: Azure
 
@@ -57,7 +56,7 @@ jobs:
 
   deploy-web-app-prod:
     runs-on: ubuntu-latest
-    needs: [deploy-web-app-dev]
+    needs: [deploy-web-app-qa]
     environment: Production
     env:
       DOTNET_CORE_VERSION: 5.0.x
