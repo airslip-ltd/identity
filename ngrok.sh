@@ -1,0 +1,1 @@
+ngrok http -subdomain airslip-auth https://localhost:10289
