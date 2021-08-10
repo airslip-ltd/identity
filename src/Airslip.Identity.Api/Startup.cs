@@ -138,7 +138,7 @@ namespace Airslip.Identity.Api
                     new OpenApiInfo
                     {
                         Title = "Identity API",
-                        Version = "v1",
+                        Version = "1.0.0",
                         Description = "Includes all API endpoints for authorisation."
                     }
                 );
