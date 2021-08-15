@@ -75,9 +75,9 @@ namespace Airslip.Identity.Api.Application.Identity
                     }
 
                 case YapilyUser yapilyUser:
-                    string yapilyUserId = yapilyUser.Uuid!;
-                    string yapilyApplicationId = yapilyUser.ApplicationUuid!;
-                    string yapilyReferenceId = yapilyUser.ReferenceId!;
+                    string yapilyUserId = yapilyUser.Uuid;
+                    string yapilyApplicationId = yapilyUser.ApplicationUuid;
+                    string yapilyReferenceId = yapilyUser.ReferenceId;
 
                     if (yapilyUser.IsInvalid())
                     {

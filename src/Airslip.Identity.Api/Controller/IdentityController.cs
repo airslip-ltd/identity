@@ -3,6 +3,7 @@ using Airslip.Common.Types.Enums;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.Identity;
 using Airslip.Identity.Api.Auth;
+using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Requests;
 using Airslip.Identity.Api.Contracts.Responses;
 using MediatR;
@@ -53,9 +54,11 @@ namespace Airslip.Identity.Api.Controller
             switch (getUserByEmailResponse)
             {
                 case AuthenticatedUserResponse response:
-                    return Ok(response.AddHateoasLinks(_publicApiSettings.BaseUri,
-                        _publicApiSettings.BankTransactionsUri, false,
+                    return Ok(response.AddHateoasLinks(_publicApiSettings.Base.BaseUri,
+                        _publicApiSettings.BankTransactions.BaseUri, false,
                         Alpha2CountryCodes.GB.ToString()));
+                case IncorrectPasswordResponse incorrectPasswordResponse:
+                    return Forbidden(incorrectPasswordResponse);
                 case NotFoundResponse _:
                 {
                     RegisterUserCommand registerUserCommand = new(
@@ -68,9 +71,9 @@ namespace Airslip.Identity.Api.Controller
                     return createUserResponse switch
                     {
                         AuthenticatedUserResponse response => Created(response.AddHateoasLinks(
-                            _publicApiSettings.BaseUri,
-                            _publicApiSettings.BankTransactionsUri,
-                           true,
+                            _publicApiSettings.Base.BaseUri,
+                            _publicApiSettings.BankTransactions.BaseUri,
+                            true,
                             Alpha2CountryCodes.GB.ToString())),
                         ConflictResponse response => Conflict(response),
                         NotFoundResponse r => NotFound(r),
@@ -103,8 +106,8 @@ namespace Airslip.Identity.Api.Controller
             return response switch
             {
                 AuthenticatedUserResponse r => Ok(r.AddHateoasLinks(
-                    _publicApiSettings.BaseUri,
-                    _publicApiSettings.BankTransactionsUri,
+                    _publicApiSettings.Base.BaseUri,
+                    _publicApiSettings.BankTransactions.BaseUri,
                     false,
                     Alpha2CountryCodes.GB.ToString())),
                 NotFoundResponse r => NotFound(r),
@@ -146,8 +149,8 @@ namespace Airslip.Identity.Api.Controller
             return loginExternalProviderResponse switch
             {
                 AuthenticatedUserResponse response => Ok(response.AddHateoasLinks(
-                    _publicApiSettings.BaseUri,
-                    _publicApiSettings.BankTransactionsUri,
+                    _publicApiSettings.Base.BaseUri,
+                    _publicApiSettings.BankTransactions.BaseUri,
                     response.IsNewUser,
                     Alpha2CountryCodes.GB.ToString())),
                 ErrorResponse response => BadRequest(response),
@@ -155,7 +158,7 @@ namespace Airslip.Identity.Api.Controller
                 _ => throw new NotSupportedException()
             };
         }
-        
+
         [HttpPost("google")]
         public async Task<IActionResult> GoogleSignin(GoogleSigninRequest request)
         {
@@ -169,8 +172,8 @@ namespace Airslip.Identity.Api.Controller
             return loginExternalProviderResponse switch
             {
                 AuthenticatedUserResponse response => Ok(response.AddHateoasLinks(
-                    _publicApiSettings.BaseUri,
-                    _publicApiSettings.BankTransactionsUri,
+                    _publicApiSettings.Base.BaseUri,
+                    _publicApiSettings.BankTransactions.BaseUri,
                     response.IsNewUser,
                     Alpha2CountryCodes.GB.ToString())),
                 ErrorResponse response => BadRequest(response),
@@ -179,13 +182,55 @@ namespace Airslip.Identity.Api.Controller
             };
         }
 
-
         [HttpGet("logout")]
         public IActionResult IdentityLogout()
         {
             return Ok();
         }
-        
+
+        [HttpPost("recovery")]
+        [ProducesResponseType(typeof(ForgotPasswordResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest forgotPasswordRequest)
+        {
+            ForgotPasswordCommand command = new(
+                "v1/identity/password",
+                forgotPasswordRequest.Email
+                );
+
+            IResponse response = await _mediator.Send(command);
+
+            return response is ISuccess
+                ? Ok(response)
+                : BadRequest(response);
+        }
+
+        [HttpGet("password")]
+        public IActionResult ResetPassword([FromQuery] string token, [FromQuery] string email)
+        {
+            return Ok(new
+            {
+                Token = token.Replace(" ", "+"), // Need to find out if there is a better as the query string is losing the + character
+                Email = email
+            });
+        }
+
+        [HttpPost("password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequest resetPasswordRequest)
+        {
+            ResetPasswordCommand command = new(
+                resetPasswordRequest.Password,
+                resetPasswordRequest.ConfirmPassword,
+                resetPasswordRequest.Email,
+                resetPasswordRequest.Token);
+
+            IResponse response = await _mediator.Send(command);
+
+            return response is ISuccess
+                ? Ok(response)
+                : BadRequest(response);
+        }
+
         [HttpPut("biometric")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]

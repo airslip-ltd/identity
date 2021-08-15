@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Airslip.Identity.Api.Contracts;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Airslip.Identity.Api
 
         public BasePathDocumentFilter(IOptions<PublicApiSettings> publicApiOptions)
         {
-            _baseUrl = publicApiOptions.Value.BaseUri;
+            _baseUrl = publicApiOptions.Value.Base.BaseUri;
         }
 
         public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
