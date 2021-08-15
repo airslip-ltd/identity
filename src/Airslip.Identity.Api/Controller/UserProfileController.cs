@@ -2,6 +2,7 @@
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.UserProfiles;
 using Airslip.Identity.Api.Auth;
+using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Requests;
 using Airslip.Identity.Api.Contracts.Responses;
 using MediatR;
@@ -44,7 +45,7 @@ namespace Airslip.Identity.Api.Controller
             IResponse response = await _mediator.Send(query);
 
             return response is UserProfileResponse accountResponse
-                ? Ok(accountResponse.AddHateoasLinks<UserProfileResponse>(_publicApiSettings.BaseUri))
+                ? Ok(accountResponse.AddHateoasLinks<UserProfileResponse>(_publicApiSettings.Base.BaseUri))
                 : BadRequest(response);
         }
 

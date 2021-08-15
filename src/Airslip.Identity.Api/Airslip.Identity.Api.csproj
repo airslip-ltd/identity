@@ -19,8 +19,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="Airslip.Common.Contracts" Version="$(AirslipCommonContracts)" />
-		<PackageReference Include="Airslip.Yapily.Client" Version="$(AirslipYapilyClient)" />
+		<PackageReference Include="Airslip.Email.Client" Version="$(AirslipEmailClient)" />
 		<PackageReference Include="Airslip.Infrastructure.BlobStorage" Version="$(AirslipInfrastructureBlobStorage)" />
+		<PackageReference Include="Airslip.Yapily.Client" Version="$(AirslipYapilyClient)" />
 	</ItemGroup>
 
 	<ItemGroup>

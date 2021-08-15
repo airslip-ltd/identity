@@ -14,10 +14,11 @@
 		<AspNetCoreHttpAbstractions>2.2.0</AspNetCoreHttpAbstractions>
 		<AzureCosmos>3.17.0</AzureCosmos>
 		<BlobStorage>12.8.0</BlobStorage>
+		<Coverlet>3.0.1</Coverlet>
 		<FluentAssertions>5.10.3</FluentAssertions>
 		<FluentValidation>10.3.0</FluentValidation>
 		<IdentityJwt>6.11.1</IdentityJwt>
-		<JetBrainsAnnoations>2021.1.0</JetBrainsAnnoations>
+		<JetBrainsAnnoations>2021.2.0</JetBrainsAnnoations>
 		<MediatR>9.0.0</MediatR>
 		<MicrosoftAspNetCoreHttp>2.2.0</MicrosoftAspNetCoreHttp>
 		<MicrosoftAspNetWebApiClient>5.2.7</MicrosoftAspNetWebApiClient>
@@ -29,17 +30,18 @@
 		<SerilogAspNetCore>4.1.0</SerilogAspNetCore>
 		<SerilogSinkLogzIo>3.0.1</SerilogSinkLogzIo>
 		<SerilogEnrichersCorrelationId>3.0.1</SerilogEnrichersCorrelationId>
-		<Swashbuckle>6.1.4</Swashbuckle>
+		<Swashbuckle>6.1.5</Swashbuckle>
 		<Xunit>2.4.1</Xunit>
 		<XunitRunner>2.4.3</XunitRunner>
 	</PropertyGroup>
 	
 	<PropertyGroup>
-		<AirslipCommonContracts>1.0.8</AirslipCommonContracts>
-		<AirslipCommonTypes>1.1.4</AirslipCommonTypes>
-		<AirslipYapilyClient>0.4.1</AirslipYapilyClient>
-		<AirslipYapilyClientContracts>0.6.9</AirslipYapilyClientContracts>
-		<AirslipInfrastructureBlobStorage>0.0.5</AirslipInfrastructureBlobStorage>
+		<AirslipCommonContracts>1.1.7</AirslipCommonContracts>
+		<AirslipCommonTypes>3.1.0</AirslipCommonTypes>
+		<AirslipEmailClient>0.0.2</AirslipEmailClient>
+		<AirslipYapilyClient>0.5.0</AirslipYapilyClient>
+		<AirslipYapilyClientContracts>0.7.0</AirslipYapilyClientContracts>
+		<AirslipInfrastructureBlobStorage>0.1.0</AirslipInfrastructureBlobStorage>
 	</PropertyGroup>
 
 </Project>

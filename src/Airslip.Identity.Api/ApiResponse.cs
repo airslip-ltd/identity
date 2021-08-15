@@ -1,6 +1,7 @@
 ﻿using Airslip.Common.Contracts;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Auth;
+using Airslip.Identity.Api.Contracts;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -55,6 +56,13 @@ namespace Airslip.Identity.Api
         {
             return response is NotFoundResponse errorResponse
                 ? new ObjectResult(new ApiErrorResponse(Token, new[] { errorResponse })) { StatusCode = StatusCodes.Status404NotFound }
+                : BadRequest(response);
+        }
+        
+        protected IActionResult Forbidden(IResponse response)
+        {
+            return response is IncorrectPasswordResponse errorResponse
+                ? new ObjectResult(new ApiErrorResponse(Token, new[] { errorResponse })) { StatusCode = StatusCodes.Status403Forbidden }
                 : BadRequest(response);
         }
 

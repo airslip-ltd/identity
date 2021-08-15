@@ -3,15 +3,15 @@
 	<Import Project="..\common.props" />
 
 	<ItemGroup>
-		<PackageReference Include="coverlet.collector" Version="3.1.0">
+		<PackageReference Include="coverlet.collector" Version="$(Coverlet)">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="FluentAssertions" Version="$(FluentAssertions)" />
 		<PackageReference Include="Moq" Version="$(Moq)" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(NetTestSdk)" />
 		<PackageReference Include="xunit" Version="$(Xunit)" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="$(XunitRunner)" />
-		<PackageReference Include="FluentAssertions" Version="$(FluentAssertions)" />
 	</ItemGroup>
 
 	<ItemGroup>

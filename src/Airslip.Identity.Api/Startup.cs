@@ -1,6 +1,8 @@
 using Airslip.Common.Contracts;
+using Airslip.Email.Client;
 using Airslip.Identity.Api.Application;
 using Airslip.Identity.Api.Auth;
+using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Middleware;
 using Airslip.Identity.MongoDb.Contracts;
 using Airslip.Identity.MongoDb.Contracts.Identity;
@@ -54,7 +56,24 @@ namespace Airslip.Identity.Api
                 .AddOptions()
                 .Configure<MongoDbSettings>(Configuration.GetSection(nameof(MongoDbSettings)))
                 .Configure<PublicApiSettings>(Configuration.GetSection(nameof(PublicApiSettings)))
-                .Configure<YapilySettings>(Configuration.GetSection(nameof(YapilySettings)));
+                .Configure<YapilySettings>(Configuration.GetSection(nameof(YapilySettings)))
+                .Configure<EmailConfigurationSettings>(Configuration.GetSection(nameof(EmailConfigurationSettings)));
+
+            services.AddSingleton(serviceProvider =>
+            {
+                IOptions<EmailConfigurationSettings> EmailConfigurationOptions =
+                    serviceProvider.GetRequiredService<IOptions<EmailConfigurationSettings>>();
+
+                EmailConfigurationSettings emailConfigurationSettings = EmailConfigurationOptions.Value;
+    
+                return EmailSenderFactory.Setup(
+                    emailConfigurationSettings.FromName,
+                    emailConfigurationSettings.FromEmail,
+                    emailConfigurationSettings.SmtpServer,
+                    emailConfigurationSettings.Port,
+                    emailConfigurationSettings.UserName,
+                    emailConfigurationSettings.Password);
+            });
             
             services.AddSingleton<IMongoClient>(serviceProvider =>
             {
@@ -92,7 +111,11 @@ namespace Airslip.Identity.Api
                         options.ClientSecret = googleAuthNSection["ClientSecret"];
                     });
 
-            services.AddIdentity<ApplicationUser, ApplicationRole>()
+            services
+                .AddIdentity<ApplicationUser, ApplicationRole>(options =>
+                {
+                    options.User.RequireUniqueEmail = true;
+                })
                 .AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>(
                     Configuration["MongoDbSettings:ConnectionString"],
                     bool.Parse(Environment.GetEnvironmentVariable("DBCONTEXT_INMEMORY") ?? "false")
