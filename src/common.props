@@ -14,17 +14,17 @@
 		<AspNetCoreHttpAbstractions>2.2.0</AspNetCoreHttpAbstractions>
 		<AzureCosmos>3.17.0</AzureCosmos>
 		<BlobStorage>12.8.0</BlobStorage>
-		<Coverlet>3.0.1</Coverlet>
-		<FluentAssertions>5.10.3</FluentAssertions>
+		<Coverlet>3.1.0</Coverlet>
+		<FluentAssertions>6.0.0</FluentAssertions>
 		<FluentValidation>10.3.0</FluentValidation>
-		<IdentityJwt>6.11.1</IdentityJwt>
+		<IdentityJwt>6.12.1</IdentityJwt>
 		<JetBrainsAnnoations>2021.2.0</JetBrainsAnnoations>
 		<MediatR>9.0.0</MediatR>
 		<MicrosoftAspNetCoreHttp>2.2.0</MicrosoftAspNetCoreHttp>
 		<MicrosoftAspNetWebApiClient>5.2.7</MicrosoftAspNetWebApiClient>
-		<MongoDb>2.13.0</MongoDb>
+		<MongoDb>2.13.1</MongoDb>
 		<Moq>4.16.1</Moq>
-		<NetTestSdk>16.10.0</NetTestSdk>
+		<NetTestSdk>16.11.0</NetTestSdk>
 		<MongoDbIdentity>3.1.1</MongoDbIdentity>
 		<NewtonsoftJson>13.0.1</NewtonsoftJson>
 		<SerilogAspNetCore>4.1.0</SerilogAspNetCore>
@@ -39,8 +39,8 @@
 		<AirslipCommonContracts>1.1.7</AirslipCommonContracts>
 		<AirslipCommonTypes>3.1.0</AirslipCommonTypes>
 		<AirslipEmailClient>0.0.2</AirslipEmailClient>
-		<AirslipYapilyClient>0.5.0</AirslipYapilyClient>
-		<AirslipYapilyClientContracts>0.7.0</AirslipYapilyClientContracts>
+		<AirslipYapilyClient>1.0.0</AirslipYapilyClient>
+		<AirslipYapilyClientContracts>1.0.0</AirslipYapilyClientContracts>
 		<AirslipInfrastructureBlobStorage>0.1.0</AirslipInfrastructureBlobStorage>
 	</PropertyGroup>
 
