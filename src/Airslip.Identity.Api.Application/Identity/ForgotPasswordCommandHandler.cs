@@ -8,6 +8,7 @@ using Airslip.Identity.MongoDb.Contracts.Identity;
 using MediatR;
 using Microsoft.Extensions.Options;
 using Serilog;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -47,9 +48,10 @@ namespace Airslip.Identity.Api.Application.Identity
                 user.Email);
 
             EmailOutcome outcome = await _emailSender.SendEmail(
-                new[] { user.Email },
+                new List<EmailAddressRecipient> { new("tjmcdonough20@gmail.com", "tjmcdonough20@gmail.com") },
                 ForgotPasswordEmailConstants.Subject,
-                ForgotPasswordEmailConstants.GetContent(resetPasswordUrl));
+                ForgotPasswordEmailConstants.GetPlainTextContent(resetPasswordUrl),
+                string.Empty);
 
             if(outcome.Success)
                 _logger.Error(outcome.ErrorReason);

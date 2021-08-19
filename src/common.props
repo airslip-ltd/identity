@@ -16,7 +16,7 @@
 		<BlobStorage>12.8.0</BlobStorage>
 		<Coverlet>3.1.0</Coverlet>
 		<FluentAssertions>6.0.0</FluentAssertions>
-		<FluentValidation>10.3.0</FluentValidation>
+		<FluentValidation>10.3.1</FluentValidation>
 		<IdentityJwt>6.12.1</IdentityJwt>
 		<JetBrainsAnnoations>2021.2.0</JetBrainsAnnoations>
 		<MediatR>9.0.0</MediatR>
@@ -37,8 +37,8 @@
 	
 	<PropertyGroup>
 		<AirslipCommonContracts>1.1.7</AirslipCommonContracts>
-		<AirslipCommonTypes>3.1.0</AirslipCommonTypes>
-		<AirslipEmailClient>0.0.2</AirslipEmailClient>
+		<AirslipCommonTypes>3.1.1</AirslipCommonTypes>
+		<AirslipEmailClient>1.0.0</AirslipEmailClient>
 		<AirslipYapilyClient>1.0.0</AirslipYapilyClient>
 		<AirslipYapilyClientContracts>1.0.0</AirslipYapilyClientContracts>
 		<AirslipInfrastructureBlobStorage>0.1.0</AirslipInfrastructureBlobStorage>

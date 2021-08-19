@@ -69,10 +69,7 @@ namespace Airslip.Identity.Api
                 return EmailSenderFactory.Setup(
                     emailConfigurationSettings.FromName,
                     emailConfigurationSettings.FromEmail,
-                    emailConfigurationSettings.SmtpServer,
-                    emailConfigurationSettings.Port,
-                    emailConfigurationSettings.UserName,
-                    emailConfigurationSettings.Password);
+                    emailConfigurationSettings.ApiKey);
             });
             
             services.AddSingleton<IMongoClient>(serviceProvider =>
