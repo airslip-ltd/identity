@@ -1,5 +1,6 @@
 ﻿using Airslip.Common.Contracts;
 using Airslip.Common.Types;
+using Airslip.Common.Types.Configuration;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Responses;
@@ -47,8 +48,9 @@ namespace Airslip.Identity.Api.Application.Identity
                 user.Email);
 
             EmailOutcome outcome = await _emailSender.SendEmail(
-                new[] { user.Email },
+                new [] {new EmailAddressRecipient(user.Email, user.UserName)},
                 ForgotPasswordEmailConstants.Subject,
+                ForgotPasswordEmailConstants.GetContent(resetPasswordUrl), 
                 ForgotPasswordEmailConstants.GetContent(resetPasswordUrl));
 
             if(outcome.Success)

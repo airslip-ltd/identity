@@ -37,8 +37,9 @@
 	
 	<PropertyGroup>
 		<AirslipCommonContracts>1.1.7</AirslipCommonContracts>
-		<AirslipCommonTypes>3.1.0</AirslipCommonTypes>
-		<AirslipEmailClient>0.0.2</AirslipEmailClient>
+		<AirslipCommonTypes>3.1.3</AirslipCommonTypes>
+		<AirslipCommonMonitoring>1.0.0</AirslipCommonMonitoring>
+		<AirslipEmailClient>1.1.0</AirslipEmailClient>
 		<AirslipYapilyClient>1.0.0</AirslipYapilyClient>
 		<AirslipYapilyClientContracts>1.0.0</AirslipYapilyClientContracts>
 		<AirslipInfrastructureBlobStorage>0.1.0</AirslipInfrastructureBlobStorage>
