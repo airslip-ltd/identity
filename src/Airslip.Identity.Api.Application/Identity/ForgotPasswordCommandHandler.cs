@@ -50,8 +50,8 @@ namespace Airslip.Identity.Api.Application.Identity
             EmailOutcome outcome = await _emailSender.SendEmail(
                 new [] {new EmailAddressRecipient(user.Email, user.UserName)},
                 ForgotPasswordEmailConstants.Subject,
-                ForgotPasswordEmailConstants.GetContent(resetPasswordUrl), 
-                ForgotPasswordEmailConstants.GetContent(resetPasswordUrl));
+                ForgotPasswordEmailConstants.GetPlainTextContent(resetPasswordUrl),
+                string.Empty);
 
             if(outcome.Success)
                 _logger.Error(outcome.ErrorReason);
