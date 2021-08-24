@@ -180,7 +180,7 @@ namespace Airslip.Identity.Api
                 .AddYapily();
 
             services
-                .UseHealChecks()
+                .UseHealthChecks()
                 .AddHealthCheck<MongoDbCheck>();
         }
 
