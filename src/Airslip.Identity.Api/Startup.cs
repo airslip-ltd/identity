@@ -1,4 +1,6 @@
 using Airslip.Common.Contracts;
+using Airslip.Common.Monitoring;
+using Airslip.Common.Monitoring.Implementations.Checks;
 using Airslip.Common.Types.Configuration;
 using Airslip.Email.Client;
 using Airslip.Identity.Api.Application;
@@ -176,6 +178,10 @@ namespace Airslip.Identity.Api
             services
                 .AddMongoServices()
                 .AddYapily();
+
+            services
+                .UseHealChecks()
+                .AddHealthCheck<MongoDbCheck>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider,  ILoggerFactory loggerFactory)
