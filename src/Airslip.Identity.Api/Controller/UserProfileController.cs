@@ -1,4 +1,5 @@
 ﻿using Airslip.Common.Contracts;
+using Airslip.Common.Types.Configuration;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.UserProfiles;
 using Airslip.Identity.Api.Auth;

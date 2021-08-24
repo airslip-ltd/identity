@@ -1,4 +1,5 @@
 ﻿using Airslip.Common.Contracts;
+using Airslip.Common.Types.Configuration;
 using Airslip.Common.Types.Enums;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.Identity;
@@ -28,6 +29,7 @@ namespace Airslip.Identity.Api.Controller
     public class IdentityController : ApiResponse
     {
         private readonly IMediator _mediator;
+        private readonly PublicApiSetting _bankTransactionSettings;
 
         public IdentityController(
             Token token,
@@ -36,6 +38,8 @@ namespace Airslip.Identity.Api.Controller
             IMediator mediator) : base(token, publicApiOptions, logger)
         {
             _mediator = mediator;
+            _bankTransactionSettings = publicApiOptions.Value.BankTransactions ?? throw new ArgumentException("PublicApiSettings:BankTransactions section missing from appSettings",
+                nameof(publicApiOptions));
         }
 
         [HttpPost("login")]
@@ -55,7 +59,7 @@ namespace Airslip.Identity.Api.Controller
             {
                 case AuthenticatedUserResponse response:
                     return Ok(response.AddHateoasLinks(_publicApiSettings.Base.BaseUri,
-                        _publicApiSettings.BankTransactions.BaseUri, false,
+                        _bankTransactionSettings.BaseUri, false,
                         Alpha2CountryCodes.GB.ToString()));
                 case IncorrectPasswordResponse incorrectPasswordResponse:
                     return Forbidden(incorrectPasswordResponse);
@@ -72,7 +76,7 @@ namespace Airslip.Identity.Api.Controller
                     {
                         AuthenticatedUserResponse response => Created(response.AddHateoasLinks(
                             _publicApiSettings.Base.BaseUri,
-                            _publicApiSettings.BankTransactions.BaseUri,
+                            _bankTransactionSettings.BaseUri,
                             true,
                             Alpha2CountryCodes.GB.ToString())),
                         ConflictResponse response => Conflict(response),
@@ -107,7 +111,7 @@ namespace Airslip.Identity.Api.Controller
             {
                 AuthenticatedUserResponse r => Ok(r.AddHateoasLinks(
                     _publicApiSettings.Base.BaseUri,
-                    _publicApiSettings.BankTransactions.BaseUri,
+                    _bankTransactionSettings.BaseUri,
                     false,
                     Alpha2CountryCodes.GB.ToString())),
                 NotFoundResponse r => NotFound(r),
@@ -150,7 +154,7 @@ namespace Airslip.Identity.Api.Controller
             {
                 AuthenticatedUserResponse response => Ok(response.AddHateoasLinks(
                     _publicApiSettings.Base.BaseUri,
-                    _publicApiSettings.BankTransactions.BaseUri,
+                    _bankTransactionSettings.BaseUri,
                     response.IsNewUser,
                     Alpha2CountryCodes.GB.ToString())),
                 ErrorResponse response => BadRequest(response),
@@ -173,7 +177,7 @@ namespace Airslip.Identity.Api.Controller
             {
                 AuthenticatedUserResponse response => Ok(response.AddHateoasLinks(
                     _publicApiSettings.Base.BaseUri,
-                    _publicApiSettings.BankTransactions.BaseUri,
+                    _bankTransactionSettings.BaseUri,
                     response.IsNewUser,
                     Alpha2CountryCodes.GB.ToString())),
                 ErrorResponse response => BadRequest(response),
