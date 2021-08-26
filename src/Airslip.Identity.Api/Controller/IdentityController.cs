@@ -38,8 +38,27 @@ namespace Airslip.Identity.Api.Controller
             IMediator mediator) : base(token, publicApiOptions, logger)
         {
             _mediator = mediator;
-            _bankTransactionSettings = publicApiOptions.Value.BankTransactions ?? throw new ArgumentException("PublicApiSettings:BankTransactions section missing from appSettings",
+            _bankTransactionSettings = publicApiOptions.Value.BankTransactions ?? throw new ArgumentException(
+                "PublicApiSettings:BankTransactions section missing from appSettings",
                 nameof(publicApiOptions));
+        }
+
+        [HttpPost("check")]
+        [ProducesResponseType(typeof(AuthenticatedUserResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AuthenticatedUserResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CheckUserExists(CheckUserRequest request)
+        {
+            CheckUserCommand checkUserCommand = new(
+                request.Email);
+
+            IResponse response = await _mediator.Send(checkUserCommand);
+
+            return response switch
+            {
+                UserResponse r => Ok(r),
+                _ => throw new NotSupportedException()
+            };
         }
 
         [HttpPost("login")]
@@ -54,7 +73,6 @@ namespace Airslip.Identity.Api.Controller
                 request.DeviceId);
 
             IResponse getUserByEmailResponse = await _mediator.Send(loginUserCommand);
-
             switch (getUserByEmailResponse)
             {
                 case AuthenticatedUserResponse response:
@@ -106,7 +124,6 @@ namespace Airslip.Identity.Api.Controller
                 request.RefreshToken);
 
             IResponse response = await _mediator.Send(command);
-
             return response switch
             {
                 AuthenticatedUserResponse r => Ok(r.AddHateoasLinks(
@@ -200,7 +217,7 @@ namespace Airslip.Identity.Api.Controller
             ForgotPasswordCommand command = new(
                 "v1/identity/password",
                 forgotPasswordRequest.Email
-                );
+            );
 
             IResponse response = await _mediator.Send(command);
 
@@ -214,7 +231,8 @@ namespace Airslip.Identity.Api.Controller
         {
             return Ok(new
             {
-                Token = token.Replace(" ", "+"), // Need to find out if there is a better as the query string is losing the + character
+                Token = token.Replace(" ",
+                    "+"), // Need to find out if there is a better as the query string is losing the + character
                 Email = email
             });
         }
