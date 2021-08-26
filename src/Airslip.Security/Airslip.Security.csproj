@@ -3,7 +3,7 @@
 	<Import Project="..\common.props" />
 
 	<ItemGroup>
-      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(IdentityJwt)" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.2" />
     </ItemGroup>
 
 </Project>

@@ -2,7 +2,6 @@
 using Airslip.Common.Types;
 using Airslip.Common.Types.Configuration;
 using Airslip.Common.Types.Failures;
-using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Responses;
 using Airslip.Identity.MongoDb.Contracts;
 using Airslip.Identity.MongoDb.Contracts.Identity;
