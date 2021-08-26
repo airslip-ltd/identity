@@ -17,7 +17,7 @@
 		<Coverlet>3.1.0</Coverlet>
 		<FluentAssertions>6.1.0</FluentAssertions>
 		<FluentValidation>10.3.3</FluentValidation>
-		<IdentityJwt>6.12.1</IdentityJwt>
+		<IdentityJwt>6.12.2</IdentityJwt>
 		<JetBrainsAnnoations>2021.2.0</JetBrainsAnnoations>
 		<MediatR>9.0.0</MediatR>
 		<MicrosoftAspNetCoreHttp>2.2.0</MicrosoftAspNetCoreHttp>

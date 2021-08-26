@@ -5,6 +5,7 @@ using Airslip.Common.Types.Configuration;
 using Airslip.Email.Client;
 using Airslip.Identity.Api.Application;
 using Airslip.Identity.Api.Auth;
+using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Middleware;
 using Airslip.Identity.MongoDb.Contracts.Identity;
 using Airslip.Infrastructure.BlobStorage;
@@ -58,7 +59,8 @@ namespace Airslip.Identity.Api
                 .Configure<MongoDbSettings>(Configuration.GetSection(nameof(MongoDbSettings)))
                 .Configure<PublicApiSettings>(Configuration.GetSection(nameof(PublicApiSettings)))
                 .Configure<YapilySettings>(Configuration.GetSection(nameof(YapilySettings)))
-                .Configure<EmailConfigurationSettings>(Configuration.GetSection(nameof(EmailConfigurationSettings)));
+                .Configure<EmailConfigurationSettings>(Configuration.GetSection(nameof(EmailConfigurationSettings)))
+                .Configure<WelcomeSettings>(Configuration.GetSection(nameof(WelcomeSettings)));
 
             services.AddSingleton(serviceProvider =>
             {
