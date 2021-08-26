@@ -1,5 +1,4 @@
 ﻿using Airslip.Common.Types.Configuration;
-using Airslip.Identity.Api.Contracts;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
