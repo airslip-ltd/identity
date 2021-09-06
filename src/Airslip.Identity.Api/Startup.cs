@@ -32,8 +32,6 @@ using System.Reflection;
 using Polly;
 using Serilog;
 
-// using JwtTokenMiddleware = Airslip.Identity.Api.Middleware.JwtTokenMiddleware;
-
 namespace Airslip.Identity.Api
 {
     public class Startup
