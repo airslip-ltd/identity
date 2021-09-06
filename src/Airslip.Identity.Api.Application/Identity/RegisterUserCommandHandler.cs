@@ -1,8 +1,9 @@
-﻿using Airslip.Common.Contracts;
+﻿using Airslip.Common.Auth.Implementations;
+using Airslip.Common.Auth.Models;
+using Airslip.Common.Contracts;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Contracts.Responses;
 using Airslip.Identity.MongoDb.Contracts;
-using Airslip.Security.Jwt;
 using Airslip.Yapily.Client.Contracts;
 using MediatR;
 using Microsoft.AspNetCore.Identity;

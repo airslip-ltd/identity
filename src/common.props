@@ -36,12 +36,14 @@
 	</PropertyGroup>
 	
 	<PropertyGroup>
+		<AirslipCommonAuth>1.0.1</AirslipCommonAuth>
+		<AirslipCommonMiddleware>1.0.0</AirslipCommonMiddleware>
 		<AirslipCommonContracts>1.1.7</AirslipCommonContracts>
-		<AirslipCommonTypes>3.1.3</AirslipCommonTypes>
+		<AirslipCommonTypes>3.1.7</AirslipCommonTypes>
 		<AirslipCommonMonitoring>1.0.2</AirslipCommonMonitoring>
 		<AirslipEmailClient>1.1.0</AirslipEmailClient>
-		<AirslipYapilyClient>1.0.0</AirslipYapilyClient>
-		<AirslipYapilyClientContracts>1.0.0</AirslipYapilyClientContracts>
+		<AirslipYapilyClient>2.0.1</AirslipYapilyClient>
+		<AirslipYapilyClientContracts>2.0.1</AirslipYapilyClientContracts>
 		<AirslipInfrastructureBlobStorage>0.1.0</AirslipInfrastructureBlobStorage>
 	</PropertyGroup>
 

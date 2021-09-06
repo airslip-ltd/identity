@@ -18,6 +18,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Airslip.Common.Auth" Version="$(AirslipCommonAuth)" />
+		<PackageReference Include="Airslip.Common.Middleware" Version="$(AirslipCommonMiddleware)" />
 		<PackageReference Include="Airslip.Common.Contracts" Version="$(AirslipCommonContracts)" />
 		<PackageReference Include="Airslip.Common.Monitoring" Version="$(AirslipCommonMonitoring)" />
 		<PackageReference Include="Airslip.Common.Types" Version="$(AirslipCommonTypes)" />
