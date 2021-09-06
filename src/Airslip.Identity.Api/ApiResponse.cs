@@ -1,7 +1,7 @@
-﻿using Airslip.Common.Contracts;
+﻿using Airslip.Common.Auth.Models;
+using Airslip.Common.Contracts;
 using Airslip.Common.Types.Configuration;
 using Airslip.Common.Types.Failures;
-using Airslip.Identity.Api.Auth;
 using Airslip.Identity.Api.Contracts;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Http;

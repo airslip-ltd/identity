@@ -1,10 +1,11 @@
-﻿using Airslip.Common.Contracts;
+﻿using Airslip.Common.Auth.Implementations;
+using Airslip.Common.Auth.Models;
+using Airslip.Common.Contracts;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Responses;
 using Airslip.Identity.MongoDb.Contracts;
 using Airslip.Identity.MongoDb.Contracts.Identity;
-using Airslip.Security.Jwt;
 using MediatR;
 using Microsoft.Extensions.Options;
 using Serilog;

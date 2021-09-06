@@ -1,15 +1,15 @@
+using Airslip.Common.Auth.Implementations;
+using Airslip.Common.Auth.Models;
 using Airslip.Common.Contracts;
+using Airslip.Common.Middleware;
 using Airslip.Common.Monitoring;
 using Airslip.Common.Monitoring.Implementations.Checks;
 using Airslip.Common.Types.Configuration;
 using Airslip.Email.Client;
 using Airslip.Identity.Api.Application;
-using Airslip.Identity.Api.Auth;
 using Airslip.Identity.Api.Contracts;
-using Airslip.Identity.Api.Middleware;
 using Airslip.Identity.MongoDb.Contracts.Identity;
 using Airslip.Infrastructure.BlobStorage;
-using Airslip.Security.Jwt;
 using Airslip.Yapily.Client.Contracts;
 using FluentValidation;
 using MediatR;
@@ -31,6 +31,8 @@ using System.IO;
 using System.Reflection;
 using Polly;
 using Serilog;
+
+// using JwtTokenMiddleware = Airslip.Identity.Api.Middleware.JwtTokenMiddleware;
 
 namespace Airslip.Identity.Api
 {
@@ -204,7 +206,6 @@ namespace Airslip.Identity.Api
                 .UseAuthorization()
                 .UseMiddleware<ErrorHandlingMiddleware>()
                 .UseMiddleware<JwtTokenMiddleware>()
-                .UseMiddleware<CorrelationIdMiddleware>()
                 .UseCors(builder => builder
                     .WithOrigins(Configuration["AllowedHosts"])
                     .AllowAnyHeader()
