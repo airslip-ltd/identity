@@ -8,6 +8,7 @@ using Airslip.Identity.Api.Application.Identity;
 using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Requests;
 using Airslip.Identity.Api.Contracts.Responses;
+using Airslip.Identity.MongoDb.Contracts;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -31,14 +32,20 @@ namespace Airslip.Identity.Api.Controller
     {
         private readonly IMediator _mediator;
         private readonly PublicApiSetting _bankTransactionSettings;
+        private readonly IUserProfileService _userProfileService;
+        private readonly IUserService _userService;
 
         public IdentityController(
             ITokenService<UserToken, GenerateUserToken> tokenService,
             ILogger logger,
             IOptions<PublicApiSettings> publicApiOptions,
-            IMediator mediator) : base(tokenService, publicApiOptions, logger)
+            IMediator mediator,
+            IUserProfileService userProfileService,
+            IUserService userService) : base(tokenService, publicApiOptions, logger)
         {
             _mediator = mediator;
+            _userProfileService = userProfileService;
+            _userService = userService;
             _bankTransactionSettings = publicApiOptions.Value.BankTransactions ?? throw new ArgumentException(
                 "PublicApiSettings:BankTransactions section missing from appSettings",
                 nameof(publicApiOptions));
@@ -268,6 +275,29 @@ namespace Airslip.Identity.Api.Controller
             return response is ISuccess
                 ? NoContent()
                 : BadRequest(response);
+        }
+
+        [HttpGet("yapily")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetYapilyUser([FromQuery] string email, [FromQuery] string provider)
+        {
+            if (!OpenBankingProviders.Names.Contains(provider))
+                return BadRequest(new UnsupportedProvider(string.Join(",", OpenBankingProviders.Names)));
+
+            UserProfile? userProfile = await _userProfileService.GetByEmail(email);
+
+            if (userProfile is null)
+                return NotFound();
+
+            string? yapilyUserId = await _userService.GetProviderId(userProfile.UserId, provider);
+
+            return yapilyUserId != null
+                ? Ok(new YapilyUserResponse(yapilyUserId))
+                : NotFound(new NotFoundResponse(
+                    "YapilyUserId",
+                    email,
+                    $"Unable to find {provider} user with the email {email}"));
         }
 
         private static ExternalLoginResponse GetExternalLoginResponse(

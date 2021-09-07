@@ -1,11 +1,17 @@
 ﻿using Airslip.Common.Types.Failures;
+using System.Collections.Generic;
 
 namespace Airslip.Identity.Api.Contracts
 {
     public class IncorrectPasswordResponse : ErrorResponse
     {
-        public IncorrectPasswordResponse()
-            : base("INCORRECT_PASSWORD", "You have entered an incorrect password.")
+        public IncorrectPasswordResponse(string validator)
+            : base("INCORRECT_PASSWORD", validator, new Dictionary<string, object>
+            {
+                {
+                    nameof(validator), validator
+                }
+            })
         {
         }
     }

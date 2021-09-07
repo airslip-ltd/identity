@@ -46,7 +46,7 @@ namespace Airslip.Identity.Api.Application.Identity
             bool canLogin = await _userManagerService.TryToLogin(applicationUser, request.Password);
             
             if (!canLogin)
-                return new IncorrectPasswordResponse();
+                return new IncorrectPasswordResponse("You have entered an incorrect password.");
 
             UserProfile? userprofile = await _userProfileService.GetByEmail(request.Email);
             if (userprofile == null)

@@ -19,6 +19,14 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             return await _context.Users.Find(user => user.Id == id).FirstOrDefaultAsync();
         }
 
+        public async Task<string?> GetProviderId(string id, string provider)
+        {
+            User? user =await  _context.Users.Find(user => user.Id == id).FirstOrDefaultAsync();
+            return user.OpenBankingProviders.Where(o => o.Name == provider)
+                .Select(u => u.Id)
+                .FirstOrDefault();
+        }
+
         public async Task<User> Create(User user)
         {
             await _context.Users.InsertOneAsync(user);

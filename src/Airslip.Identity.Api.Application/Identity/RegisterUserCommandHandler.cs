@@ -4,6 +4,7 @@ using Airslip.Common.Auth.Models;
 using Airslip.Common.Contracts;
 using Airslip.Common.Types.Extensions;
 using Airslip.Common.Types.Failures;
+using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Responses;
 using Airslip.Identity.MongoDb.Contracts;
 using Airslip.Yapily.Client.Contracts;
@@ -53,6 +54,7 @@ namespace Airslip.Identity.Api.Application.Identity
                         nameof(request.Email),
                         request.Email,
                         "User already exists"),
+                    "PasswordRequiresUpper" => new IncorrectPasswordResponse("Passwords must have at least one non alphanumeric character."),
                     _ => new ErrorResponse(
                         result.Errors.First().Code,
                         result.Errors.First().Description)
