@@ -57,6 +57,7 @@ jobs:
         ls
 
     - name: Generate Test Report
+      if: success() || failure()
       uses: dorny/test-reporter@v1
       with:
         name: ${{ env.TEST_RESULT_NAME }}
