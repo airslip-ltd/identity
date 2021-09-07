@@ -5,6 +5,7 @@ namespace Airslip.Identity.MongoDb.Contracts
     public interface IUserService
     {
         Task<User?> Get(string id);
+        Task<string?> GetProviderId(string id, string provider);
         Task<User> Create(User user);
         Task Update(User userIn);
         Task UpdateRefreshToken(string id, string deviceId, string token);
