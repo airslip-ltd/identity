@@ -1,3 +1,5 @@
+using Airslip.Common.Auth.Enums;
+using Airslip.Common.Auth.Extensions;
 using Airslip.Common.Auth.Implementations;
 using Airslip.Common.Auth.Models;
 using Airslip.Common.Contracts;
@@ -94,12 +96,7 @@ namespace Airslip.Identity.Api
             });
 
             services
-                .AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>()
-                .AddScoped<Token>()
-                .Configure<JwtSettings>(Configuration.GetSection(nameof(JwtSettings)))
-                .AddAuthorization()
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer()
+                .AddAirslipJwtAuth(Configuration)?
                 .AddCookie(options => { options.LoginPath = new PathString("/v1/identity/google-login"); })
                 .AddGoogle(GoogleDefaults.AuthenticationScheme,
                     options =>

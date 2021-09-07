@@ -1,4 +1,5 @@
-﻿using Airslip.Common.Auth.Models;
+﻿using Airslip.Common.Auth.Interfaces;
+using Airslip.Common.Auth.Models;
 using Airslip.Common.Contracts;
 using Airslip.Common.Types.Configuration;
 using Airslip.Common.Types.Failures;
@@ -18,12 +19,13 @@ namespace Airslip.Identity.Api
     public class ApiResponse : ControllerBase
     {
         protected readonly PublicApiSettings _publicApiSettings;
-        protected readonly Token Token;
+        protected readonly UserToken Token;
+        
         private readonly ILogger _logger;
 
-        public ApiResponse(Token token, IOptions<PublicApiSettings> publicApiOptions, ILogger logger)
+        public ApiResponse(ITokenService<UserToken, GenerateUserToken> tokenService, IOptions<PublicApiSettings> publicApiOptions, ILogger logger)
         {
-            Token = token;
+            Token = tokenService.GetCurrentToken();
             _publicApiSettings = publicApiOptions.Value;
             _logger = logger;
         }
@@ -94,7 +96,7 @@ namespace Airslip.Identity.Api
             public string CorrelationId { get; }
             public IEnumerable<ErrorResponse> Errors { get; }
 
-            public ApiErrorResponse(Token token, IEnumerable<ErrorResponse> errors)
+            public ApiErrorResponse(UserToken token, IEnumerable<ErrorResponse> errors)
             {
                 Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 CorrelationId = token.CorrelationId;

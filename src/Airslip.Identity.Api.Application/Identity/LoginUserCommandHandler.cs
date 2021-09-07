@@ -1,15 +1,15 @@
 ﻿using Airslip.Common.Auth.Implementations;
+using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
 using Airslip.Common.Contracts;
+using Airslip.Common.Types.Extensions;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Responses;
 using Airslip.Identity.MongoDb.Contracts;
 using Airslip.Identity.MongoDb.Contracts.Identity;
 using MediatR;
-using Microsoft.Extensions.Options;
 using Serilog;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,22 +17,22 @@ namespace Airslip.Identity.Api.Application.Identity
 {
     public class GenerateJwtBearerTokenCommandHandler : IRequestHandler<LoginUserCommand, IResponse>
     {
+        private readonly ITokenService<UserToken, GenerateUserToken> _tokenService;
         private readonly IUserService _userService;
         private readonly IUserProfileService _userProfileService;
         private readonly IUserManagerService _userManagerService;
-        private readonly JwtSettings _jwtSettings;
         private readonly ILogger _logger;
 
         public GenerateJwtBearerTokenCommandHandler(
+            ITokenService<UserToken, GenerateUserToken> tokenService,
             IUserService userService,
             IUserProfileService userProfileService,
-            IOptions<JwtSettings> jwtSettingsOptions,
             IUserManagerService userManagerService)
         {
+            _tokenService = tokenService;
             _userService = userService;
             _userProfileService = userProfileService;
             _userManagerService = userManagerService;
-            _jwtSettings = jwtSettingsOptions.Value;
             _logger = Log.Logger;
         }
 
@@ -61,22 +61,17 @@ namespace Airslip.Identity.Api.Application.Identity
 
             _logger.Information("User {UserId} successfully logged in", user.Id);
 
-            DateTime bearerTokenExpiryDate = JwtBearerToken.GetExpiry(_jwtSettings.ExpiresTime);
+            GenerateUserToken generateUserToken = new(user.Id, yapilyUserId ?? "", "");
 
-            string jwtBearerToken = JwtBearerToken.Generate(
-                _jwtSettings.Key,
-                _jwtSettings.Audience,
-                _jwtSettings.Issuer,
-                bearerTokenExpiryDate,
-                JwtBearerToken.GetClaims(user.Id, yapilyUserId));
+            NewToken newToken = _tokenService.GenerateNewToken(generateUserToken);
 
             string refreshToken = JwtBearerToken.GenerateRefreshToken();
 
             await _userService.UpdateRefreshToken(user.Id, request.DeviceId, refreshToken);
 
             return new AuthenticatedUserResponse(
-                jwtBearerToken,
-                JwtBearerToken.GetExpiryInEpoch(bearerTokenExpiryDate),
+                newToken.TokenValue,
+                newToken.TokenExpiry?.ToUnixTimeMilliseconds() ?? 0,
                 refreshToken,
                 user.BiometricOn,
                 false);

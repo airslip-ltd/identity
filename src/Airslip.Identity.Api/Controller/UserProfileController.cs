@@ -1,4 +1,5 @@
-﻿using Airslip.Common.Auth.Models;
+﻿using Airslip.Common.Auth.Interfaces;
+using Airslip.Common.Auth.Models;
 using Airslip.Common.Contracts;
 using Airslip.Common.Types.Configuration;
 using Airslip.Common.Types.Failures;
@@ -25,10 +26,10 @@ namespace Airslip.Identity.Api.Controller
         private readonly IMediator _mediator;
 
         public UserProfileController(
-            Token token,
+            ITokenService<UserToken, GenerateUserToken> tokenService,
             ILogger logger,
             IOptions<PublicApiSettings> publicApiOptions,
-            IMediator mediator) : base(token, publicApiOptions, logger)
+            IMediator mediator) : base(tokenService, publicApiOptions, logger)
         {
             _mediator = mediator;
         }

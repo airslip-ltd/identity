@@ -1,4 +1,5 @@
-﻿using Airslip.Common.Auth.Models;
+﻿using Airslip.Common.Auth.Interfaces;
+using Airslip.Common.Auth.Models;
 using Airslip.Common.Contracts;
 using Airslip.Common.Types.Configuration;
 using Airslip.Common.Types.Enums;
@@ -32,10 +33,10 @@ namespace Airslip.Identity.Api.Controller
         private readonly PublicApiSetting _bankTransactionSettings;
 
         public IdentityController(
-            Token token,
+            ITokenService<UserToken, GenerateUserToken> tokenService,
             ILogger logger,
             IOptions<PublicApiSettings> publicApiOptions,
-            IMediator mediator) : base(token, publicApiOptions, logger)
+            IMediator mediator) : base(tokenService, publicApiOptions, logger)
         {
             _mediator = mediator;
             _bankTransactionSettings = publicApiOptions.Value.BankTransactions ?? throw new ArgumentException(
