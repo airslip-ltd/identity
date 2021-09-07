@@ -99,6 +99,7 @@ namespace Airslip.Identity.Api.Controller
                             Alpha2CountryCodes.GB.ToString())),
                         ConflictResponse response => Conflict(response),
                         NotFoundResponse r => NotFound(r),
+                        IncorrectPasswordResponse r => Forbidden(r),
                         ErrorResponse response => BadRequest(response),
                         IFail response => BadRequest(response),
                         _ => throw new NotSupportedException()
