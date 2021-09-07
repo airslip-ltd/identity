@@ -9,6 +9,8 @@ using Airslip.Common.Monitoring.Implementations.Checks;
 using Airslip.Common.Types.Configuration;
 using Airslip.Email.Client;
 using Airslip.Identity.Api.Application;
+using Airslip.Identity.Api.Application.Implementations;
+using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.MongoDb.Contracts.Identity;
 using Airslip.Infrastructure.BlobStorage;
@@ -64,6 +66,8 @@ namespace Airslip.Identity.Api
                 .Configure<EmailConfigurationSettings>(Configuration.GetSection(nameof(EmailConfigurationSettings)))
                 .Configure<WelcomeSettings>(Configuration.GetSection(nameof(WelcomeSettings)));
 
+            services.AddScoped<IUserLoginService, UserLoginService>();
+            
             services.AddSingleton(serviceProvider =>
             {
                 IOptions<EmailConfigurationSettings> EmailConfigurationOptions =

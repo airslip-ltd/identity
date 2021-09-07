@@ -4,6 +4,7 @@ using Airslip.Common.Auth.Models;
 using Airslip.Common.Contracts;
 using Airslip.Common.Types.Extensions;
 using Airslip.Common.Types.Failures;
+using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Responses;
 using Airslip.Identity.MongoDb.Contracts;
@@ -21,7 +22,7 @@ namespace Airslip.Identity.Api.Application.Identity
 {
     public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, IResponse>
     {
-        private readonly ITokenService<UserToken, GenerateUserToken> _tokenService;
+        private readonly IUserLoginService _userLoginService;
         private readonly IUserService _userService;
         private readonly IYapilyClient _yapilyApis;
         private readonly IUserManagerService _userManagerService;
@@ -29,13 +30,13 @@ namespace Airslip.Identity.Api.Application.Identity
         private readonly IUserProfileService _userProfileService;
 
         public RegisterUserCommandHandler(
-            ITokenService<UserToken, GenerateUserToken> tokenService,
+            IUserLoginService userLoginService,
             IUserService userService,
             IYapilyClient yapilyApis,
             IUserManagerService userManagerService,
             IUserProfileService userProfileService)
         {
-            _tokenService = tokenService;
+            _userLoginService = userLoginService;
             _userService = userService;
             _yapilyApis = yapilyApis;
             _userManagerService = userManagerService;
@@ -97,20 +98,8 @@ namespace Airslip.Identity.Api.Application.Identity
 
                     _logger.Information("User {UserId} successfully registered", user.Id);
 
-                    GenerateUserToken generateUserToken = new(user.Id, yapilyUserId ?? "", "");
-
-                    NewToken newToken = _tokenService.GenerateNewToken(generateUserToken);
-
-                    string refreshToken = JwtBearerToken.GenerateRefreshToken();
-
-                    await _userService.UpdateRefreshToken(user.Id, request.DeviceId, refreshToken);
-
-                    return new AuthenticatedUserResponse(
-                        newToken.TokenValue,
-                        newToken.TokenExpiry?.ToUnixTimeMilliseconds() ?? 0,
-                        refreshToken,
-                        false,
-                        true);
+                    return await _userLoginService
+                        .GenerateUserResponse(user, true, yapilyUserId, request.DeviceId);
 
                 default:
                     throw new InvalidOperationException();
