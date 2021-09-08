@@ -14,6 +14,7 @@ using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.MongoDb.Contracts.Identity;
 using Airslip.Infrastructure.BlobStorage;
+using Airslip.Yapily.Client;
 using Airslip.Yapily.Client.Contracts;
 using FluentValidation;
 using MediatR;
@@ -124,7 +125,7 @@ namespace Airslip.Identity.Api
                         : Configuration["MongoDbSettings:DatabaseName"])
                 .AddDefaultTokenProviders();
 
-            services.AddHttpClient<IYapilyClient>(nameof(IYapilyClient),
+            services.AddHttpClient<IYapilyClient>(nameof(YapilyClient),
                     (serviceProvider, yapilyHttpClient) =>
                     {
                         IOptions<YapilySettings> yapilySettingsOptions =
