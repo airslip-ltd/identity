@@ -26,11 +26,6 @@ namespace Airslip.Identity.MongoDb.Contracts
         [BsonElement("refreshTokens")]
         public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>(1);
 
-        public void AddRefreshToken(string deviceId, string token)
-        {
-            RefreshTokens.Add(new RefreshToken(deviceId, token));
-        }
-        
         public void AddOpenBankingProvider(OpenBankingProvider openBankingProvider)
         {
             OpenBankingProviders.Add(openBankingProvider);
