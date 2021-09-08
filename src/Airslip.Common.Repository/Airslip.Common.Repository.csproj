@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="..\common.props" />
+
+	<ItemGroup>
+		<PackageReference Include="Airslip.Common.Auth" Version="$(AirslipCommonAuth)" />
+	</ItemGroup>
+	
+</Project>

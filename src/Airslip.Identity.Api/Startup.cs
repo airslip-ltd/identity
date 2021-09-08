@@ -6,6 +6,8 @@ using Airslip.Common.Contracts;
 using Airslip.Common.Middleware;
 using Airslip.Common.Monitoring;
 using Airslip.Common.Monitoring.Implementations.Checks;
+using Airslip.Common.Repository.Implementations;
+using Airslip.Common.Repository.Interfaces;
 using Airslip.Common.Types.Configuration;
 using Airslip.Email.Client;
 using Airslip.Identity.Api.Application;
@@ -14,6 +16,7 @@ using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.MongoDb.Contracts.Identity;
 using Airslip.Infrastructure.BlobStorage;
+using Airslip.Yapily.Client;
 using Airslip.Yapily.Client.Contracts;
 using FluentValidation;
 using MediatR;
@@ -124,7 +127,7 @@ namespace Airslip.Identity.Api
                         : Configuration["MongoDbSettings:DatabaseName"])
                 .AddDefaultTokenProviders();
 
-            services.AddHttpClient<IYapilyClient>(nameof(IYapilyClient),
+            services.AddHttpClient<IYapilyClient>(nameof(YapilyClient),
                     (serviceProvider, yapilyHttpClient) =>
                     {
                         IOptions<YapilySettings> yapilySettingsOptions =
@@ -167,6 +170,11 @@ namespace Airslip.Identity.Api
                     }
                 );
             });
+            
+            services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
+            // services.AddScoped<FluentValidation.IValidator<CityModel>, CityModelValidator>();
+            // services.AddScoped<IContext, MongoDbContext>();
+
 
             services
                 .AddApiVersioning(options => { options.ReportApiVersions = true; })

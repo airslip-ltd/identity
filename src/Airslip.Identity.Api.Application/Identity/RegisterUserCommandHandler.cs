@@ -8,6 +8,8 @@ using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Responses;
 using Airslip.Identity.MongoDb.Contracts;
+using Airslip.Identity.MongoDb.Contracts.Entities;
+using Airslip.Identity.MongoDb.Contracts.Interfaces;
 using Airslip.Yapily.Client.Contracts;
 using MediatR;
 using Microsoft.AspNetCore.Identity;

@@ -2,6 +2,7 @@
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.MongoDb.Contracts;
 using Airslip.Identity.MongoDb.Contracts.Identity;
+using Airslip.Identity.MongoDb.Contracts.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;

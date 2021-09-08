@@ -9,6 +9,8 @@ using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Requests;
 using Airslip.Identity.Api.Contracts.Responses;
 using Airslip.Identity.MongoDb.Contracts;
+using Airslip.Identity.MongoDb.Contracts.Entities;
+using Airslip.Identity.MongoDb.Contracts.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;

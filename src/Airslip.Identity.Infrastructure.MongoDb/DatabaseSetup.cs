@@ -1,4 +1,5 @@
 ﻿using Airslip.Identity.MongoDb.Contracts;
+using Airslip.Identity.MongoDb.Contracts.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;

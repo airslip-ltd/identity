@@ -11,6 +11,12 @@
 
 	<ItemGroup>
 		<PackageReference Include="Airslip.Common.Types" Version="$(AirslipCommonTypes)" />
+		<PackageReference Include="Airslip.Common.Auth" Version="$(AirslipCommonAuth)" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Airslip.Common.Repository\Airslip.Common.Repository.csproj" />
+	  <ProjectReference Include="..\Airslip.Identity.Api.Contracts\Airslip.Identity.Api.Contracts.csproj" />
 	</ItemGroup>
 
 </Project>

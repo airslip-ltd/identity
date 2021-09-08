@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 
-namespace Airslip.Identity.MongoDb.Contracts
+namespace Airslip.Identity.MongoDb.Contracts.Interfaces
 {
     public interface IUserManagerService
     {
