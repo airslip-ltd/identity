@@ -1,7 +1,4 @@
-using Airslip.Common.Auth.Enums;
 using Airslip.Common.Auth.Extensions;
-using Airslip.Common.Auth.Implementations;
-using Airslip.Common.Auth.Models;
 using Airslip.Common.Contracts;
 using Airslip.Common.Middleware;
 using Airslip.Common.Monitoring;
@@ -19,7 +16,6 @@ using Airslip.Yapily.Client.Contracts;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -125,7 +121,9 @@ namespace Airslip.Identity.Api
                         : Configuration["MongoDbSettings:DatabaseName"])
                 .AddDefaultTokenProviders();
 
-            services.AddHttpClient<IYapilyClient>(nameof(YapilyClient),
+            services
+                .AddHttpClient<IYapilyClient>(
+                    nameof(YapilyClient), 
                     (serviceProvider, yapilyHttpClient) =>
                     {
                         IOptions<YapilySettings> yapilySettingsOptions =

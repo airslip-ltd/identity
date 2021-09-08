@@ -30,7 +30,7 @@
 		<SerilogAspNetCore>4.1.0</SerilogAspNetCore>
 		<SerilogSinkLogzIo>3.0.1</SerilogSinkLogzIo>
 		<SerilogEnrichersCorrelationId>3.0.1</SerilogEnrichersCorrelationId>
-		<Swashbuckle>6.1.5</Swashbuckle>
+		<Swashbuckle>6.2.1</Swashbuckle>
 		<Xunit>2.4.1</Xunit>
 		<XunitRunner>2.4.3</XunitRunner>
 	</PropertyGroup>
@@ -39,11 +39,11 @@
 		<AirslipCommonAuth>1.0.4</AirslipCommonAuth>
 		<AirslipCommonMiddleware>1.0.1</AirslipCommonMiddleware>
 		<AirslipCommonContracts>1.1.7</AirslipCommonContracts>
-		<AirslipCommonTypes>3.1.8</AirslipCommonTypes>
+		<AirslipCommonTypes>3.2.1</AirslipCommonTypes>
 		<AirslipCommonMonitoring>1.0.2</AirslipCommonMonitoring>
 		<AirslipEmailClient>1.1.0</AirslipEmailClient>
-		<AirslipYapilyClient>2.0.1</AirslipYapilyClient>
-		<AirslipYapilyClientContracts>2.0.1</AirslipYapilyClientContracts>
+		<AirslipYapilyClient>2.0.3</AirslipYapilyClient>
+		<AirslipYapilyClientContracts>2.0.3</AirslipYapilyClientContracts>
 		<AirslipInfrastructureBlobStorage>0.1.0</AirslipInfrastructureBlobStorage>
 	</PropertyGroup>
 
