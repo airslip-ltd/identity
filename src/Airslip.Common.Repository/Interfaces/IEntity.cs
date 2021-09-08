@@ -6,10 +6,8 @@ namespace Airslip.Common.Repository.Interfaces
     /// <summary>
     /// A simple interface defining the common data properties for basic auditing of changes to an entity object
     /// </summary>
-    public interface IEntity
+    public interface IEntity : IEntityWithId
     {
-        string Id { get; set; }
-        
         string? CreatedByUserId { get; set; }
         
         DateTime DateCreated { get; set; }

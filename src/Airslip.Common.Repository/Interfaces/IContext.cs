@@ -20,15 +20,8 @@ namespace Airslip.Common.Repository.Interfaces
         /// <typeparam name="TEntity">The entity type</typeparam>
         /// <returns>The entity after being added to the context</returns>
         Task<TEntity> AddEntity<TEntity>(TEntity newEntity) 
-            where TEntity : class, IEntity;
+            where TEntity : class, IEntityWithId;
 
-        /// <summary>
-        /// Saves and changes to the context
-        /// </summary>
-        /// <param name="cancellationToken">A cancellation token</param>
-        /// <returns>An int representing the number of changes</returns>
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default (CancellationToken));
-        
         /// <summary>
         /// Gets a particular entity based on an Id
         /// </summary>
@@ -36,7 +29,16 @@ namespace Airslip.Common.Repository.Interfaces
         /// <typeparam name="TEntity">The entity type</typeparam>
         /// <returns>The loaded entity, would be null if not found</returns>
         Task<TEntity?> GetEntity<TEntity>(string id)
-            where TEntity : class, IEntity;
+            where TEntity : class, IEntityWithId;
+        
+        /// <summary>
+        /// Updates an entity within the context, assumes all validation has already passed
+        /// </summary>
+        /// <param name="updatedEntity">The entity to update</param>
+        /// <typeparam name="TEntity">The entity type</typeparam>
+        /// <returns>The entity after being added to the context</returns>
+        Task<TEntity> UpdateEntity<TEntity>(TEntity updatedEntity) 
+            where TEntity : class, IEntityWithId;
 
         /// <summary>
         /// Returns a list of entities based on search criteria
@@ -45,7 +47,7 @@ namespace Airslip.Common.Repository.Interfaces
         /// <typeparam name="TEntity">The entity type</typeparam>
         /// <returns>A list of entities matching the search criteria</returns>
         Task<List<TEntity>> GetEntities<TEntity>(List<SearchFilterModel> searchFilters)
-            where TEntity : class, IEntity;
+            where TEntity : class, IEntityWithId;
 
         /// <summary>
         /// Returns a list of entities based on search criteria
@@ -53,14 +55,6 @@ namespace Airslip.Common.Repository.Interfaces
         /// <typeparam name="TEntity">The entity type</typeparam>
         /// <returns>A list of entities matching the search criteria</returns>
         IQueryable<TEntity> QueryableOf<TEntity>()
-            where TEntity : class;
-
-        /// <summary>
-        /// Returns a list of entities based on search criteria
-        /// </summary>
-        /// <typeparam name="TEntity">The entity type</typeparam>
-        /// <returns>A list of entities matching the search criteria</returns>
-        Task<List<TEntity>> ExecuteAsync<TEntity>(IQueryable<TEntity> queryable)
             where TEntity : class;
     }
 }

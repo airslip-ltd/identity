@@ -32,6 +32,7 @@
 		<ProjectReference Include="..\Airslip.Common.Repository\Airslip.Common.Repository.csproj" />
 		<ProjectReference Include="..\Airslip.Identity.Api.Application\Airslip.Identity.Api.Application.csproj" />
 		<ProjectReference Include="..\Airslip.Identity.Api.Contracts\Airslip.Identity.Api.Contracts.csproj" />
+		<ProjectReference Include="..\Airslip.Identity.AutoMapper\Airslip.Identity.AutoMapper.csproj" />
 		<ProjectReference Include="..\Airslip.Identity.Infrastructure.MongoDb\Airslip.Identity.Infrastructure.MongoDb.csproj" />
 		<ProjectReference Include="..\Airslip.Identity.MongoDb.Contracts\Airslip.Identity.MongoDb.Contracts.csproj" />
 	</ItemGroup>

@@ -8,7 +8,7 @@ namespace Airslip.Common.Repository.Interfaces
     /// </summary>
     public interface IEntityWithId
     {
-        string Id { get; }
+        string Id { get; set; }
     }
     
     /// <summary>

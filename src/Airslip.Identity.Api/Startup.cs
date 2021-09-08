@@ -1,7 +1,4 @@
-using Airslip.Common.Auth.Enums;
 using Airslip.Common.Auth.Extensions;
-using Airslip.Common.Auth.Implementations;
-using Airslip.Common.Auth.Models;
 using Airslip.Common.Contracts;
 using Airslip.Common.Middleware;
 using Airslip.Common.Monitoring;
@@ -14,14 +11,16 @@ using Airslip.Identity.Api.Application;
 using Airslip.Identity.Api.Application.Implementations;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts;
+using Airslip.Identity.Api.Contracts.Models;
+using Airslip.Identity.Api.Contracts.Validators;
+using Airslip.Identity.AutoMapper.Extensions;
+using Airslip.Identity.Infrastructure.MongoDb;
 using Airslip.Identity.MongoDb.Contracts.Identity;
 using Airslip.Infrastructure.BlobStorage;
 using Airslip.Yapily.Client;
 using Airslip.Yapily.Client.Contracts;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -147,7 +146,7 @@ namespace Airslip.Identity.Api
 
             services.AddMediatR(ApplicationAssembly.Reference);
             // For all the validators, register them with dependency injection as scoped
-            AssemblyScanner.FindValidatorsInAssembly(ApplicationAssembly.Reference)
+            FluentValidation.AssemblyScanner.FindValidatorsInAssembly(ApplicationAssembly.Reference)
                 .ForEach(item => services.AddScoped(item.InterfaceType, item.ValidatorType));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidatorBehavior<,>));
 
@@ -172,9 +171,9 @@ namespace Airslip.Identity.Api
             });
             
             services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
-            // services.AddScoped<FluentValidation.IValidator<CityModel>, CityModelValidator>();
-            // services.AddScoped<IContext, MongoDbContext>();
-
+            services.AddScoped<IValidator<ApiKeyModel>, ApiKeyModelValidator>();
+            services.AddScoped<IContext, MongoDbContext>();
+            services.AddAutoMapper();
 
             services
                 .AddApiVersioning(options => { options.ReportApiVersions = true; })

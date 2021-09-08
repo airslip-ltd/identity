@@ -2,9 +2,7 @@
 using Airslip.Common.Repository.Enums;
 using Airslip.Common.Repository.Interfaces;
 using Airslip.Common.Types.Extensions;
-using Airslip.Identity.Api.Contracts.Enums;
-using Airslip.Identity.MongoDb.Contracts;
-using Airslip.Identity.MongoDb.Contracts.Entities;
+using Airslip.Identity.Api.Contracts.Entities;
 using JetBrains.Annotations;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -19,10 +17,6 @@ namespace Airslip.Identity.Infrastructure.MongoDb
     {
         private readonly IMongoDatabase _database;
       
-        private readonly string _userCollection = $"{nameof(User)}s_test".ToCamelCase();
-        private readonly string _userProfileCollection = $"{nameof(UserProfile)}s_test".ToCamelCase();
-        private readonly string _apiKeyCollection = $"{nameof(ApiKey)}s_test".ToCamelCase();
-
         public AirslipMongoDbContext(IMongoDatabase database)
         {
             _database = database;
@@ -37,10 +31,9 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             
             // Enums as integers
             BsonSerializer.RegisterSerializer(new EnumSerializer<EntityStatusEnum>(BsonType.Int32));
-            BsonSerializer.RegisterSerializer(new EnumSerializer<ApiKeyStatus>(BsonType.Int32));
             
             // Enum as string
-            BsonSerializer.RegisterSerializer(new EnumSerializer<ApiKeyUsageType>(BsonType.Int32));
+            BsonSerializer.RegisterSerializer(new EnumSerializer<ApiKeyUsageType>(BsonType.String));
             
             // Map classes
             mapEntityWithId<ApiKey>();
@@ -49,7 +42,10 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             mapEntityNoId<RefreshToken>();
             mapEntityNoId<OpenBankingProvider>();
             
-            CreateCollections();
+            // Ensure collections exist
+            CreateCollection<ApiKey>();
+            CreateCollection<User>();
+            CreateCollection<UserProfile>();
         }
 
         private void mapEntityWithId<TType>() where TType : IEntityWithId
@@ -75,18 +71,20 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             }
         }
 
-        public IMongoCollection<User> Users => _database.GetCollection<User>(_userCollection);
-        public IMongoCollection<UserProfile> UserProfiles => _database.GetCollection<UserProfile>(_userProfileCollection);
-        public IMongoCollection<ApiKey> ApiKeys => _database.GetCollection<ApiKey>(_apiKeyCollection);
+        public IMongoCollection<User> Users => CollectionByType<User>();
+        public IMongoCollection<UserProfile> UserProfiles => CollectionByType<UserProfile>();
+        public IMongoCollection<ApiKey> ApiKeys => CollectionByType<ApiKey>();
 
-        private void CreateCollections()
+        public IMongoCollection<TType> CollectionByType<TType>()
         {
-            if (!CheckCollection(_userCollection))
-                _database.CreateCollection(_userCollection);
-            if (!CheckCollection(_userProfileCollection))
-                _database.CreateCollection(_userProfileCollection);
-            if (!CheckCollection(_apiKeyCollection))
-                _database.CreateCollection(_apiKeyCollection);
+            return _database.GetCollection<TType>(DeriveCollectionName<TType>());
+        }
+
+        private void CreateCollection<TType>()
+        {
+            string collectionName = DeriveCollectionName<TType>();
+            if (!CheckCollection(collectionName))
+                _database.CreateCollection(collectionName);
         }
 
         private bool CheckCollection(string collectionName)
@@ -95,6 +93,11 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             IAsyncCursor<BsonDocument>? collectionCursor =
                 _database.ListCollections(new ListCollectionsOptions {Filter = filter});
             return collectionCursor.Any();
+        }
+
+        private static string DeriveCollectionName<TType>()
+        {
+            return $"{typeof(TType).Name}s".ToCamelCase();
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿using Airslip.Identity.MongoDb.Contracts;
-using Airslip.Identity.MongoDb.Contracts.Entities;
+﻿using Airslip.Identity.Api.Contracts.Entities;
+using Airslip.Identity.MongoDb.Contracts;
 using Airslip.Identity.MongoDb.Contracts.Interfaces;
 using MongoDB.Driver;
 using System.Linq;

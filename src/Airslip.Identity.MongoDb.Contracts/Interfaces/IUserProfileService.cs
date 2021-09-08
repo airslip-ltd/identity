@@ -1,4 +1,4 @@
-﻿using Airslip.Identity.MongoDb.Contracts.Entities;
+﻿using Airslip.Identity.Api.Contracts.Entities;
 using System.Threading.Tasks;
 
 namespace Airslip.Identity.MongoDb.Contracts.Interfaces

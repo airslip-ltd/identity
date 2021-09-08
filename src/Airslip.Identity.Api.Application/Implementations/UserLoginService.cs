@@ -5,9 +5,9 @@ using Airslip.Common.Contracts;
 using Airslip.Common.Types.Extensions;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.Interfaces;
+using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Responses;
 using Airslip.Identity.MongoDb.Contracts;
-using Airslip.Identity.MongoDb.Contracts.Entities;
 using Airslip.Identity.MongoDb.Contracts.Interfaces;
 using System.Threading.Tasks;
 

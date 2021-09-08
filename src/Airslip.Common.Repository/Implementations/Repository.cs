@@ -23,7 +23,8 @@ namespace Airslip.Common.Repository.Implementations
         private readonly IModelMapper<TModel> _mapper;
         private readonly UserToken _userToken;
 
-        public Repository(IContext context, IValidator<TModel> validator, IModelMapper<TModel> mapper, ITokenService<UserToken, GenerateUserToken> tokenService)
+        public Repository(IContext context, IValidator<TModel> validator, IModelMapper<TModel> mapper, 
+            ITokenService<UserToken, GenerateUserToken> tokenService)
         {
             _context = context;
             _validator = validator;
@@ -66,10 +67,6 @@ namespace Airslip.Common.Repository.Implementations
             
             // Add the entity
             await _context.AddEntity(newEntity);
-            
-            // Save to the db, this could be done in a
-            //  unit of work pattern and saved later
-            await _context.SaveChangesAsync();
             
             // Create a result containing old and new version, and return
             return new RepositoryActionResultModel<TModel>
@@ -115,7 +112,7 @@ namespace Airslip.Common.Repository.Implementations
             }
             
             // Now we load the current entity version
-            var currentEntity = await _context.GetEntity<TEntity>(id);
+            TEntity? currentEntity = await _context.GetEntity<TEntity>(id);
             
             // Check to see if the entity was found within the context
             if (currentEntity == null)
@@ -136,10 +133,9 @@ namespace Airslip.Common.Repository.Implementations
             // Assign the defaults for updated flags
             currentEntity.DateUpdated = DateTime.UtcNow;
             currentEntity.UpdatedByUserId = _userToken.UserId;
-                       
-            // Save to the db, this could be done in a
-            //  unit of work pattern and saved later
-            await _context.SaveChangesAsync();
+            
+            // Update in the context
+            await _context.UpdateEntity(currentEntity);
             
             // Create a result containing old and new version, and return
             return new RepositoryActionResultModel<TModel>
@@ -174,17 +170,16 @@ namespace Airslip.Common.Repository.Implementations
             }
                         
             // Create a representation as it is today
-            var currentModel = _mapper.CreateModel(currentEntity);
+            TModel currentModel = _mapper.CreateModel(currentEntity);
             
             // Assign the defaults for updated flags
             currentEntity.DateDeleted = DateTime.UtcNow;
             currentEntity.DeletedByUserId = _userToken.UserId;
             currentEntity.EntityStatus = EntityStatusEnum.Deleted;
-                       
-            // Save to the db, this could be done in a
-            //  unit of work pattern and saved later
-            await _context.SaveChangesAsync();
 
+            // Update in the context
+            await _context.UpdateEntity(currentEntity);
+            
             // Create a result containing old and new version, and return
             return new RepositoryActionResultModel<TModel>
             (

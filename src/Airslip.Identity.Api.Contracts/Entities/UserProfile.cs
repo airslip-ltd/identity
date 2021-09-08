@@ -2,12 +2,12 @@
 using JetBrains.Annotations;
 using System;
 
-namespace Airslip.Identity.MongoDb.Contracts.Entities
+namespace Airslip.Identity.Api.Contracts.Entities
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public record UserProfile : IEntityWithId
     {
-        public string Id { get; init; } = Guid.NewGuid().ToString("N");
+        public string Id { get; set; } = Guid.NewGuid().ToString("N");
         
         public string UserId { get; init; }
 

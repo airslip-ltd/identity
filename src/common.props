@@ -33,6 +33,7 @@
 		<Swashbuckle>6.1.5</Swashbuckle>
 		<Xunit>2.4.1</Xunit>
 		<XunitRunner>2.4.3</XunitRunner>
+		<AutoMapper>10.1.1</AutoMapper>
 	</PropertyGroup>
 	
 	<PropertyGroup>
