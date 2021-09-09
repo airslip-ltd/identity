@@ -78,11 +78,11 @@ namespace Airslip.Identity.Api.Controller
         private IActionResult _actionToResult(RepositoryActionResultModel<ApiKeyModel> theResult)
         {
             // Dependent on the return type, we will return either BadRequest or OK
-            if (theResult.ResultType == ResultTypeEnum.NotFound)
+            if (theResult.ResultType == ResultType.NotFound)
             {
                 return NotFound(theResult);
             } 
-            if (theResult.ResultType == ResultTypeEnum.FailedValidation || theResult.ResultType == ResultTypeEnum.FailedVerification)
+            if (theResult.ResultType == ResultType.FailedValidation || theResult.ResultType == ResultType.FailedVerification)
             {
                 return BadRequest(theResult);
             }

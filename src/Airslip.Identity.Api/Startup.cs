@@ -6,6 +6,7 @@ using Airslip.Common.Contracts;
 using Airslip.Common.Middleware;
 using Airslip.Common.Monitoring;
 using Airslip.Common.Monitoring.Implementations.Checks;
+using Airslip.Common.Repository.Extensions;
 using Airslip.Common.Repository.Implementations;
 using Airslip.Common.Repository.Interfaces;
 using Airslip.Common.Services.AutoMapper.Extensions;
@@ -176,8 +177,9 @@ namespace Airslip.Identity.Api
             });
             
             // Add repository content
-            services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
-            services.AddScoped<IContext, MongoDbContext>();
+            services
+                .AddRepositories()
+                .AddScoped<IContext, MongoDbContext>();
             
             // Customised per app
             services.AddScoped<IModelValidator<ApiKeyModel>, ApiKeyModelValidator>();

@@ -95,7 +95,9 @@ namespace Airslip.Identity.Api.Controller
                     RegisterUserCommand registerUserCommand = new(
                         request.Email,
                         request.Password,
-                        request.DeviceId);
+                        request.DeviceId,
+                        request.EntityId,
+                        request.AirslipUserType);
 
                     IResponse createUserResponse = await _mediator.Send(registerUserCommand);
 

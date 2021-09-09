@@ -59,6 +59,9 @@ namespace Airslip.Identity.Api.Application.Identity
 
             User user = await _userService.Create(new User());
 
+            user.EntityId = request.EntityId;
+            user.AirslipUserType = request.AirslipUserType;
+            
             IYapilyResponse response =
                 await _yapilyApis.CreateUser(user.Id, request.ReferenceId, cancellationToken);
 

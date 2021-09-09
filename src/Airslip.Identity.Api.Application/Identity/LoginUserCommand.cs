@@ -7,7 +7,7 @@ namespace Airslip.Identity.Api.Application.Identity
     {
         public string Email { get; }
         public string Password { get; } 
-        public string DeviceId { get; } 
+        public string DeviceId { get; }
         
         public LoginUserCommand(string? email, string? password, string? deviceId)
         {

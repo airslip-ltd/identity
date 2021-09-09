@@ -1,3 +1,4 @@
+using Airslip.Common.Auth.Enums;
 using Airslip.Common.Repository.Interfaces;
 using Airslip.Common.Repository.Models;
 using Airslip.Identity.Api.Contracts.Models;
@@ -8,7 +9,7 @@ using FluentValidation.Results;
 namespace Airslip.Identity.Api.Application.Validators
 {
     /// <summary>
-    /// IValildator implementation for validating a new or updated Api Key entry
+    /// IModelValidator implementation for validating a new or updated Api Key entry
     /// </summary>
     public class ApiKeyModelValidator : AbstractValidator<ApiKeyModel>, IModelValidator<ApiKeyModel>
     {
@@ -24,6 +25,12 @@ namespace Airslip.Identity.Api.Application.Validators
             RuleFor(o => o.KeyValue)
                 .NotEmpty();
             
+            RuleFor(o => o.EntityId)
+                .NotEmpty();
+
+            RuleFor(o => o.AirslipUserType)
+                .Equal(AirslipUserType.Merchant);
+
         }
         
         public async Task<ValidationResultModel> ValidateAdd(ApiKeyModel model)

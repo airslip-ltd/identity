@@ -1,4 +1,5 @@
 ﻿using Airslip.Common.Auth.Enums;
+using Airslip.Common.Repository.Entities;
 using Airslip.Common.Repository.Enums;
 using Airslip.Common.Repository.Interfaces;
 using Airslip.Common.Types.Extensions;
@@ -30,10 +31,10 @@ namespace Airslip.Identity.Infrastructure.MongoDb
                 filter: t => true);
             
             // Enums as integers
-            BsonSerializer.RegisterSerializer(new EnumSerializer<EntityStatusEnum>(BsonType.Int32));
+            BsonSerializer.RegisterSerializer(new EnumSerializer<EntityStatus>(BsonType.Int32));
             
             // Enum as string
-            BsonSerializer.RegisterSerializer(new EnumSerializer<ApiKeyUsageType>(BsonType.String));
+            BsonSerializer.RegisterSerializer(new EnumSerializer<AirslipUserType>(BsonType.String));
             
             // Map classes
             mapEntityWithId<ApiKey>();
@@ -41,6 +42,7 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             mapEntityWithId<UserProfile>();
             mapEntityNoId<RefreshToken>();
             mapEntityNoId<OpenBankingProvider>();
+            mapEntityNoId<BasicAuditInformation>();
             
             // Ensure collections exist
             CreateCollection<ApiKey>();

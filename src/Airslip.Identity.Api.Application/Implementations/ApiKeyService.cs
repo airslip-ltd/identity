@@ -17,32 +17,39 @@ namespace Airslip.Identity.Api.Application.Implementations
     {
         private readonly IRepository<ApiKey, ApiKeyModel> _repository;
         private readonly IModelMapper<ApiKeyModel> _modelMapper;
-        private readonly ITokenService<ApiKeyToken, GenerateApiKeyToken> _tokenService;
+        private readonly ITokenService<ApiKeyToken, GenerateApiKeyToken> _apiKeyTokenService;
+        private readonly ITokenService<UserToken, GenerateUserToken> _userTokenService;
 
         public ApiKeyService(IRepository<ApiKey, ApiKeyModel> repository, IModelMapper<ApiKeyModel> modelMapper,
-            ITokenService<ApiKeyToken, GenerateApiKeyToken> tokenService)
+            ITokenService<ApiKeyToken, GenerateApiKeyToken> apiKeyTokenService,
+            ITokenService<UserToken, GenerateUserToken> userTokenService)
         {
             _repository = repository;
             _modelMapper = modelMapper;
-            _tokenService = tokenService;
+            _apiKeyTokenService = apiKeyTokenService;
+            _userTokenService = userTokenService;
         }
 
         public async Task<RepositoryActionResultModel<ApiKeyModel>> CreateNewApiKey(CreateApiKeyModel createApiKeyModel)
         {
+            UserToken userToken = _userTokenService.GetCurrentToken();
             ApiKeyModel apiKeyModel = _modelMapper.Create(createApiKeyModel);
 
             // Allocate a new key value, we will use the existing refresh token
             //   logic as the user will never see this value
             apiKeyModel.KeyValue = JwtBearerToken.GenerateRefreshToken();
+            apiKeyModel.EntityId = userToken.EntityId;
+            apiKeyModel.AirslipUserType = userToken.AirslipUserType;
             
             RepositoryActionResultModel<ApiKeyModel> result = await _repository.Add(apiKeyModel);
 
-            if (result.ResultType == ResultTypeEnum.Success)
+            if (result.ResultType == ResultType.Success)
             {
-                GenerateApiKeyToken generateApiKeyToken = new(apiKeyModel.KeyValue, "", 
-                    ApiKeyUsageType.Merchant);
+                GenerateApiKeyToken generateApiKeyToken = new(apiKeyModel.KeyValue, 
+                    userToken.EntityId, 
+                    userToken.AirslipUserType);
 
-                NewToken newToken = _tokenService.GenerateNewToken(generateApiKeyToken);
+                NewToken newToken = _apiKeyTokenService.GenerateNewToken(generateApiKeyToken);
 
                 result.CurrentVersion!.TokenValue = newToken.TokenValue;                
             }

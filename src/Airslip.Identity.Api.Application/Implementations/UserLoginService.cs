@@ -1,3 +1,4 @@
+using Airslip.Common.Auth.Enums;
 using Airslip.Common.Auth.Implementations;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
@@ -35,17 +36,21 @@ namespace Airslip.Identity.Api.Application.Implementations
                     "An incorrect refresh token has been used for this device");
 
 
-            return await GenerateUserResponse(user, false, deviceId: deviceId);
+            return await GenerateUserResponse(user, 
+                false,
+                null,
+                deviceId);
         }
 
-        public async Task<IResponse> GenerateUserResponse(User user, bool isNewUser,
-            string? yapilyUserId = null,
-            string deviceId = "",
-            string identity = "")
+        public async Task<IResponse> GenerateUserResponse(User user, 
+            bool isNewUser,
+            string? yapilyUserId,
+            string deviceId)
         {
             yapilyUserId ??= user.GetOpenBankingProviderId("Yapily");
 
-            GenerateUserToken generateUserToken = new(user.Id, yapilyUserId ?? "", identity);
+            GenerateUserToken generateUserToken = new(user.Id, yapilyUserId ?? string.Empty, 
+                user.EntityId ?? string.Empty, user.AirslipUserType);
 
             NewToken newToken = _tokenService.GenerateNewToken(generateUserToken);
             string newRefreshToken = JwtBearerToken.GenerateRefreshToken();

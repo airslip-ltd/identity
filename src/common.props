@@ -37,7 +37,9 @@
 	</PropertyGroup>
 	
 	<PropertyGroup>
-		<AirslipCommonAuth>1.0.4</AirslipCommonAuth>
+		<AirslipCommonAuth>1.0.6</AirslipCommonAuth>
+		<AirslipCommonRepository>1.0.0</AirslipCommonRepository>
+		<AirslipCommonServicesAutoMapper>1.0.0</AirslipCommonServicesAutoMapper>
 		<AirslipCommonMiddleware>1.0.1</AirslipCommonMiddleware>
 		<AirslipCommonContracts>1.1.7</AirslipCommonContracts>
 		<AirslipCommonTypes>3.1.8</AirslipCommonTypes>

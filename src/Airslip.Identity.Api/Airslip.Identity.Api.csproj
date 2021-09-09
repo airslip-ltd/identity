@@ -23,16 +23,18 @@
 		<PackageReference Include="Airslip.Common.Contracts" Version="$(AirslipCommonContracts)" />
 		<PackageReference Include="Airslip.Common.Monitoring" Version="$(AirslipCommonMonitoring)" />
 		<PackageReference Include="Airslip.Common.Types" Version="$(AirslipCommonTypes)" />
+
+		<PackageReference Include="Airslip.Common.Repository" Version="$(AirslipCommonRepository)" />
+		<PackageReference Include="Airslip.Common.Services.AutoMapper" Version="$(AirslipCommonServicesAutoMapper)" />
+		
 		<PackageReference Include="Airslip.Email.Client" Version="$(AirslipEmailClient)" />
 		<PackageReference Include="Airslip.Infrastructure.BlobStorage" Version="$(AirslipInfrastructureBlobStorage)" />
 		<PackageReference Include="Airslip.Yapily.Client" Version="$(AirslipYapilyClient)" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Airslip.Common.Repository\Airslip.Common.Repository.csproj" />
 		<ProjectReference Include="..\Airslip.Identity.Api.Application\Airslip.Identity.Api.Application.csproj" />
 		<ProjectReference Include="..\Airslip.Identity.Api.Contracts\Airslip.Identity.Api.Contracts.csproj" />
-		<ProjectReference Include="..\Airslip.Common.Services.AutoMapper\Airslip.Common.Services.AutoMapper.csproj" />
 		<ProjectReference Include="..\Airslip.Identity.Infrastructure.MongoDb\Airslip.Identity.Infrastructure.MongoDb.csproj" />
 		<ProjectReference Include="..\Airslip.Identity.MongoDb.Contracts\Airslip.Identity.MongoDb.Contracts.csproj" />
 	</ItemGroup>

@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using Airslip.Common.Auth.Enums;
+using JetBrains.Annotations;
 using System.ComponentModel.DataAnnotations;
 
 namespace Airslip.Identity.Api.Contracts.Requests
@@ -14,5 +15,9 @@ namespace Airslip.Identity.Api.Contracts.Requests
         
         [Required]
         public string? DeviceId { get; init; }
+        
+        public string? EntityId { get; init; }
+
+        public AirslipUserType AirslipUserType { get; init; } = AirslipUserType.Standard;
     }
 }
