@@ -22,7 +22,7 @@ namespace Airslip.Identity.Infrastructure.MongoDb
 
         public async Task<string?> GetProviderId(string id, string provider)
         {
-            User? user =await  _context.Users.Find(user => user.Id == id).FirstOrDefaultAsync();
+            User? user = await _context.Users.Find(user => user.Id == id).FirstOrDefaultAsync();
             return user.OpenBankingProviders.Where(o => o.Name == provider)
                 .Select(u => u.Id)
                 .FirstOrDefault();
@@ -39,16 +39,27 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             return _context.Users.ReplaceOneAsync(user => user.Id == userIn.Id, userIn);
         }
 
-        public Task UpdateRefreshToken(string id, string deviceId, string token)
+        public async Task UpdateOrReplaceRefreshToken(string id, string deviceId, string token)
         {
             FilterDefinitionBuilder<User>? filterDefinitionBuilder = Builders<User>.Filter;
+            FilterDefinition<User> userFilter = filterDefinitionBuilder.Eq(user => user.Id, id);
+            FilterDefinition<User> filter = userFilter & filterDefinitionBuilder.Eq("refreshTokens.deviceId", deviceId);
 
-            FilterDefinition<User> filter = filterDefinitionBuilder.Eq(user => user.Id, id)
-                                            & filterDefinitionBuilder.Eq("refreshTokens.deviceId", deviceId);
-            
             UpdateDefinition<User> update = Builders<User>.Update.Set("refreshTokens.$.token", token);
 
-            return _context.Users.UpdateOneAsync(filter, update);
+            UpdateResult updateResult = await _context.Users.UpdateOneAsync(filter, update);
+
+            if (updateResult.ModifiedCount > 0)
+                return;
+
+            // This is only invoked when a new device is registered
+            User userIn = await _context.Users.Find(userFilter).FirstOrDefaultAsync();
+
+            userIn.AddRefreshToken(deviceId, token);
+
+            await _context.Users.ReplaceOneAsync(
+                user => user.Id == id, userIn,
+                new ReplaceOptions { IsUpsert = true });
         }
 
         public Task ToggleBiometric(string id, bool biometricOn)

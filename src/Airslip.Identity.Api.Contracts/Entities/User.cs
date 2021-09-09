@@ -39,5 +39,10 @@ namespace Airslip.Identity.Api.Contracts.Entities
         {
             return OpenBankingProviders.FirstOrDefault(obp => obp.Name == name)?.Id;
         }
+        
+        public void AddRefreshToken(string deviceId, string token)
+        {
+            RefreshTokens.Add(new RefreshToken(deviceId, token));
+        }
     }
 }
