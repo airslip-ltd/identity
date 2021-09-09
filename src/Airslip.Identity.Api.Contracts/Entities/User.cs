@@ -29,11 +29,6 @@ namespace Airslip.Identity.Api.Contracts.Entities
         public bool BiometricOn { get; private set; }
 
         public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>(1);
-
-        public void AddRefreshToken(string deviceId, string token)
-        {
-            RefreshTokens.Add(new RefreshToken(deviceId, token));
-        }
         
         public void AddOpenBankingProvider(OpenBankingProvider openBankingProvider)
         {

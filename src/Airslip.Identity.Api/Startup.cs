@@ -132,7 +132,9 @@ namespace Airslip.Identity.Api
                         : Configuration["MongoDbSettings:DatabaseName"])
                 .AddDefaultTokenProviders();
 
-            services.AddHttpClient<IYapilyClient>(nameof(YapilyClient),
+            services
+                .AddHttpClient<IYapilyClient>(
+                    nameof(YapilyClient), 
                     (serviceProvider, yapilyHttpClient) =>
                     {
                         IOptions<YapilySettings> yapilySettingsOptions =

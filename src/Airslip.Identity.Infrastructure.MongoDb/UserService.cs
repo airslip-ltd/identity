@@ -39,21 +39,16 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             return _context.Users.ReplaceOneAsync(user => user.Id == userIn.Id, userIn);
         }
 
-        public async Task UpdateRefreshToken(string id, string deviceId, string token)
+        public Task UpdateRefreshToken(string id, string deviceId, string token)
         {
-            FilterDefinition<User> filter = Builders<User>.Filter.Eq(u => u.Id, id);
-            User userIn = await _context.Users.Find(filter).FirstOrDefaultAsync();
+            FilterDefinitionBuilder<User>? filterDefinitionBuilder = Builders<User>.Filter;
 
-            RefreshToken? refreshToken = userIn.RefreshTokens.FirstOrDefault(rt => rt.DeviceId == deviceId);
+            FilterDefinition<User> filter = filterDefinitionBuilder.Eq(user => user.Id, id)
+                                            & filterDefinitionBuilder.Eq("refreshTokens.deviceId", deviceId);
+            
+            UpdateDefinition<User> update = Builders<User>.Update.Set("refreshTokens.$.token", token);
 
-            if (refreshToken != null)
-                userIn.RefreshTokens.Remove(refreshToken);
-
-            userIn.AddRefreshToken(deviceId, token);
-
-            await _context.Users.ReplaceOneAsync(
-                user => user.Id == id, userIn,
-                new ReplaceOptions { IsUpsert = true });
+            return _context.Users.UpdateOneAsync(filter, update);
         }
 
         public Task ToggleBiometric(string id, bool biometricOn)
