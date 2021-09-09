@@ -55,7 +55,7 @@ namespace Airslip.Identity.Api.Application.Implementations
             NewToken newToken = _tokenService.GenerateNewToken(generateUserToken);
             string newRefreshToken = JwtBearerToken.GenerateRefreshToken();
             
-            await _userService.UpdateRefreshToken(user.Id, deviceId, newRefreshToken);
+            await _userService.UpdateOrReplaceRefreshToken(user.Id, deviceId, newRefreshToken);
 
             return new AuthenticatedUserResponse(
                 newToken.TokenValue,
