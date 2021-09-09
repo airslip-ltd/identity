@@ -1,0 +1,45 @@
+using Airslip.Common.Repository.Interfaces;
+using Airslip.Common.Repository.Models;
+using Airslip.Identity.Api.Contracts.Models;
+using System.Threading.Tasks;
+using FluentValidation;
+using FluentValidation.Results;
+
+namespace Airslip.Identity.Api.Application.Validators
+{
+    /// <summary>
+    /// IValildator implementation for validating a new or updated Api Key entry
+    /// </summary>
+    public class ApiKeyModelValidator : AbstractValidator<ApiKeyModel>, IModelValidator<ApiKeyModel>
+    {
+        private const int NameMaxLength = 50;
+
+        public ApiKeyModelValidator()
+        {
+            RuleFor(o => o.Name)
+                .Length(1, NameMaxLength);
+            RuleFor(o => o.Name)
+                .NotEmpty();
+            
+            RuleFor(o => o.KeyValue)
+                .NotEmpty();
+            
+        }
+        
+        public async Task<ValidationResultModel> ValidateAdd(ApiKeyModel model)
+        {
+            ValidationResult? validationResult = await ValidateAsync(model);
+
+            ValidationResultModel result = new();
+            validationResult.Errors
+                .ForEach(o => result.AddMessage(o.PropertyName, o.ErrorMessage));
+            
+            return await Task.FromResult(result);
+        }
+
+        public async Task<ValidationResultModel> ValidateUpdate(ApiKeyModel model)
+        {
+            return await ValidateAdd(model);
+        }
+    }
+}

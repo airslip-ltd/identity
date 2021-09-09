@@ -14,12 +14,6 @@ namespace Airslip.Identity.Api.Contracts.Models
         [JsonIgnore]
         public string? KeyValue { get; set; }
         
-        [JsonProperty("keyValue")]
-        private string KeyValueSetter
-        {
-            set => KeyValue = value;
-        }
-        
         [JsonIgnore]
         public ApiKeyUsageType ApiKeyUsageType { get; set; }
         
@@ -27,5 +21,7 @@ namespace Airslip.Identity.Api.Contracts.Models
         public string? OwningEntityId { get; set; }
 
         public string? Name { get; set; }
+        
+        public string? TokenValue { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 using Airslip.Common.Repository.Interfaces;
 using AutoMapper;
 
-namespace Airslip.Identity.AutoMapper.Implementations
+namespace Airslip.Common.Services.AutoMapper.Implementations
 {
     public class AutoMapperModelMapper<TModel> : IModelMapper<TModel>
     {
@@ -12,17 +12,17 @@ namespace Airslip.Identity.AutoMapper.Implementations
             _mapper = mapper;
         }
 
-        public TEntity CreateEntity<TEntity>(TModel source)
+        public TDest Create<TDest>(TModel source)
         {
-            return _mapper.Map<TModel, TEntity>(source);
+            return _mapper.Map<TModel, TDest>(source);
         }
 
-        public TEntity UpdateEntity<TEntity>(TModel source, TEntity destination)
+        public TDest Update<TDest>(TModel source, TDest destination)
         {
-            return _mapper.Map<TModel, TEntity>(source, destination);
+            return _mapper.Map(source, destination);
         }
 
-        public TModel CreateModel<TEntity>(TEntity source)
+        public TModel Create<TEntity>(TEntity source)
         {
             return _mapper.Map<TEntity, TModel>(source);
         }

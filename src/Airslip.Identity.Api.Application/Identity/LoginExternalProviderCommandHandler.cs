@@ -2,8 +2,6 @@
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Entities;
-using Airslip.Identity.MongoDb.Contracts;
-using Airslip.Identity.MongoDb.Contracts.Interfaces;
 using Airslip.Yapily.Client.Contracts;
 using MediatR;
 using Serilog;

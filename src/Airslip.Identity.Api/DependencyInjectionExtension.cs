@@ -1,6 +1,6 @@
-﻿using Airslip.Identity.Infrastructure.MongoDb;
+﻿using Airslip.Identity.Api.Application.Interfaces;
+using Airslip.Identity.Infrastructure.MongoDb;
 using Airslip.Identity.Infrastructure.MongoDb.Identity;
-using Airslip.Identity.MongoDb.Contracts;
 using Airslip.Identity.MongoDb.Contracts.Interfaces;
 using Airslip.Yapily.Client;
 using Airslip.Yapily.Client.Contracts;

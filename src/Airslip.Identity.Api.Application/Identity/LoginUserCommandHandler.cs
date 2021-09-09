@@ -1,14 +1,8 @@
-﻿using Airslip.Common.Auth.Implementations;
-using Airslip.Common.Auth.Interfaces;
-using Airslip.Common.Auth.Models;
-using Airslip.Common.Contracts;
-using Airslip.Common.Types.Extensions;
+﻿using Airslip.Common.Contracts;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Entities;
-using Airslip.Identity.Api.Contracts.Responses;
-using Airslip.Identity.MongoDb.Contracts;
 using Airslip.Identity.MongoDb.Contracts.Identity;
 using Airslip.Identity.MongoDb.Contracts.Interfaces;
 using MediatR;

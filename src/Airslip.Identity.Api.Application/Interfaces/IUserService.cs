@@ -1,7 +1,7 @@
 ﻿using Airslip.Identity.Api.Contracts.Entities;
 using System.Threading.Tasks;
 
-namespace Airslip.Identity.MongoDb.Contracts.Interfaces
+namespace Airslip.Identity.Api.Application.Interfaces
 {
     public interface IUserService
     {

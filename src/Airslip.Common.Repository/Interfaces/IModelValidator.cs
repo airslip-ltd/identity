@@ -8,7 +8,7 @@ namespace Airslip.Common.Repository.Interfaces
     ///  as it tells the repository how to validate the record
     /// </summary>
     /// <typeparam name="TModel">The model tyoe to validate</typeparam>
-    public interface IValidator<TModel> where TModel : class, IModel
+    public interface IModelValidator<TModel> where TModel : class, IModel
     {
         /// <summary>
         /// Validate on adding a record

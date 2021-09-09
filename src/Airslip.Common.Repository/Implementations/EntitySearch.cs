@@ -34,13 +34,13 @@ namespace Airslip.Common.Repository.Implementations
         {
             // Get search results for our entities
             List<TEntity> searchResults = await _context.GetEntities<TEntity>(searchFilters);
-            List<TModel> results = new List<TModel>();
+            List<TModel> results = new();
             
             // Format them into models
             foreach (TEntity result in searchResults)
             {
                 // Create a new model using the mapper
-                TModel newModel = _mapper.CreateModel(result);
+                TModel newModel = _mapper.Create(result);
 
                 // If we have a search formatter we can use it here to populate any additional data
                 if (_searchFormatter != null)

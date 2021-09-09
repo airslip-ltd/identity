@@ -1,12 +1,10 @@
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
 using Airslip.Common.Repository.Enums;
-using Airslip.Common.Repository.Interfaces;
 using Airslip.Common.Repository.Models;
 using Airslip.Common.Types.Configuration;
-using Airslip.Identity.Api.Contracts.Entities;
+using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -21,16 +19,16 @@ namespace Airslip.Identity.Api.Controller
     [Route("v{version:apiVersion}/apikey")]
     public class ApiKeyController : ApiResponse
     {
-        private readonly IRepository<ApiKey, ApiKeyModel> _apiKeyRepository;
+        private readonly IApiKeyService _apiKeyService;
         private readonly ILogger _logger;
 
         public ApiKeyController(
             ITokenService<UserToken, GenerateUserToken> tokenService,
             IOptions<PublicApiSettings> publicApiOptions,
-            IRepository<ApiKey, ApiKeyModel> apiKeyRepository, ILogger logger)
+            IApiKeyService apiKeyService, ILogger logger)
             : base(tokenService, publicApiOptions, logger)
         {
-            _apiKeyRepository = apiKeyRepository;
+            _apiKeyService = apiKeyService;
             _logger = logger;
         }
         
@@ -38,13 +36,13 @@ namespace Airslip.Identity.Api.Controller
         [Route("add")]
         [ProducesResponseType(typeof(RepositoryActionResultModel<ApiKeyModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(RepositoryActionResultModel<ApiKeyModel>), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Add([FromBody] ApiKeyModel model)
+        public async Task<IActionResult> Add([FromBody] CreateApiKeyModel model)
         {
             RepositoryActionResultModel<ApiKeyModel> result;
             
             try
             {
-                result = await _apiKeyRepository.Add(model);
+                result = await _apiKeyService.CreateNewApiKey(model);
             }
             catch (Exception ex)
             {
@@ -56,51 +54,7 @@ namespace Airslip.Identity.Api.Controller
         }
         
         [HttpGet]
-        [Route("get/{id}")]
-        [ProducesResponseType(typeof(RepositoryActionResultModel<ApiKeyModel>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(RepositoryActionResultModel<ApiKeyModel>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(RepositoryActionResultModel<ApiKeyModel>), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Get(string id)
-        {
-            RepositoryActionResultModel<ApiKeyModel> result;
-            
-            try
-            {
-                result = await _apiKeyRepository.Get(id);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Exception when getting Api Key");
-                return BadRequest(ex.Message);
-            }
-
-            return _actionToResult(result);
-        }
-        
-        [HttpPost]
-        [Route("update/{id}")]
-        [ProducesResponseType(typeof(RepositoryActionResultModel<ApiKeyModel>), StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(RepositoryActionResultModel<ApiKeyModel>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(RepositoryActionResultModel<ApiKeyModel>), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Update(string id, [FromBody] ApiKeyModel model)
-        {
-            RepositoryActionResultModel<ApiKeyModel> result;
-            
-            try
-            {
-                result = await _apiKeyRepository.Update(id, model);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex,"Exception when updating Api Key");
-                return BadRequest(ex.Message);
-            }
-
-            return _actionToResult(result);
-        }
-        
-        [HttpGet]
-        [Route("delete/{id}")]
+        [Route("expire/{id}")]
         [ProducesResponseType(typeof(RepositoryActionResultModel<ApiKeyModel>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(RepositoryActionResultModel<ApiKeyModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(RepositoryActionResultModel<ApiKeyModel>), StatusCodes.Status400BadRequest)]
@@ -110,7 +64,7 @@ namespace Airslip.Identity.Api.Controller
             
             try
             {
-                result = await _apiKeyRepository.Delete(id);
+                result = await _apiKeyService.ExpireApiKey(id);
             }
             catch (Exception ex)
             {

@@ -1,5 +1,4 @@
-﻿using Airslip.Identity.MongoDb.Contracts;
-using Airslip.Identity.MongoDb.Contracts.Identity;
+﻿using Airslip.Identity.MongoDb.Contracts.Identity;
 using Airslip.Identity.MongoDb.Contracts.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;

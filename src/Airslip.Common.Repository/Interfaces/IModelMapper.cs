@@ -10,25 +10,25 @@ namespace Airslip.Common.Repository.Interfaces
         /// Create an entity from a particular source
         /// </summary>
         /// <param name="source">The source object</param>
-        /// <typeparam name="TEntity">The destination entity type</typeparam>
+        /// <typeparam name="TDest">The destination entity type</typeparam>
         /// <returns>A new entity mapped using the data contained in the source</returns>
-        TEntity CreateEntity<TEntity>(TModel source);
+        TDest Create<TDest>(TModel source);
         
         /// <summary>
         /// Updated an already created entity with data from a particular source
         /// </summary>
         /// <param name="source">The source object</param>
         /// <param name="destination">The destination entity</param>
-        /// <typeparam name="TEntity">The destination entity type</typeparam>
+        /// <typeparam name="TDest">The destination entity type</typeparam>
         /// <returns>The updated entity mapped using the data contained in the source</returns>
-        TEntity UpdateEntity<TEntity>(TModel source, TEntity destination);
+        TDest Update<TDest>(TModel source, TDest destination);
         
         /// <summary>
         /// Create a model from a particular source
         /// </summary>
         /// <param name="source">The source object</param>
-        /// <typeparam name="TEntity">The source entity type</typeparam>
+        /// <typeparam name="TSource">The source entity type</typeparam>
         /// <returns>A new model mapped using the data contained in the source</returns>
-        TModel CreateModel<TEntity>(TEntity source);
+        TModel Create<TSource>(TSource source);
     }
 }

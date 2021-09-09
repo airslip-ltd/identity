@@ -1,6 +1,3 @@
-using Airslip.Common.Repository.Enums;
-using System;
-
 namespace Airslip.Common.Repository.Interfaces
 {
     /// <summary>

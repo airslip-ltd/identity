@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Airslip.Identity.Api.Applic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Airslip.Common.Repository", "Airslip.Common.Repository\Airslip.Common.Repository.csproj", "{2314411A-95CA-4D80-8EAC-9DE985D95F80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Airslip.Identity.AutoMapper", "Airslip.Identity.AutoMapper\Airslip.Identity.AutoMapper.csproj", "{16FB1077-8393-4B44-A497-082FFE09E299}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Airslip.Common.Services.AutoMapper", "Airslip.Common.Services.AutoMapper\Airslip.Common.Services.AutoMapper.csproj", "{16FB1077-8393-4B44-A497-082FFE09E299}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

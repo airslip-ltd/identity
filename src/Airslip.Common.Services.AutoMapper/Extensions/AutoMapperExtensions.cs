@@ -2,7 +2,7 @@ using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Airslip.Identity.AutoMapper.Extensions
+namespace Airslip.Common.Services.AutoMapper.Extensions
 {
     public static class MapperExtensions
     {
@@ -47,9 +47,10 @@ namespace Airslip.Identity.AutoMapper.Extensions
             profile.IgnoreUnmapped(typeof(TSrc), typeof(TDest));
         }
 
-        public static IServiceCollection AddAutoMapper(this IServiceCollection services)
+        public static IServiceCollection AddAutoMapper(this IServiceCollection services, 
+            Action<IMapperConfigurationExpression> mapperConfiguration)
         {
-            Services.ConfigureServices(services);
+            Services.ConfigureServices(services, mapperConfiguration);
 
             return services;
         }

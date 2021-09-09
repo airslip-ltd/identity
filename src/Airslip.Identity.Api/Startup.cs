@@ -1,19 +1,23 @@
 using Airslip.Common.Auth.Extensions;
+using Airslip.Common.Auth.Implementations;
+using Airslip.Common.Auth.Interfaces;
+using Airslip.Common.Auth.Models;
 using Airslip.Common.Contracts;
 using Airslip.Common.Middleware;
 using Airslip.Common.Monitoring;
 using Airslip.Common.Monitoring.Implementations.Checks;
 using Airslip.Common.Repository.Implementations;
 using Airslip.Common.Repository.Interfaces;
+using Airslip.Common.Services.AutoMapper.Extensions;
 using Airslip.Common.Types.Configuration;
 using Airslip.Email.Client;
 using Airslip.Identity.Api.Application;
 using Airslip.Identity.Api.Application.Implementations;
 using Airslip.Identity.Api.Application.Interfaces;
+using Airslip.Identity.Api.Application.Validators;
 using Airslip.Identity.Api.Contracts;
+using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Models;
-using Airslip.Identity.Api.Contracts.Validators;
-using Airslip.Identity.AutoMapper.Extensions;
 using Airslip.Identity.Infrastructure.MongoDb;
 using Airslip.Identity.MongoDb.Contracts.Identity;
 using Airslip.Infrastructure.BlobStorage;
@@ -102,6 +106,7 @@ namespace Airslip.Identity.Api
             });
 
             services
+                .AddScoped<ITokenService<ApiKeyToken, GenerateApiKeyToken>, ApiKeyTokenService>()
                 .AddAirslipJwtAuth(Configuration)?
                 .AddCookie(options => { options.LoginPath = new PathString("/v1/identity/google-login"); })
                 .AddGoogle(GoogleDefaults.AuthenticationScheme,
@@ -170,10 +175,20 @@ namespace Airslip.Identity.Api
                 );
             });
             
+            // Add repository content
             services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
-            services.AddScoped<IValidator<ApiKeyModel>, ApiKeyModelValidator>();
             services.AddScoped<IContext, MongoDbContext>();
-            services.AddAutoMapper();
+            
+            // Customised per app
+            services.AddScoped<IModelValidator<ApiKeyModel>, ApiKeyModelValidator>();
+            services.AddAutoMapper(cfg =>
+            {
+                cfg.CreateMap<ApiKey, ApiKeyModel>();
+                cfg.CreateMap<ApiKeyModel, ApiKey>();
+                cfg.CreateMap<CreateApiKeyModel, ApiKeyModel>();
+            });
+
+            services.AddScoped<IApiKeyService, ApiKeyService>();
 
             services
                 .AddApiVersioning(options => { options.ReportApiVersions = true; })

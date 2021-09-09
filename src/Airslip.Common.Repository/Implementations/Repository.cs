@@ -19,11 +19,11 @@ namespace Airslip.Common.Repository.Implementations
         where TModel : class, IModel
     {
         private readonly IContext _context;
-        private readonly IValidator<TModel> _validator;
+        private readonly IModelValidator<TModel> _validator;
         private readonly IModelMapper<TModel> _mapper;
         private readonly UserToken _userToken;
 
-        public Repository(IContext context, IValidator<TModel> validator, IModelMapper<TModel> mapper, 
+        public Repository(IContext context, IModelValidator<TModel> validator, IModelMapper<TModel> mapper, 
             ITokenService<UserToken, GenerateUserToken> tokenService)
         {
             _context = context;
@@ -57,7 +57,7 @@ namespace Airslip.Common.Repository.Implementations
             }
             
             // If passed, assume all ok and create a new entity
-            TEntity newEntity = _mapper.CreateEntity<TEntity>(model);
+            TEntity newEntity = _mapper.Create<TEntity>(model);
 
             // Assign a few defaults, guid and who created it
             newEntity.Id = Guid.NewGuid().ToString("N");
@@ -72,7 +72,7 @@ namespace Airslip.Common.Repository.Implementations
             return new RepositoryActionResultModel<TModel>
             (
                 ResultTypeEnum.Success,
-                _mapper.CreateModel(newEntity)
+                _mapper.Create(newEntity)
             );
         }
 
@@ -125,10 +125,10 @@ namespace Airslip.Common.Repository.Implementations
             }
             
             // Create a representation as it is today
-            var currentModel = _mapper.CreateModel(currentEntity);
+            var currentModel = _mapper.Create(currentEntity);
             
             // Update the current entity with the new values passed in
-            _mapper.UpdateEntity(model, currentEntity);
+            _mapper.Update(model, currentEntity);
             
             // Assign the defaults for updated flags
             currentEntity.DateUpdated = DateTime.UtcNow;
@@ -142,7 +142,7 @@ namespace Airslip.Common.Repository.Implementations
             (
                 ResultTypeEnum.Success,
                 PreviousVersion: currentModel,
-                CurrentVersion: _mapper.CreateModel(currentEntity)
+                CurrentVersion: _mapper.Create(currentEntity)
             );
         }
 
@@ -170,7 +170,7 @@ namespace Airslip.Common.Repository.Implementations
             }
                         
             // Create a representation as it is today
-            TModel currentModel = _mapper.CreateModel(currentEntity);
+            TModel currentModel = _mapper.Create(currentEntity);
             
             // Assign the defaults for updated flags
             currentEntity.DateDeleted = DateTime.UtcNow;
@@ -215,7 +215,7 @@ namespace Airslip.Common.Repository.Implementations
             return new RepositoryActionResultModel<TModel>
             (
                 ResultTypeEnum.Success,
-                _mapper.CreateModel(currentEntity)
+                _mapper.Create(currentEntity)
             );
         }
     }

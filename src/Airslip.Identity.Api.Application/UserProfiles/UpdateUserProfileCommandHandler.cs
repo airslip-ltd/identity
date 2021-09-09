@@ -1,7 +1,6 @@
 ﻿using Airslip.Common.Contracts;
+using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Entities;
-using Airslip.Identity.MongoDb.Contracts;
-using Airslip.Identity.MongoDb.Contracts.Interfaces;
 using JetBrains.Annotations;
 using MediatR;
 using System.Threading;
