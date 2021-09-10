@@ -76,7 +76,7 @@ namespace Airslip.Identity.Api.Application.Implementations
                 ClaimsPrincipal? newToken = await _tokenValidator.GetClaimsPrincipalFromToken(qrCodeToGenerate,
                     QrCodeAuthenticationSchemeOptions.QrCodeAuthScheme);
 
-                if (newToken == null || newToken.Claims.Count() == 0) 
+                if (newToken == null || !newToken.Claims.Any()) 
                     return new GenerateQrCodeImageModel(false, null);
             }
             catch (ArgumentException)
