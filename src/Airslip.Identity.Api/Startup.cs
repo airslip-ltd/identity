@@ -108,6 +108,7 @@ namespace Airslip.Identity.Api
 
             services
                 .AddScoped<ITokenService<ApiKeyToken, GenerateApiKeyToken>, ApiKeyTokenService>()
+                .AddScoped<ITokenService<QrCodeToken, GenerateQrCodeToken>, QrCodeTokenService>()
                 .AddAirslipJwtAuth(Configuration)?
                 .AddCookie(options => { options.LoginPath = new PathString("/v1/identity/google-login"); })
                 .AddGoogle(GoogleDefaults.AuthenticationScheme,
@@ -185,14 +186,22 @@ namespace Airslip.Identity.Api
             
             // Customised per app
             services.AddScoped<IModelValidator<ApiKeyModel>, ApiKeyModelValidator>();
+            services.AddScoped<IModelValidator<QrCodeModel>, QrCodeModelValidator>();
+            services
+                .AddScoped<ITokenValidator<QrCodeToken, GenerateQrCodeToken>,
+                    TokenValidator<QrCodeToken, GenerateQrCodeToken>>();
             services.AddAutoMapper(cfg =>
             {
                 cfg.CreateMap<ApiKey, ApiKeyModel>();
                 cfg.CreateMap<ApiKeyModel, ApiKey>();
                 cfg.CreateMap<CreateApiKeyModel, ApiKeyModel>();
+                cfg.CreateMap<QrCode, QrCodeModel>();
+                cfg.CreateMap<QrCodeModel, QrCode>();
+                cfg.CreateMap<CreateQrCodeModel, QrCodeModel>();
             });
 
             services.AddScoped<IApiKeyService, ApiKeyService>();
+            services.AddScoped<IQrCodeService, QrCodeService>();
 
             services
                 .AddApiVersioning(options => { options.ReportApiVersions = true; })

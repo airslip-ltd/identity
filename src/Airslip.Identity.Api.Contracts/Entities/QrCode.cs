@@ -1,0 +1,19 @@
+using Airslip.Common.Auth.Enums;
+using Airslip.Common.Repository.Entities;
+using Airslip.Common.Repository.Enums;
+using Airslip.Common.Repository.Interfaces;
+
+namespace Airslip.Identity.Api.Contracts.Entities
+{
+    public record QrCode : IEntity
+    {
+        public string Id { get; set; } = "";
+        public BasicAuditInformation? AuditInformation { get; set; }
+        public EntityStatus EntityStatus { get; set; }
+        public AirslipUserType AirslipUserType { get; init; }
+        public string? EntityId { get; init; }
+        public string? StoreId { get; init; }
+        public string? CheckoutId { get; init; }
+        public string? Name { get; set; }
+    }
+}

@@ -8,6 +8,7 @@
 		<PackageReference Include="FluentValidation" Version="$(FluentValidation)" />
 		<PackageReference Include="Airslip.Common.Contracts" Version="$(AirslipCommonContracts)" />
 		<PackageReference Include="Airslip.Common.Types" Version="$(AirslipCommonTypes)" />
+		<PackageReference Include="QRCoder" Version="$(QRCoder)" />
 		<PackageReference Include="Serilog.AspNetCore" Version="$(SerilogAspNetCore)" />
 		<PackageReference Include="Serilog.Sinks.Logz.Io" Version="$(SerilogSinkLogzIo)" />
 		<PackageReference Include="Serilog.Enrichers.CorrelationId" Version="$(SerilogEnrichersCorrelationId)" />
