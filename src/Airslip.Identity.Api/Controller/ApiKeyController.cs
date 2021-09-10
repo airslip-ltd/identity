@@ -50,7 +50,7 @@ namespace Airslip.Identity.Api.Controller
                 return BadRequest(ex.Message);
             }
             
-            return _actionToResult(result);
+            return RepositoryActionToResult(result);
         }
         
         [HttpGet]
@@ -72,22 +72,7 @@ namespace Airslip.Identity.Api.Controller
                 return BadRequest(ex.Message);
             }
 
-            return _actionToResult(result);
-        }
-        
-        private IActionResult _actionToResult(RepositoryActionResultModel<ApiKeyModel> theResult)
-        {
-            // Dependent on the return type, we will return either BadRequest or OK
-            if (theResult.ResultType == ResultType.NotFound)
-            {
-                return NotFound(theResult);
-            } 
-            if (theResult.ResultType == ResultType.FailedValidation || theResult.ResultType == ResultType.FailedVerification)
-            {
-                return BadRequest(theResult);
-            }
-
-            return Ok(theResult);
+            return RepositoryActionToResult(result);
         }
     }
 }

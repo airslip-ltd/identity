@@ -38,6 +38,7 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             
             // Map classes
             mapEntityWithId<ApiKey>();
+            mapEntityWithId<QrCode>();
             mapEntityWithId<User>();
             mapEntityWithId<UserProfile>();
             mapEntityNoId<RefreshToken>();
@@ -46,6 +47,7 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             
             // Ensure collections exist
             CreateCollection<ApiKey>();
+            CreateCollection<QrCode>();
             CreateCollection<User>();
             CreateCollection<UserProfile>();
         }
@@ -76,6 +78,7 @@ namespace Airslip.Identity.Infrastructure.MongoDb
         public IMongoCollection<User> Users => CollectionByType<User>();
         public IMongoCollection<UserProfile> UserProfiles => CollectionByType<UserProfile>();
         public IMongoCollection<ApiKey> ApiKeys => CollectionByType<ApiKey>();
+        public IMongoCollection<QrCode> QrCodes => CollectionByType<QrCode>();
 
         public IMongoCollection<TType> CollectionByType<TType>()
         {

@@ -1,6 +1,9 @@
 ﻿using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
 using Airslip.Common.Contracts;
+using Airslip.Common.Repository.Enums;
+using Airslip.Common.Repository.Interfaces;
+using Airslip.Common.Repository.Models;
 using Airslip.Common.Types.Configuration;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Contracts;
@@ -102,6 +105,22 @@ namespace Airslip.Identity.Api
                 CorrelationId = token.CorrelationId;
                 Errors = errors;
             }
+        }
+        
+        protected IActionResult RepositoryActionToResult<TModel>(RepositoryActionResultModel<TModel> theResult) 
+            where TModel : class, IModel
+        {
+            // Dependent on the return type, we will return either BadRequest or OK
+            if (theResult.ResultType == ResultType.NotFound)
+            {
+                return NotFound(theResult);
+            } 
+            if (theResult.ResultType == ResultType.FailedValidation || theResult.ResultType == ResultType.FailedVerification)
+            {
+                return BadRequest(theResult);
+            }
+
+            return Ok(theResult);
         }
     }
 }

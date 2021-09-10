@@ -34,10 +34,11 @@
 		<Xunit>2.4.1</Xunit>
 		<XunitRunner>2.4.3</XunitRunner>
 		<AutoMapper>10.1.1</AutoMapper>
+		<QRCoder>1.4.1</QRCoder>
 	</PropertyGroup>
 	
 	<PropertyGroup>
-		<AirslipCommonAuth>1.0.6</AirslipCommonAuth>
+		<AirslipCommonAuth>1.0.8</AirslipCommonAuth>
 		<AirslipCommonRepository>1.0.0</AirslipCommonRepository>
 		<AirslipCommonServicesAutoMapper>1.0.0</AirslipCommonServicesAutoMapper>
 		<AirslipCommonMiddleware>1.0.1</AirslipCommonMiddleware>
