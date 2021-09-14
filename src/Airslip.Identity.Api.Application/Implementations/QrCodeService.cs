@@ -1,3 +1,4 @@
+using Airslip.Common.Auth.Implementations;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
 using Airslip.Common.Auth.Schemes;
@@ -51,6 +52,7 @@ namespace Airslip.Identity.Api.Application.Implementations
             //   logic as the user will never see this value
             qrCodeModel.EntityId = userToken.EntityId;
             qrCodeModel.AirslipUserType = userToken.AirslipUserType;
+            qrCodeModel.KeyValue = JwtBearerToken.GenerateRefreshToken();
             
             RepositoryActionResultModel<QrCodeModel> result = await _repository.Add(qrCodeModel);
 
@@ -59,7 +61,8 @@ namespace Airslip.Identity.Api.Application.Implementations
                 GenerateQrCodeToken generateQrCodeToken = new(qrCodeModel.StoreId ?? "",
                     qrCodeModel.CheckoutId ?? "",
                     userToken.EntityId, 
-                    userToken.AirslipUserType);
+                    userToken.AirslipUserType, 
+                    qrCodeModel.KeyValue);
 
                 NewToken newToken = _tokenService.GenerateNewToken(generateQrCodeToken);
 
@@ -74,7 +77,8 @@ namespace Airslip.Identity.Api.Application.Implementations
             try
             {
                 ClaimsPrincipal? newToken = await _tokenValidator.GetClaimsPrincipalFromToken(qrCodeToGenerate,
-                    QrCodeAuthenticationSchemeOptions.QrCodeAuthScheme);
+                    QrCodeAuthenticationSchemeOptions.QrCodeAuthScheme,
+                    QrCodeAuthenticationSchemeOptions.ThisEnvironment);
 
                 if (newToken == null || !newToken.Claims.Any()) 
                     return new GenerateQrCodeImageModel(false, null);
