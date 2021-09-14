@@ -2,6 +2,7 @@ using Airslip.Common.Auth.Extensions;
 using Airslip.Common.Auth.Implementations;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
+using Airslip.Common.Auth.Schemes;
 using Airslip.Common.Contracts;
 using Airslip.Common.Middleware;
 using Airslip.Common.Monitoring;
@@ -71,7 +72,8 @@ namespace Airslip.Identity.Api
                 .Configure<PublicApiSettings>(Configuration.GetSection(nameof(PublicApiSettings)))
                 .Configure<YapilySettings>(Configuration.GetSection(nameof(YapilySettings)))
                 .Configure<EmailConfigurationSettings>(Configuration.GetSection(nameof(EmailConfigurationSettings)))
-                .Configure<WelcomeSettings>(Configuration.GetSection(nameof(WelcomeSettings)));
+                .Configure<WelcomeSettings>(Configuration.GetSection(nameof(WelcomeSettings)))
+                .Configure<EnvironmentSettings>(Configuration.GetSection(nameof(EnvironmentSettings)));
 
             services.AddScoped<IUserLoginService, UserLoginService>();
             
@@ -224,6 +226,11 @@ namespace Airslip.Identity.Api
         {
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
 
+            // Set environments for tokens
+            IOptions<EnvironmentSettings>? environment = serviceProvider.GetService<IOptions<EnvironmentSettings>>();
+            ApiKeyAuthenticationSchemeOptions.ThisEnvironment = environment?.Value.EnvironmentName ?? "Development";
+            QrCodeAuthenticationSchemeOptions.ThisEnvironment = environment?.Value.EnvironmentName ?? "Development";
+            
             loggerFactory.AddSerilog();
             
             app.UseSwagger();

@@ -15,5 +15,6 @@ namespace Airslip.Identity.Api.Contracts.Entities
         public string? StoreId { get; init; }
         public string? CheckoutId { get; init; }
         public string? Name { get; set; }
+        public string? KeyValue { get; set; }
     }
 }

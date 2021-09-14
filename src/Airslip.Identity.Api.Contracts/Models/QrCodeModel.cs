@@ -10,6 +10,8 @@ namespace Airslip.Identity.Api.Contracts.Models
         public string? Id { get; set; }
         public EntityStatus EntityStatus { get; set; }
         [JsonIgnore]
+        public string? KeyValue { get; set; }
+        [JsonIgnore]
         public AirslipUserType AirslipUserType { get; set; }
         [JsonIgnore]
         public string? EntityId { get; set; }
