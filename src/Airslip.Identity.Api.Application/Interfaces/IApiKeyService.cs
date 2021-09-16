@@ -8,5 +8,6 @@ namespace Airslip.Identity.Api.Application.Interfaces
     {
         Task<RepositoryActionResultModel<ApiKeyModel>> CreateNewApiKey(CreateApiKeyModel createApiKeyModel);
         Task<RepositoryActionResultModel<ApiKeyModel>> ExpireApiKey(string id);
+        Task<ApiKeyValidationResultModel> ValidateApiKey(ApiKeyValidationModel model);
     }
 }

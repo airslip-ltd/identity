@@ -1,9 +1,11 @@
+using Airslip.Common.Auth.Enums;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
 using Airslip.Common.Repository.Models;
 using Airslip.Common.Types.Configuration;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -72,6 +74,26 @@ namespace Airslip.Identity.Api.Controller
             }
 
             return RepositoryActionToResult(result);
+        }
+        
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("validate")]
+        [ProducesResponseType(typeof(ApiKeyValidationResultModel), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Validate(ApiKeyValidationModel model)
+        {
+            ApiKeyValidationResultModel result;
+            
+            try
+            {
+                result = await _apiKeyService.ValidateApiKey(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            return Ok(result);
         }
     }
 }
