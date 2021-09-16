@@ -17,6 +17,7 @@ using Airslip.Identity.Api.Application.Implementations;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Application.Validators;
 using Airslip.Identity.Api.Contracts;
+using Airslip.Identity.Api.Contracts.Config;
 using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Models;
 using Airslip.Identity.Infrastructure.MongoDb;
@@ -72,7 +73,8 @@ namespace Airslip.Identity.Api
                 .Configure<YapilySettings>(Configuration.GetSection(nameof(YapilySettings)))
                 .Configure<EmailConfigurationSettings>(Configuration.GetSection(nameof(EmailConfigurationSettings)))
                 .Configure<WelcomeSettings>(Configuration.GetSection(nameof(WelcomeSettings)))
-                .Configure<EnvironmentSettings>(Configuration.GetSection(nameof(EnvironmentSettings)));
+                .Configure<EnvironmentSettings>(Configuration.GetSection(nameof(EnvironmentSettings)))
+                .Configure<ApiKeyValidationSettings>(Configuration.GetSection(nameof(ApiKeyValidationSettings)));
 
             services.AddScoped<IUserLoginService, UserLoginService>();
             
@@ -205,6 +207,7 @@ namespace Airslip.Identity.Api
 
             services.AddScoped<IApiKeyService, ApiKeyService>();
             services.AddScoped<IQrCodeService, QrCodeService>();
+            services.AddScoped<IApiKeyRepository, ApiKeyRepository>();
 
             services
                 .AddApiVersioning(options => { options.ReportApiVersions = true; })
