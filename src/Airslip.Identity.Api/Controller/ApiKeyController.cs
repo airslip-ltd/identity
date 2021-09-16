@@ -1,10 +1,8 @@
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
-using Airslip.Common.Repository.Enums;
 using Airslip.Common.Repository.Models;
 using Airslip.Common.Types.Configuration;
 using Airslip.Identity.Api.Application.Interfaces;
-using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

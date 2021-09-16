@@ -1,4 +1,3 @@
-using Airslip.Common.Auth.Enums;
 using Airslip.Common.Contracts;
 using Airslip.Identity.Api.Contracts.Entities;
 using System.Threading.Tasks;
