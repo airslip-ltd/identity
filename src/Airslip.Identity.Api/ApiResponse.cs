@@ -26,7 +26,7 @@ namespace Airslip.Identity.Api
         
         private readonly ILogger _logger;
 
-        public ApiResponse(ITokenService<UserToken, GenerateUserToken> tokenService, IOptions<PublicApiSettings> publicApiOptions, ILogger logger)
+        public ApiResponse(ITokenDecodeService<UserToken> tokenService, IOptions<PublicApiSettings> publicApiOptions, ILogger logger)
         {
             Token = tokenService.GetCurrentToken();
             _publicApiSettings = publicApiOptions.Value;

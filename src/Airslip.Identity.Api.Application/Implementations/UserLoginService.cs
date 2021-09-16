@@ -14,10 +14,10 @@ namespace Airslip.Identity.Api.Application.Implementations
 {
     public class UserLoginService : IUserLoginService
     {
-        private readonly ITokenService<UserToken, GenerateUserToken> _tokenService;
+        private readonly ITokenGenerationService<GenerateUserToken> _tokenService;
         private readonly IUserService _userService;
 
-        public UserLoginService(ITokenService<UserToken, GenerateUserToken> tokenService, IUserService userService)
+        public UserLoginService(ITokenGenerationService<GenerateUserToken> tokenService, IUserService userService)
         {
             _tokenService = tokenService;
             _userService = userService;
@@ -49,8 +49,10 @@ namespace Airslip.Identity.Api.Application.Implementations
         {
             yapilyUserId ??= user.GetOpenBankingProviderId("Yapily");
 
-            GenerateUserToken generateUserToken = new(user.Id, yapilyUserId ?? string.Empty, 
-                user.EntityId ?? string.Empty, user.AirslipUserType);
+            GenerateUserToken generateUserToken = new(user.EntityId ?? string.Empty, 
+                user.AirslipUserType,
+                user.Id, 
+                yapilyUserId ?? string.Empty);
 
             NewToken newToken = _tokenService.GenerateNewToken(generateUserToken);
             string newRefreshToken = JwtBearerToken.GenerateRefreshToken();

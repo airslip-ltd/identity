@@ -37,7 +37,7 @@ namespace Airslip.Identity.Api.Controller
         private readonly IUserService _userService;
 
         public IdentityController(
-            ITokenService<UserToken, GenerateUserToken> tokenService,
+            ITokenDecodeService<UserToken> tokenService,
             ILogger logger,
             IOptions<PublicApiSettings> publicApiOptions,
             IMediator mediator,
