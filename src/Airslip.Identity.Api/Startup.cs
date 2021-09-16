@@ -8,7 +8,6 @@ using Airslip.Common.Middleware;
 using Airslip.Common.Monitoring;
 using Airslip.Common.Monitoring.Implementations.Checks;
 using Airslip.Common.Repository.Extensions;
-using Airslip.Common.Repository.Implementations;
 using Airslip.Common.Repository.Interfaces;
 using Airslip.Common.Services.AutoMapper.Extensions;
 using Airslip.Common.Types.Configuration;
@@ -109,8 +108,10 @@ namespace Airslip.Identity.Api
             });
 
             services
+                .AddScoped<ITokenDecodeService<QrCodeToken>, TokenDecodeService<QrCodeToken>>()
                 .AddScoped<ITokenGenerationService<GenerateApiKeyToken>, TokenGenerationService<GenerateApiKeyToken>>()
                 .AddScoped<ITokenGenerationService<GenerateQrCodeToken>, TokenGenerationService<GenerateQrCodeToken>>()
+                .AddScoped<ITokenGenerationService<GenerateUserToken>, TokenGenerationService<GenerateUserToken>>()
                 .AddAirslipJwtAuth(Configuration)?
                 .AddCookie(options => { options.LoginPath = new PathString("/v1/identity/google-login"); })
                 .AddGoogle(GoogleDefaults.AuthenticationScheme,

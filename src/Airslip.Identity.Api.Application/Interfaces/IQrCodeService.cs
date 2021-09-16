@@ -1,6 +1,5 @@
 using Airslip.Common.Repository.Models;
 using Airslip.Identity.Api.Contracts.Models;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Airslip.Identity.Api.Application.Interfaces

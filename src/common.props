@@ -36,10 +36,10 @@
 		<AutoMapper>10.1.1</AutoMapper>
 		<QRCoder>1.4.1</QRCoder>
 	</PropertyGroup>
-	
+
 	<PropertyGroup>
 		<AirslipCommonAuth>1.1.2</AirslipCommonAuth>
-		<AirslipCommonRepository>1.0.0</AirslipCommonRepository>
+		<AirslipCommonRepository>1.1.2</AirslipCommonRepository>
 		<AirslipCommonServicesAutoMapper>1.0.0</AirslipCommonServicesAutoMapper>
 		<AirslipCommonMiddleware>1.0.1</AirslipCommonMiddleware>
 		<AirslipCommonContracts>1.1.7</AirslipCommonContracts>
@@ -50,5 +50,4 @@
 		<AirslipYapilyClientContracts>2.0.3</AirslipYapilyClientContracts>
 		<AirslipInfrastructureBlobStorage>0.1.0</AirslipInfrastructureBlobStorage>
 	</PropertyGroup>
-
 </Project>
