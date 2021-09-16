@@ -24,7 +24,7 @@ namespace Airslip.Identity.Api.Controller
         private readonly ILogger _logger;
 
         public QrCodeController(
-            ITokenService<UserToken, GenerateUserToken> tokenService,
+            ITokenDecodeService<UserToken> tokenService,
             IOptions<PublicApiSettings> publicApiOptions,
             IQrCodeService qrCodeService, ILogger logger)
             : base(tokenService, publicApiOptions, logger)

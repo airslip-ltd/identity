@@ -26,7 +26,7 @@ namespace Airslip.Identity.Api.Controller
         private readonly IMediator _mediator;
 
         public UserProfileController(
-            ITokenService<UserToken, GenerateUserToken> tokenService,
+            ITokenDecodeService<UserToken> tokenService,
             ILogger logger,
             IOptions<PublicApiSettings> publicApiOptions,
             IMediator mediator) : base(tokenService, publicApiOptions, logger)

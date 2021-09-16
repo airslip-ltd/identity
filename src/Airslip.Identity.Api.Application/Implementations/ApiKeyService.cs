@@ -17,12 +17,12 @@ namespace Airslip.Identity.Api.Application.Implementations
     {
         private readonly IRepository<ApiKey, ApiKeyModel> _repository;
         private readonly IModelMapper<ApiKeyModel> _modelMapper;
-        private readonly ITokenService<ApiKeyToken, GenerateApiKeyToken> _apiKeyTokenService;
-        private readonly ITokenService<UserToken, GenerateUserToken> _userTokenService;
+        private readonly ITokenGenerationService<GenerateApiKeyToken> _apiKeyTokenService;
+        private readonly ITokenDecodeService<UserToken> _userTokenService;
 
         public ApiKeyService(IRepository<ApiKey, ApiKeyModel> repository, IModelMapper<ApiKeyModel> modelMapper,
-            ITokenService<ApiKeyToken, GenerateApiKeyToken> apiKeyTokenService,
-            ITokenService<UserToken, GenerateUserToken> userTokenService)
+            ITokenGenerationService<GenerateApiKeyToken> apiKeyTokenService,
+            ITokenDecodeService<UserToken> userTokenService)
         {
             _repository = repository;
             _modelMapper = modelMapper;
@@ -45,8 +45,8 @@ namespace Airslip.Identity.Api.Application.Implementations
 
             if (result.ResultType == ResultType.Success)
             {
-                GenerateApiKeyToken generateApiKeyToken = new(apiKeyModel.KeyValue, 
-                    userToken.EntityId, 
+                GenerateApiKeyToken generateApiKeyToken = new(userToken.EntityId, 
+                    apiKeyModel.KeyValue, 
                     userToken.AirslipUserType);
 
                 NewToken newToken = _apiKeyTokenService.GenerateNewToken(generateApiKeyToken);

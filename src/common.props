@@ -38,12 +38,12 @@
 	</PropertyGroup>
 	
 	<PropertyGroup>
-		<AirslipCommonAuth>1.0.11</AirslipCommonAuth>
+		<AirslipCommonAuth>1.1.2</AirslipCommonAuth>
 		<AirslipCommonRepository>1.0.0</AirslipCommonRepository>
 		<AirslipCommonServicesAutoMapper>1.0.0</AirslipCommonServicesAutoMapper>
 		<AirslipCommonMiddleware>1.0.1</AirslipCommonMiddleware>
 		<AirslipCommonContracts>1.1.7</AirslipCommonContracts>
-		<AirslipCommonTypes>3.2.4</AirslipCommonTypes>
+		<AirslipCommonTypes>3.2.6</AirslipCommonTypes>
 		<AirslipCommonMonitoring>1.0.2</AirslipCommonMonitoring>
 		<AirslipEmailClient>1.1.0</AirslipEmailClient>
 		<AirslipYapilyClient>2.0.3</AirslipYapilyClient>

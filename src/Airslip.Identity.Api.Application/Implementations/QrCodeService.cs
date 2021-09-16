@@ -24,17 +24,17 @@ namespace Airslip.Identity.Api.Application.Implementations
     public class QrCodeService : IQrCodeService
     {
         private readonly IRepository<QrCode, QrCodeModel> _repository;
-        private readonly ITokenService<QrCodeToken, GenerateQrCodeToken> _tokenService;
-        private readonly ITokenService<UserToken, GenerateUserToken> _userTokenService;
+        private readonly ITokenGenerationService<GenerateQrCodeToken> _tokenService;
+        private readonly ITokenDecodeService<UserToken> _userTokenService;
         private readonly IModelMapper<QrCodeModel> _modelMapper;
-        private readonly ITokenValidator<QrCodeToken, GenerateQrCodeToken> _tokenValidator;
+        private readonly ITokenValidator<QrCodeToken> _tokenValidator;
 
         public QrCodeService(
             IRepository<QrCode, QrCodeModel> repository, 
-            ITokenService<QrCodeToken, GenerateQrCodeToken> tokenService,
+            ITokenGenerationService<GenerateQrCodeToken> tokenService,
             IModelMapper<QrCodeModel> modelMapper,
-            ITokenValidator<QrCodeToken, GenerateQrCodeToken> tokenValidator,
-            ITokenService<UserToken, GenerateUserToken> userTokenService)
+            ITokenValidator<QrCodeToken> tokenValidator,
+            ITokenDecodeService<UserToken> userTokenService)
         {
             _repository = repository;
             _tokenService = tokenService;
@@ -58,11 +58,11 @@ namespace Airslip.Identity.Api.Application.Implementations
 
             if (result.ResultType == ResultType.Success)
             {
-                GenerateQrCodeToken generateQrCodeToken = new(qrCodeModel.StoreId ?? "",
-                    qrCodeModel.CheckoutId ?? "",
-                    userToken.EntityId, 
-                    userToken.AirslipUserType, 
-                    qrCodeModel.KeyValue);
+                GenerateQrCodeToken generateQrCodeToken = new(userToken.EntityId,
+                    qrCodeModel.StoreId ?? "",
+                    qrCodeModel.CheckoutId ?? "", 
+                    qrCodeModel.KeyValue,
+                    userToken.AirslipUserType);
 
                 NewToken newToken = _tokenService.GenerateNewToken(generateQrCodeToken);
 
