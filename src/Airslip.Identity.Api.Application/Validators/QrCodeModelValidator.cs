@@ -46,9 +46,7 @@ namespace Airslip.Identity.Api.Application.Validators
             return await Task.FromResult(result);
         }
 
-        public async Task<ValidationResultModel> ValidateUpdate(QrCodeModel model)
-        {
-            return await ValidateAdd(model);
-        }
+        public Task<ValidationResultModel> ValidateUpdate(QrCodeModel model) 
+            => ValidateAdd(model);
     }
 }

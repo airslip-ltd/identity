@@ -1,7 +1,7 @@
+using Airslip.Common.Auth.Data;
 using Airslip.Common.Auth.Implementations;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
-using Airslip.Common.Auth.Schemes;
 using Airslip.Common.Repository.Enums;
 using Airslip.Common.Repository.Interfaces;
 using Airslip.Common.Repository.Models;
@@ -75,8 +75,8 @@ namespace Airslip.Identity.Api.Application.Implementations
             try
             {
                 ClaimsPrincipal? newToken = await _tokenValidator.GetClaimsPrincipalFromToken(qrCodeToGenerate,
-                    QrCodeAuthenticationSchemeOptions.QrCodeAuthScheme,
-                    QrCodeAuthenticationSchemeOptions.ThisEnvironment);
+                    AirslipSchemeOptions.QrCodeAuthScheme,
+                    AirslipSchemeOptions.ThisEnvironment);
 
                 if (newToken == null || !newToken.Claims.Any()) 
                     return new GenerateQrCodeImageModel(false, null);

@@ -1,10 +1,6 @@
 using Airslip.Common.Auth.Enums;
-using Airslip.Common.Repository.Interfaces;
-using Airslip.Common.Repository.Models;
 using Airslip.Identity.Api.Contracts.Models;
-using System.Threading.Tasks;
 using FluentValidation;
-using FluentValidation.Results;
 
 namespace Airslip.Identity.Api.Application.Validators
 {

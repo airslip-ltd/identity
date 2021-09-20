@@ -1,6 +1,7 @@
 ﻿using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
 using Airslip.Common.Contracts;
+using Airslip.Common.Types;
 using Airslip.Common.Types.Configuration;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.UserProfiles;
@@ -20,7 +21,7 @@ namespace Airslip.Identity.Api.Controller
     [ApiVersion(ApiConstants.VersionOne)]
     // ReSharper disable once RouteTemplates.RouteParameterConstraintNotResolved
     [Route("v{version:apiVersion}/profile")]
-    [Produces(ApiConstants.JsonMediaType)]
+    [Produces(Json.MediaType)]
     public class UserProfileController : ApiResponse
     {
         private readonly IMediator _mediator;
