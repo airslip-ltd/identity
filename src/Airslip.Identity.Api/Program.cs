@@ -1,3 +1,4 @@
+using Airslip.Common.Types;
 using Airslip.Identity.Api;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;

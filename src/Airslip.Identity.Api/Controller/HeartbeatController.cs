@@ -1,5 +1,6 @@
 ﻿using Airslip.Common.Monitoring.Interfaces;
 using Airslip.Common.Monitoring.Models;
+using Airslip.Common.Types;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

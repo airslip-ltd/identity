@@ -1,8 +1,7 @@
-using Airslip.Common.Auth.Extensions;
+using Airslip.Common.Auth.Data;
 using Airslip.Common.Auth.Implementations;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
-using Airslip.Common.Auth.Schemes;
 using Airslip.Common.Contracts;
 using Airslip.Common.Middleware;
 using Airslip.Common.Monitoring;
@@ -17,7 +16,6 @@ using Airslip.Identity.Api.Application.Implementations;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Application.Validators;
 using Airslip.Identity.Api.Contracts;
-using Airslip.Identity.Api.Contracts.Config;
 using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Models;
 using Airslip.Identity.Infrastructure.MongoDb;
@@ -43,6 +41,7 @@ using System.IO;
 using System.Reflection;
 using Polly;
 using Serilog;
+using Airslip.Common.Auth.AspNetCore.Extensions;
 
 namespace Airslip.Identity.Api
 {
@@ -232,8 +231,7 @@ namespace Airslip.Identity.Api
 
             // Set environments for tokens
             IOptions<EnvironmentSettings>? environment = serviceProvider.GetService<IOptions<EnvironmentSettings>>();
-            ApiKeyAuthenticationSchemeOptions.ThisEnvironment = environment?.Value.EnvironmentName ?? "Development";
-            QrCodeAuthenticationSchemeOptions.ThisEnvironment = environment?.Value.EnvironmentName ?? "Development";
+            AirslipSchemeOptions.ThisEnvironment = environment?.Value.EnvironmentName ?? "Development";
             
             loggerFactory.AddSerilog();
             

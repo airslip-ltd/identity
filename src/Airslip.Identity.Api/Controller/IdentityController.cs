@@ -1,8 +1,8 @@
 ﻿using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
 using Airslip.Common.Contracts;
+using Airslip.Common.Types;
 using Airslip.Common.Types.Configuration;
-using Airslip.Common.Types.Enums;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.Identity;
 using Airslip.Identity.Api.Application.Interfaces;
@@ -21,6 +21,7 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Alpha2CountryCodes = Airslip.Common.Types.Enums.Alpha2CountryCodes;
 
 namespace Airslip.Identity.Api.Controller
 {
@@ -28,7 +29,7 @@ namespace Airslip.Identity.Api.Controller
     [ApiVersion(ApiConstants.VersionOne)]
     // ReSharper disable once RouteTemplates.RouteParameterConstraintNotResolved
     [Route("v{version:apiVersion}/identity")]
-    [Produces(ApiConstants.JsonMediaType)]
+    [Produces(Json.MediaType)]
     public class IdentityController : ApiResponse
     {
         private readonly IMediator _mediator;
