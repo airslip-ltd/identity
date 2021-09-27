@@ -186,7 +186,7 @@ namespace Airslip.Identity.Api
             // Add repository content
             services
                 .AddRepositories()
-                .AddScoped<IContext, MongoDbContext>();
+                .AddSingleton<IContext, MongoDbContext>();
             
             // Customised per app
             services.AddScoped<IModelValidator<ApiKeyModel>, ApiKeyModelValidator>();
