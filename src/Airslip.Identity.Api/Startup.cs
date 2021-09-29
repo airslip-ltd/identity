@@ -42,6 +42,8 @@ using System.Reflection;
 using Polly;
 using Serilog;
 using Airslip.Common.Auth.AspNetCore.Extensions;
+using Airslip.Common.Types;
+using Microsoft.Extensions.FileProviders;
 
 namespace Airslip.Identity.Api
 {
@@ -241,6 +243,14 @@ namespace Airslip.Identity.Api
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Airslip.Identity.Api v1");
                 c.RoutePrefix = string.Empty;
+            });
+            
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                ServeUnknownFileTypes = true,
+                DefaultContentType = Json.MediaType,
+                FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, ".well-known")),
+                RequestPath = "/.well-known"
             });
 
             app.UseHttpsRedirection()
