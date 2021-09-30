@@ -5,6 +5,7 @@ using Airslip.Common.Types;
 using Airslip.Common.Types.Configuration;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -60,6 +61,25 @@ namespace Airslip.Identity.Api.Controller
         public async Task<IActionResult> Image([FromQuery(Name = "qrCode")] string qrCode)
         {
             var generatedImage = await _qrCodeService.GenerateQrCodeImage(qrCode);
+            
+            if (generatedImage.Success)
+            {
+                string contentType = "image/jpg";
+                string fileName = "qrcode.jpg";
+                return File(generatedImage.imageStream, contentType, fileName);
+            }
+
+            return BadRequest();
+        }
+        
+        [HttpGet]
+        [Route("generate")]
+        [ProducesResponseType(typeof(RepositoryActionResultModel<QrCodeModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(RepositoryActionResultModel<QrCodeModel>), StatusCodes.Status400BadRequest)]
+        [AllowAnonymous]
+        public IActionResult Generate([FromQuery(Name = "id")] string anyString)
+        {
+            var generatedImage = _qrCodeService.GenerateQrCodeImageForAnyString(anyString);
             
             if (generatedImage.Success)
             {

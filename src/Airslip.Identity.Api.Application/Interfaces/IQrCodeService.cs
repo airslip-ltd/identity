@@ -9,5 +9,7 @@ namespace Airslip.Identity.Api.Application.Interfaces
         Task<RepositoryActionResultModel<QrCodeModel>> CreateNewQrCode(CreateQrCodeModel createQrCodeModel);
 
         Task<GenerateQrCodeImageModel> GenerateQrCodeImage(string qrCodeToGenerate);
+        
+        GenerateQrCodeImageModel GenerateQrCodeImageForAnyString(string anyString);
     }
 }
