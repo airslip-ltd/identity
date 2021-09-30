@@ -233,9 +233,12 @@ namespace Airslip.Identity.Api.Controller
 
             IResponse response = await _mediator.Send(command);
 
-            return response is ISuccess
-                ? Ok(response)
-                : BadRequest(response);
+            return response switch
+            {
+                ISuccess => Ok(response),
+                NotFoundResponse r => NotFound(r),
+                _ => BadRequest(response)
+            };
         }
 
         [HttpGet("password")]
@@ -260,9 +263,12 @@ namespace Airslip.Identity.Api.Controller
 
             IResponse response = await _mediator.Send(command);
 
-            return response is ISuccess
-                ? Ok(response)
-                : BadRequest(response);
+            return response switch
+            {
+                ISuccess => Ok(response),
+                NotFoundResponse r => NotFound(r),
+                _ => BadRequest(response)
+            };
         }
 
         [HttpPut("biometric")]
