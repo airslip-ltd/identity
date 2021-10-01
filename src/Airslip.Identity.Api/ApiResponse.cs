@@ -1,6 +1,6 @@
 ﻿using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
-using Airslip.Common.Contracts;
+using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Repository.Enums;
 using Airslip.Common.Repository.Interfaces;
 using Airslip.Common.Repository.Models;
@@ -23,8 +23,7 @@ namespace Airslip.Identity.Api
     {
         protected readonly PublicApiSettings _publicApiSettings;
         protected readonly UserToken Token;
-        
-        private readonly ILogger _logger;
+        protected readonly ILogger _logger;
 
         public ApiResponse(ITokenDecodeService<UserToken> tokenService, IOptions<PublicApiSettings> publicApiOptions, ILogger logger)
         {

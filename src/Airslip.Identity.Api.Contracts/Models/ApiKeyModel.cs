@@ -1,6 +1,6 @@
-using Airslip.Common.Auth.Enums;
 using Airslip.Common.Repository.Enums;
 using Airslip.Common.Repository.Interfaces;
+using Airslip.Common.Types.Enums;
 using Newtonsoft.Json;
 
 namespace Airslip.Identity.Api.Contracts.Models

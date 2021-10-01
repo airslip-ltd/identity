@@ -42,7 +42,6 @@
 		<AirslipCommonRepository>1.1.2</AirslipCommonRepository>
 		<AirslipCommonServicesAutoMapper>1.0.0</AirslipCommonServicesAutoMapper>
 		<AirslipCommonMiddleware>1.0.1</AirslipCommonMiddleware>
-		<AirslipCommonContracts>1.1.7</AirslipCommonContracts>
 		<AirslipCommonTypes>3.2.6</AirslipCommonTypes>
 		<AirslipCommonMonitoring>1.0.2</AirslipCommonMonitoring>
 		<AirslipEmailClient>1.1.0</AirslipEmailClient>

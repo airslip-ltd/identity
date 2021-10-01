@@ -1,6 +1,6 @@
 ﻿using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
-using Airslip.Common.Contracts;
+using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Types;
 using Airslip.Common.Types.Configuration;
 using Airslip.Common.Types.Failures;

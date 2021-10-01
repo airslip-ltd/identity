@@ -1,5 +1,5 @@
-﻿using Airslip.Common.Auth.Enums;
-using Airslip.Common.Contracts;
+﻿using Airslip.Common.Types.Enums;
+using Airslip.Common.Types.Interfaces;
 using MediatR;
 using System;
 

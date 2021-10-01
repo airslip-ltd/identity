@@ -21,7 +21,6 @@ namespace Airslip.Identity.Api.Controller
     public class ApiKeyController : ApiResponse
     {
         private readonly IApiKeyService _apiKeyService;
-        private readonly ILogger _logger;
 
         public ApiKeyController(
             ITokenDecodeService<UserToken> tokenService,
@@ -30,7 +29,6 @@ namespace Airslip.Identity.Api.Controller
             : base(tokenService, publicApiOptions, logger)
         {
             _apiKeyService = apiKeyService;
-            _logger = logger;
         }
         
         [HttpPost]

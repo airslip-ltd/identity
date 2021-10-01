@@ -5,7 +5,6 @@ using Airslip.Common.Types;
 using Airslip.Common.Types.Configuration;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -21,7 +20,6 @@ namespace Airslip.Identity.Api.Controller
     public class QrCodeController : ApiResponse
     {
         private readonly IQrCodeService _qrCodeService;
-        private readonly ILogger _logger;
 
         public QrCodeController(
             ITokenDecodeService<UserToken> tokenService,
@@ -30,7 +28,6 @@ namespace Airslip.Identity.Api.Controller
             : base(tokenService, publicApiOptions, logger)
         {
             _qrCodeService = qrCodeService;
-            _logger = logger;
         }
         
         [HttpPost]

@@ -1,4 +1,4 @@
-﻿using Airslip.Common.Contracts;
+﻿using Airslip.Common.Types.Interfaces;
 using System.IO;
 
 namespace Airslip.Identity.Api.Contracts.Responses
