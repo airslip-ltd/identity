@@ -1,4 +1,4 @@
-﻿using Airslip.Common.Contracts;
+﻿using Airslip.Common.Types.Interfaces;
 
 namespace Airslip.Identity.Api.Contracts
 {

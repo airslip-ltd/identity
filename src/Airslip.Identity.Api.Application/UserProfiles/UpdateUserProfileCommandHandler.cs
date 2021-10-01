@@ -1,4 +1,5 @@
-﻿using Airslip.Common.Contracts;
+﻿using Airslip.Common.Types;
+using Airslip.Common.Types.Interfaces;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Entities;
 using JetBrains.Annotations;

@@ -1,8 +1,10 @@
 using Airslip.Common.Repository.Interfaces;
 using Airslip.Common.Types.Extensions;
+using JetBrains.Annotations;
 
 namespace Airslip.Identity.Api.Contracts.Entities
 {
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public record DataConsent : IEntityNoId
     {
         public bool Essential { get; private set; }

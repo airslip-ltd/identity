@@ -1,6 +1,6 @@
 ﻿using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
-using Airslip.Common.Contracts;
+using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Types;
 using Airslip.Common.Types.Configuration;
 using Airslip.Common.Types.Failures;
@@ -21,7 +21,6 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Alpha2CountryCodes = Airslip.Common.Types.Enums.Alpha2CountryCodes;
 
 namespace Airslip.Identity.Api.Controller
 {
@@ -88,7 +87,7 @@ namespace Airslip.Identity.Api.Controller
                 case AuthenticatedUserResponse response:
                     return Ok(response.AddHateoasLinks(_publicApiSettings.Base.BaseUri,
                         _bankTransactionSettings.BaseUri, false,
-                        Alpha2CountryCodes.GB.ToString()));
+                        Common.Types.Enums.Alpha2CountryCodes.GB.ToString()));
                 case IncorrectPasswordResponse incorrectPasswordResponse:
                     return Forbidden(incorrectPasswordResponse);
                 case NotFoundResponse _:
@@ -108,7 +107,7 @@ namespace Airslip.Identity.Api.Controller
                             _publicApiSettings.Base.BaseUri,
                             _bankTransactionSettings.BaseUri,
                             true,
-                            Alpha2CountryCodes.GB.ToString())),
+                            Common.Types.Enums.Alpha2CountryCodes.GB.ToString())),
                         ConflictResponse response => Conflict(response),
                         NotFoundResponse r => NotFound(r),
                         ErrorResponse response => BadRequest(response),
@@ -142,7 +141,7 @@ namespace Airslip.Identity.Api.Controller
                     _publicApiSettings.Base.BaseUri,
                     _bankTransactionSettings.BaseUri,
                     false,
-                    Alpha2CountryCodes.GB.ToString())),
+                    Common.Types.Enums.Alpha2CountryCodes.GB.ToString())),
                 NotFoundResponse r => NotFound(r),
                 ErrorResponse r => BadRequest(r),
                 IFail r => BadRequest(r),
@@ -185,7 +184,7 @@ namespace Airslip.Identity.Api.Controller
                     _publicApiSettings.Base.BaseUri,
                     _bankTransactionSettings.BaseUri,
                     response.IsNewUser,
-                    Alpha2CountryCodes.GB.ToString())),
+                    Common.Types.Enums.Alpha2CountryCodes.GB.ToString())),
                 ErrorResponse response => BadRequest(response),
                 IFail response => BadRequest(response),
                 _ => throw new NotSupportedException()
@@ -208,7 +207,7 @@ namespace Airslip.Identity.Api.Controller
                     _publicApiSettings.Base.BaseUri,
                     _bankTransactionSettings.BaseUri,
                     response.IsNewUser,
-                    Alpha2CountryCodes.GB.ToString())),
+                    Common.Types.Enums.Alpha2CountryCodes.GB.ToString())),
                 ErrorResponse response => BadRequest(response),
                 IFail response => BadRequest(response),
                 _ => throw new NotSupportedException()
@@ -309,7 +308,7 @@ namespace Airslip.Identity.Api.Controller
                     email,
                     $"Unable to find {provider} user with the email {email}"));
         }
-
+        
         private static ExternalLoginResponse GetExternalLoginResponse(
             ClaimsIdentity claimIdentity,
             DateTimeOffset? expires)

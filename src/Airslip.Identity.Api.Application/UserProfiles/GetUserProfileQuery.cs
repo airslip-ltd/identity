@@ -1,4 +1,4 @@
-﻿using Airslip.Common.Contracts;
+﻿using Airslip.Common.Types.Interfaces;
 using MediatR;
 
 namespace Airslip.Identity.Api.Application.UserProfiles

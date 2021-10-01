@@ -19,7 +19,6 @@ namespace Airslip.Identity.Api.Controller
     public class DataConsentController : ApiResponse
     {
         private readonly IDataConsentService _dataConsentService;
-        private readonly ILogger _logger;
 
         public DataConsentController(
             ITokenDecodeService<UserToken> tokenService,
@@ -29,7 +28,6 @@ namespace Airslip.Identity.Api.Controller
             : base(tokenService, publicApiOptions, logger)
         {
             _dataConsentService = dataConsentService;
-            _logger = logger;
         }
         
         [HttpPost]

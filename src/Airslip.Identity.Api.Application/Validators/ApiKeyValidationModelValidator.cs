@@ -1,4 +1,4 @@
-using Airslip.Common.Auth.Enums;
+using Airslip.Common.Types.Enums;
 using Airslip.Identity.Api.Contracts.Models;
 using FluentValidation;
 

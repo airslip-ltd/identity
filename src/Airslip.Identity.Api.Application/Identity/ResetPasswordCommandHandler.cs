@@ -1,4 +1,5 @@
-﻿using Airslip.Common.Contracts;
+﻿using Airslip.Common.Types;
+using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.MongoDb.Contracts.Identity;
 using Airslip.Identity.MongoDb.Contracts.Interfaces;

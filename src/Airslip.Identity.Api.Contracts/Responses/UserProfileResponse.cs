@@ -1,4 +1,4 @@
-﻿using Airslip.Common.Contracts;
+﻿using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Types.Hateoas;
 using JetBrains.Annotations;
 using System;

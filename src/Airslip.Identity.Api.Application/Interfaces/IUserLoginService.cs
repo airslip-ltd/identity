@@ -1,4 +1,4 @@
-using Airslip.Common.Contracts;
+using Airslip.Common.Types.Interfaces;
 using Airslip.Identity.Api.Contracts.Entities;
 using System.Threading.Tasks;
 

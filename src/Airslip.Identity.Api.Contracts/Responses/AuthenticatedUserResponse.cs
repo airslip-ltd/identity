@@ -1,5 +1,5 @@
-﻿using Airslip.Common.Contracts;
-using Airslip.Common.Types.Hateoas;
+﻿using Airslip.Common.Types.Hateoas;
+using Airslip.Common.Types.Interfaces;
 using JetBrains.Annotations;
 using System.Collections.Generic;
 

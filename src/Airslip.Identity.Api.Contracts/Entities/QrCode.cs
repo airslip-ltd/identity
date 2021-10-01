@@ -1,7 +1,7 @@
-using Airslip.Common.Auth.Enums;
 using Airslip.Common.Repository.Entities;
 using Airslip.Common.Repository.Enums;
 using Airslip.Common.Repository.Interfaces;
+using Airslip.Common.Types.Enums;
 
 namespace Airslip.Identity.Api.Contracts.Entities
 {

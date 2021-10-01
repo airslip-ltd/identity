@@ -9,7 +9,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="Airslip.Common.Types" Version="3.2.7" />
+		<PackageReference Include="Airslip.Common.Types" Version="3.2.17" />
 	</ItemGroup>
 
 	<ItemGroup>

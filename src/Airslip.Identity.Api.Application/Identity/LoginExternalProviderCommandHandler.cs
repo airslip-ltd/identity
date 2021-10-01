@@ -1,4 +1,4 @@
-﻿using Airslip.Common.Contracts;
+﻿using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Entities;

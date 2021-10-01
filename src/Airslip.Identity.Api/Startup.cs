@@ -2,7 +2,7 @@ using Airslip.Common.Auth.Data;
 using Airslip.Common.Auth.Implementations;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
-using Airslip.Common.Contracts;
+using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Middleware;
 using Airslip.Common.Monitoring;
 using Airslip.Common.Monitoring.Implementations.Checks;
