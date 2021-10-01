@@ -2,19 +2,18 @@
 using Airslip.Common.Repository.Enums;
 using Airslip.Common.Repository.Interfaces;
 using Airslip.Common.Types.Enums;
+using Airslip.Identity.Api.Contracts.Entities;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace Airslip.Identity.Api.Contracts.Entities
+namespace Airslip.Identity.Api.Contracts.Models
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    public record User : IEntity
+    public record UserModel : IModel
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString("N");
+        public string? Id { get; set; }
         public string Email { get; set; } = string.Empty;
-
         public BasicAuditInformation? AuditInformation { get; set; }
 
         public EntityStatus EntityStatus { get; set; } = EntityStatus.Active;
@@ -31,26 +30,6 @@ namespace Airslip.Identity.Api.Contracts.Entities
 
         public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>(1);
         public DataConsent DataConsent { get; set; } = new ();
-        
-        public void AddOpenBankingProvider(OpenBankingProvider openBankingProvider)
-        {
-            OpenBankingProviders.Add(openBankingProvider);
-        }
-        
-        public string? GetOpenBankingProviderId(string name)
-        {
-            return OpenBankingProviders.FirstOrDefault(obp => obp.Name == name)?.Id;
-        }
-        
-        public void AddRefreshToken(string deviceId, string token)
-        {
-            RefreshTokens.Add(new RefreshToken(deviceId, token));
-        }
-        
-        public void UpdateDataConsent(DataConsent dataConsent)
-        {
-            DataConsent = dataConsent;
-        }
 
     }
 }

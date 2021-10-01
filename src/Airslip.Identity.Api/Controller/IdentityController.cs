@@ -1,5 +1,6 @@
 ﻿using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
+using Airslip.Common.Repository.Models;
 using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Types;
 using Airslip.Common.Types.Configuration;
@@ -8,6 +9,7 @@ using Airslip.Identity.Api.Application.Identity;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Entities;
+using Airslip.Identity.Api.Contracts.Models;
 using Airslip.Identity.Api.Contracts.Requests;
 using Airslip.Identity.Api.Contracts.Responses;
 using MediatR;
@@ -21,6 +23,7 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Alpha2CountryCodes = Airslip.Common.Types.Enums.Alpha2CountryCodes;
 
 namespace Airslip.Identity.Api.Controller
 {
@@ -35,6 +38,7 @@ namespace Airslip.Identity.Api.Controller
         private readonly PublicApiSetting _bankTransactionSettings;
         private readonly IUserProfileService _userProfileService;
         private readonly IUserService _userService;
+        private readonly IUnregisteredUserService _unregisteredUserService;
 
         public IdentityController(
             ITokenDecodeService<UserToken> tokenService,
@@ -42,11 +46,13 @@ namespace Airslip.Identity.Api.Controller
             IOptions<PublicApiSettings> publicApiOptions,
             IMediator mediator,
             IUserProfileService userProfileService,
-            IUserService userService) : base(tokenService, publicApiOptions, logger)
+            IUserService userService,
+            IUnregisteredUserService unregisteredUserService) : base(tokenService, publicApiOptions, logger)
         {
             _mediator = mediator;
             _userProfileService = userProfileService;
             _userService = userService;
+            _unregisteredUserService = unregisteredUserService;
             _bankTransactionSettings = publicApiOptions.Value.BankTransactions ?? throw new ArgumentException(
                 "PublicApiSettings:BankTransactions section missing from appSettings",
                 nameof(publicApiOptions));
@@ -87,7 +93,7 @@ namespace Airslip.Identity.Api.Controller
                 case AuthenticatedUserResponse response:
                     return Ok(response.AddHateoasLinks(_publicApiSettings.Base.BaseUri,
                         _bankTransactionSettings.BaseUri, false,
-                        Common.Types.Enums.Alpha2CountryCodes.GB.ToString()));
+                        Alpha2CountryCodes.GB.ToString()));
                 case IncorrectPasswordResponse incorrectPasswordResponse:
                     return Forbidden(incorrectPasswordResponse);
                 case NotFoundResponse _:
@@ -107,7 +113,7 @@ namespace Airslip.Identity.Api.Controller
                             _publicApiSettings.Base.BaseUri,
                             _bankTransactionSettings.BaseUri,
                             true,
-                            Common.Types.Enums.Alpha2CountryCodes.GB.ToString())),
+                            Alpha2CountryCodes.GB.ToString())),
                         ConflictResponse response => Conflict(response),
                         NotFoundResponse r => NotFound(r),
                         ErrorResponse response => BadRequest(response),
@@ -141,7 +147,7 @@ namespace Airslip.Identity.Api.Controller
                     _publicApiSettings.Base.BaseUri,
                     _bankTransactionSettings.BaseUri,
                     false,
-                    Common.Types.Enums.Alpha2CountryCodes.GB.ToString())),
+                    Alpha2CountryCodes.GB.ToString())),
                 NotFoundResponse r => NotFound(r),
                 ErrorResponse r => BadRequest(r),
                 IFail r => BadRequest(r),
@@ -184,7 +190,7 @@ namespace Airslip.Identity.Api.Controller
                     _publicApiSettings.Base.BaseUri,
                     _bankTransactionSettings.BaseUri,
                     response.IsNewUser,
-                    Common.Types.Enums.Alpha2CountryCodes.GB.ToString())),
+                    Alpha2CountryCodes.GB.ToString())),
                 ErrorResponse response => BadRequest(response),
                 IFail response => BadRequest(response),
                 _ => throw new NotSupportedException()
@@ -207,7 +213,7 @@ namespace Airslip.Identity.Api.Controller
                     _publicApiSettings.Base.BaseUri,
                     _bankTransactionSettings.BaseUri,
                     response.IsNewUser,
-                    Common.Types.Enums.Alpha2CountryCodes.GB.ToString())),
+                    Alpha2CountryCodes.GB.ToString())),
                 ErrorResponse response => BadRequest(response),
                 IFail response => BadRequest(response),
                 _ => throw new NotSupportedException()
@@ -307,6 +313,24 @@ namespace Airslip.Identity.Api.Controller
                     "YapilyUserId",
                     email,
                     $"Unable to find {provider} user with the email {email}"));
+        }
+
+        [HttpPost("unregistered")]
+        [ProducesResponseType( StatusCodes.Status204NoContent)]
+        [ProducesResponseType( StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CreateRegisteredUser([FromBody] CreateUnregisteredUserModel model)
+        {
+            try
+            {
+                RepositoryActionResultModel<UserModel> result = await _unregisteredUserService.Create(model);
+                
+                return RepositoryActionToResult(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Exception when creating unregistered user");
+                return BadRequest(ex.Message);
+            }
         }
         
         private static ExternalLoginResponse GetExternalLoginResponse(
