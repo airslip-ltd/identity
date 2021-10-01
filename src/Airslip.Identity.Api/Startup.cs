@@ -193,9 +193,12 @@ namespace Airslip.Identity.Api
             // Customised per app
             services.AddScoped<IModelValidator<ApiKeyModel>, ApiKeyModelValidator>();
             services.AddScoped<IModelValidator<QrCodeModel>, QrCodeModelValidator>();
+            services.AddScoped<IModelValidator<UserModel>, UserModelValidator>();
+            
             services
                 .AddScoped<ITokenValidator<QrCodeToken>,
                     TokenValidator<QrCodeToken>>();
+            
             services.AddAutoMapper(cfg =>
             {
                 cfg.CreateMap<ApiKey, ApiKeyModel>();
@@ -205,12 +208,16 @@ namespace Airslip.Identity.Api
                 cfg.CreateMap<QrCodeModel, QrCode>();
                 cfg.CreateMap<CreateQrCodeModel, QrCodeModel>();
                 cfg.CreateMap<DataConsentModel, DataConsent>();
+                cfg.CreateMap<CreateUnregisteredUserModel, UserModel>();
+                cfg.CreateMap<UserModel, User>().ReverseMap();
             });
 
             services.AddScoped<IApiKeyService, ApiKeyService>();
             services.AddScoped<IQrCodeService, QrCodeService>();
             services.AddScoped<IApiKeyRepository, ApiKeyRepository>();
             services.AddScoped<IDataConsentService, DataConsentService>();
+            services.AddScoped<IUnregisteredUserService, UnregisteredUserService>();
+            services.AddScoped<IUserRepository, UserRepository>();
 
             services
                 .AddApiVersioning(options => { options.ReportApiVersions = true; })
