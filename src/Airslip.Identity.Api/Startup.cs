@@ -204,11 +204,13 @@ namespace Airslip.Identity.Api
                 cfg.CreateMap<QrCode, QrCodeModel>();
                 cfg.CreateMap<QrCodeModel, QrCode>();
                 cfg.CreateMap<CreateQrCodeModel, QrCodeModel>();
+                cfg.CreateMap<DataConsentModel, DataConsent>();
             });
 
             services.AddScoped<IApiKeyService, ApiKeyService>();
             services.AddScoped<IQrCodeService, QrCodeService>();
             services.AddScoped<IApiKeyRepository, ApiKeyRepository>();
+            services.AddScoped<IDataConsentService, DataConsentService>();
 
             services
                 .AddApiVersioning(options => { options.ReportApiVersions = true; })
