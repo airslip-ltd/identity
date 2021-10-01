@@ -104,24 +104,5 @@ namespace Airslip.Identity.Api.Application.Implementations
             
             return new GenerateQrCodeImageModel(true, memoryStream);
         }
-
-        public GenerateQrCodeImageModel GenerateQrCodeImageForAnyString(string anyString)
-        {
-            // Generate the URL payload
-            string payload = anyString;
-            
-            // Generate the image
-            QRCodeGenerator qrGenerator = new();
-            QRCodeData qrCodeData = qrGenerator.CreateQrCode(payload, QRCodeGenerator.ECCLevel.Q);
-            QRCode qrCode = new(qrCodeData);
-            Bitmap qrCodeImage = qrCode.GetGraphic(20);
-            
-            // Save to a memory stream
-            MemoryStream memoryStream = new();
-            qrCodeImage.Save(memoryStream, ImageFormat.Jpeg);
-            memoryStream.Position = 0;
-            
-            return new GenerateQrCodeImageModel(true, memoryStream);
-        }
     }
 }

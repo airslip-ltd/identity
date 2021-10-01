@@ -71,24 +71,5 @@ namespace Airslip.Identity.Api.Controller
 
             return BadRequest();
         }
-        
-        [HttpGet]
-        [Route("generate")]
-        [ProducesResponseType(typeof(RepositoryActionResultModel<QrCodeModel>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(RepositoryActionResultModel<QrCodeModel>), StatusCodes.Status400BadRequest)]
-        [AllowAnonymous]
-        public IActionResult Generate([FromQuery(Name = "id")] string anyString)
-        {
-            var generatedImage = _qrCodeService.GenerateQrCodeImageForAnyString(anyString);
-            
-            if (generatedImage.Success)
-            {
-                string contentType = "image/jpg";
-                string fileName = "qrcode.jpg";
-                return File(generatedImage.imageStream, contentType, fileName);
-            }
-
-            return BadRequest();
-        }
     }
 }
