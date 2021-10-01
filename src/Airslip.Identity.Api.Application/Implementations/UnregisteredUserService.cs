@@ -1,4 +1,3 @@
-using Airslip.Common.Repository.Enums;
 using Airslip.Common.Repository.Interfaces;
 using Airslip.Common.Repository.Models;
 using Airslip.Common.Types.Enums;
@@ -27,19 +26,19 @@ namespace Airslip.Identity.Api.Application.Implementations
 
         public async Task<RepositoryActionResultModel<UserModel>> Create(CreateUnregisteredUserModel createModel)
         {
-            User? user = await _userService.GetByEmail(createModel.Email ?? string.Empty);
-            UserModel userModel = _modelMapper.Create(createModel);
+                User? user = await _userService.GetByEmail(createModel.Email ?? string.Empty);
+                UserModel userModel = _modelMapper.Create(createModel);
 
-            if (user is null)
-            {
-                userModel.AirslipUserType = AirslipUserType.Unregistered;
+                if (user is null)
+                {
+                    userModel.AirslipUserType = AirslipUserType.Unregistered;
 
-               return await _userRepository.Add(userModel);
-            }
+                    return await _userRepository.Add(userModel);
+                }
 
-            RepositoryActionResultModel<UserModel> result = await _userRepository.Get(user.Id);
+                RepositoryActionResultModel<UserModel> result = await _userRepository.Get(user.Id);
 
-            return result;
+                return result;
         }
     }
 }

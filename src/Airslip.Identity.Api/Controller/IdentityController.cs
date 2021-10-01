@@ -1,4 +1,5 @@
-﻿using Airslip.Common.Auth.Interfaces;
+﻿using Airslip.Common.Auth.AspNetCore.Interfaces;
+using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
 using Airslip.Common.Repository.Models;
 using Airslip.Common.Types.Interfaces;
@@ -39,6 +40,8 @@ namespace Airslip.Identity.Api.Controller
         private readonly IUserProfileService _userProfileService;
         private readonly IUserService _userService;
         private readonly IUnregisteredUserService _unregisteredUserService;
+        private readonly IApiRequestAuthService _apiAuthService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public IdentityController(
             ITokenDecodeService<UserToken> tokenService,
@@ -47,12 +50,16 @@ namespace Airslip.Identity.Api.Controller
             IMediator mediator,
             IUserProfileService userProfileService,
             IUserService userService,
-            IUnregisteredUserService unregisteredUserService) : base(tokenService, publicApiOptions, logger)
+            IUnregisteredUserService unregisteredUserService,
+            IApiRequestAuthService apiAuthService,
+            IHttpContextAccessor httpContextAccessor) : base(tokenService, publicApiOptions, logger)
         {
             _mediator = mediator;
             _userProfileService = userProfileService;
             _userService = userService;
             _unregisteredUserService = unregisteredUserService;
+            _apiAuthService = apiAuthService;
+            _httpContextAccessor = httpContextAccessor;
             _bankTransactionSettings = publicApiOptions.Value.BankTransactions ?? throw new ArgumentException(
                 "PublicApiSettings:BankTransactions section missing from appSettings",
                 nameof(publicApiOptions));
@@ -320,6 +327,11 @@ namespace Airslip.Identity.Api.Controller
         [ProducesResponseType( StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateRegisteredUser([FromBody] CreateUnregisteredUserModel model)
         {
+            KeyAuthenticationResult authResult = await _apiAuthService.Handle(_httpContextAccessor.HttpContext!.Request);
+
+            if (authResult.AuthResult == AuthResult.Fail)
+                return BadRequest(authResult.Message);
+            
             try
             {
                 RepositoryActionResultModel<UserModel> result = await _unregisteredUserService.Create(model);

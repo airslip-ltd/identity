@@ -52,5 +52,10 @@ namespace Airslip.Identity.Api.Contracts.Entities
             DataConsent = dataConsent;
         }
 
+        public void ChangeFromUnregisteredToStandard()
+        {
+            if(AirslipUserType == AirslipUserType.Unregistered)
+                AirslipUserType = AirslipUserType.Standard;
+        }
     }
 }
