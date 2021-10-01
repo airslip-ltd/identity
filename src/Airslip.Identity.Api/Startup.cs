@@ -42,6 +42,7 @@ using System.Reflection;
 using Polly;
 using Serilog;
 using Airslip.Common.Auth.AspNetCore.Extensions;
+using Airslip.Common.Auth.Enums;
 using Airslip.Common.Types;
 using Microsoft.Extensions.FileProviders;
 
@@ -115,7 +116,7 @@ namespace Airslip.Identity.Api
                 .AddScoped<ITokenGenerationService<GenerateApiKeyToken>, TokenGenerationService<GenerateApiKeyToken>>()
                 .AddScoped<ITokenGenerationService<GenerateQrCodeToken>, TokenGenerationService<GenerateQrCodeToken>>()
                 .AddScoped<ITokenGenerationService<GenerateUserToken>, TokenGenerationService<GenerateUserToken>>()
-                .AddAirslipJwtAuth(Configuration)?
+                .AddAirslipJwtAuth(Configuration, AuthType.All)?
                 .AddCookie(options => { options.LoginPath = new PathString("/v1/identity/google-login"); })
                 .AddGoogle(GoogleDefaults.AuthenticationScheme,
                     options =>
@@ -196,8 +197,7 @@ namespace Airslip.Identity.Api
             services.AddScoped<IModelValidator<UserModel>, UserModelValidator>();
             
             services
-                .AddScoped<ITokenValidator<QrCodeToken>,
-                    TokenValidator<QrCodeToken>>();
+                .AddScoped<ITokenValidator<QrCodeToken>, TokenValidator<QrCodeToken>>();
             
             services.AddAutoMapper(cfg =>
             {

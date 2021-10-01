@@ -1,4 +1,5 @@
-﻿using Airslip.Common.Types.Interfaces;
+﻿using Airslip.Common.Types.Enums;
+using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts;
@@ -57,7 +58,15 @@ namespace Airslip.Identity.Api.Application.Identity
                         result.Errors.First().Description)
                 };
 
-            User user = await _userService.Create(new User());
+            User? user = await _userService.GetByEmail(request.Email);
+            
+            if (user is null)
+                user = await _userService.Create(new User());
+            else
+            {
+                user.ChangeFromUnregisteredToStandard();
+                await _userService.Update(user);
+            }
 
             user.EntityId = request.EntityId;
             user.AirslipUserType = request.AirslipUserType;
