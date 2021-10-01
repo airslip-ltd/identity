@@ -234,6 +234,9 @@ namespace Airslip.Identity.Api
             services
                 .UseHealthChecks()
                 .AddHealthCheck<MongoDbCheck>();
+            
+            services
+                .AddApiAccessValidation(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider,  ILoggerFactory loggerFactory)
