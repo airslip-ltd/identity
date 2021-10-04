@@ -3,7 +3,7 @@
 	<Import Project="..\common.props" />
 
     <ItemGroup>
-        <PackageReference Include="Airslip.Common.Types" Version="3.2.17" />
+        <PackageReference Include="Airslip.Common.Types" Version="3.2.18" />
         <PackageReference Include="FluentAssertions" Version="6.1.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(NetTestSdk)" />
         <PackageReference Include="Moq" Version="4.16.1" />
@@ -18,7 +18,7 @@
         </PackageReference>
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="5.0.10" />
 		<PackageReference Include="Serilog.AspNetCore" Version="$(SerilogAspNetCore)" />
-		<PackageReference Include="Serilog.Sinks.Logz.Io" Version="5.0.0" />
+		<PackageReference Include="Serilog.Sinks.Logz.Io" Version="5.1.0" />
 	</ItemGroup>
 
     <ItemGroup>
