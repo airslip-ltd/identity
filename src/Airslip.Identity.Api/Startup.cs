@@ -79,20 +79,10 @@ namespace Airslip.Identity.Api
                 .Configure<ApiKeyValidationSettings>(Configuration.GetSection(nameof(ApiKeyValidationSettings)));
 
             services.AddScoped<IUserLoginService, UserLoginService>();
-            
-            services.AddSingleton(serviceProvider =>
-            {
-                IOptions<EmailConfigurationSettings> EmailConfigurationOptions =
-                    serviceProvider.GetRequiredService<IOptions<EmailConfigurationSettings>>();
 
-                EmailConfigurationSettings emailConfigurationSettings = EmailConfigurationOptions.Value;
-    
-                return EmailSenderFactory.Setup(
-                    emailConfigurationSettings.FromName,
-                    emailConfigurationSettings.FromEmail,
-                    emailConfigurationSettings.ApiKey);
-            });
-            
+            services
+                .AddSendGrid(Configuration);
+
             services.AddSingleton<IMongoClient>(serviceProvider =>
             {
                 IOptions<MongoDbSettings> mongoDbSettingsOptions =
