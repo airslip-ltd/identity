@@ -5,9 +5,12 @@ using Airslip.Common.Auth.Models;
 using Airslip.Common.Repository.Enums;
 using Airslip.Common.Repository.Interfaces;
 using Airslip.Common.Repository.Models;
+using Airslip.Common.Types.Configuration;
+using Airslip.Common.Types.Extensions;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Models;
+using Microsoft.Extensions.Options;
 using QRCoder;
 using System;
 using System.Drawing;
@@ -26,19 +29,22 @@ namespace Airslip.Identity.Api.Application.Implementations
         private readonly ITokenDecodeService<UserToken> _userTokenService;
         private readonly IModelMapper<QrCodeModel> _modelMapper;
         private readonly ITokenValidator<QrCodeToken> _tokenValidator;
-
+        private readonly string _qrCodeBaseUri;
+        
         public QrCodeService(
             IRepository<QrCode, QrCodeModel> repository, 
             ITokenGenerationService<GenerateQrCodeToken> tokenService,
             IModelMapper<QrCodeModel> modelMapper,
             ITokenValidator<QrCodeToken> tokenValidator,
-            ITokenDecodeService<UserToken> userTokenService)
+            ITokenDecodeService<UserToken> userTokenService,
+            IOptions<PublicApiSettings> publicApiOptions)
         {
             _repository = repository;
             _tokenService = tokenService;
             _modelMapper = modelMapper;
             _tokenValidator = tokenValidator;
             _userTokenService = userTokenService;
+            _qrCodeBaseUri = publicApiOptions.Value.GetSettingByName("QrCodeRouting").BaseUri!;
         }
         
         public async Task<RepositoryActionResultModel<QrCodeModel>> CreateNewQrCode(CreateQrCodeModel createQrCodeModel)
@@ -87,7 +93,7 @@ namespace Airslip.Identity.Api.Application.Implementations
             }
             
             // Generate the URL payload
-            string qrCodeUrl = $"https://connect.airslip.com?{qrCodeToGenerate}";
+            string qrCodeUrl = $"{_qrCodeBaseUri}?{qrCodeToGenerate}";
             PayloadGenerator.Url generator = new(qrCodeUrl);
             string payload = generator.ToString();
             
