@@ -26,17 +26,16 @@ namespace Airslip.Identity.Api.Application.Implementations
 
         public async Task<RepositoryActionResultModel<UserModel>> Create(CreateUnregisteredUserModel createModel)
         {
-                User? user = await _userService.GetByEmail(createModel.Email ?? string.Empty);
-                UserModel userModel = _modelMapper.Create(createModel);
+                UserProfile? user = await _userService.GetProfileByEmail(createModel.Email ?? string.Empty);
 
                 if (user is null)
                 {
+                    UserModel userModel = _modelMapper.Create(createModel);
                     userModel.AirslipUserType = AirslipUserType.Unregistered;
-
                     return await _userRepository.Add(userModel);
                 }
 
-                RepositoryActionResultModel<UserModel> result = await _userRepository.Get(user.Id);
+                RepositoryActionResultModel<UserModel> result = await _userRepository.Get(user.UserId);
 
                 return result;
         }

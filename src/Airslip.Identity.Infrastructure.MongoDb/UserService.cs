@@ -20,6 +20,11 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             return await _context.Users.Find(user => user.Id == id).FirstOrDefaultAsync();
         }
 
+        public async Task<UserProfile?> GetProfileByEmail(string email)
+        {
+            return await _context.UserProfiles.Find(user => user.Email == email).FirstOrDefaultAsync();
+        }
+        
         public async Task<User?> GetByEmail(string email)
         {
             return await _context.Users.Find(user => user.Email == email).FirstOrDefaultAsync();
