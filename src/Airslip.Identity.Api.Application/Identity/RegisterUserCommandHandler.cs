@@ -1,4 +1,5 @@
 ﻿using Airslip.Common.Types.Enums;
+using Airslip.Common.Types.Extensions;
 using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.Interfaces;
@@ -104,7 +105,7 @@ namespace Airslip.Identity.Api.Application.Identity
                     
                     await _userProfileService.Create(new UserProfile(user.Id, request.Email));
 
-                    _logger.Information("User {UserId} successfully registered", user.Id);
+                    _logger.Information("User {UserId} successfully registered with email {Email} at {NowDate}", user.Id, request.Email, DateTimeOffset.UtcNow);
 
                     return await _userLoginService
                         .GenerateUserResponse(user, true, yapilyUserId, request.DeviceId);
