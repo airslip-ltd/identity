@@ -16,19 +16,16 @@ namespace Airslip.Identity.Api.Application.Identity
     {
         private readonly IUserLoginService _userLoginService;
         private readonly IUserService _userService;
-        private readonly IUserProfileService _userProfileService;
         private readonly IUserManagerService _userManagerService;
         private readonly ILogger _logger;
 
         public GenerateJwtBearerTokenCommandHandler(
             IUserLoginService userLoginService,
             IUserService userService,
-            IUserProfileService userProfileService,
             IUserManagerService userManagerService)
         {
             _userLoginService = userLoginService;
             _userService = userService;
-            _userProfileService = userProfileService;
             _userManagerService = userManagerService;
             _logger = Log.Logger;
         }
@@ -45,11 +42,11 @@ namespace Airslip.Identity.Api.Application.Identity
             if (!canLogin)
                 return new IncorrectPasswordResponse("You have entered an incorrect password.");
 
-            UserProfile? userprofile = await _userProfileService.GetByEmail(request.Email);
-            if (userprofile == null)
+            User? user = await _userService.GetByEmail(request.Email);
+            if (user == null)
                 return new NotFoundResponse(nameof(request.Email), request.Email, "Unable to find user");
 
-            User user = (await _userService.Get(userprofile.UserId))!;
+            user = (await _userService.Get(user.Id))!;
 
             string? yapilyUserId = user.GetOpenBankingProviderId("Yapily");
 
