@@ -1,6 +1,4 @@
-﻿using Airslip.Common.Types.Enums;
-using Airslip.Common.Types.Extensions;
-using Airslip.Common.Types.Interfaces;
+﻿using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts;
@@ -25,20 +23,17 @@ namespace Airslip.Identity.Api.Application.Identity
         private readonly IYapilyClient _yapilyApis;
         private readonly IUserManagerService _userManagerService;
         private readonly ILogger _logger;
-        private readonly IUserProfileService _userProfileService;
 
         public RegisterUserCommandHandler(
             IUserLoginService userLoginService,
             IUserService userService,
             IYapilyClient yapilyApis,
-            IUserManagerService userManagerService,
-            IUserProfileService userProfileService)
+            IUserManagerService userManagerService)
         {
             _userLoginService = userLoginService;
             _userService = userService;
             _yapilyApis = yapilyApis;
             _userManagerService = userManagerService;
-            _userProfileService = userProfileService;
             _logger = Log.Logger;
         }
 
@@ -62,7 +57,7 @@ namespace Airslip.Identity.Api.Application.Identity
             User? user = await _userService.GetByEmail(request.Email);
             
             if (user is null)
-                user = await _userService.Create(new User());
+                user = await _userService.Create(new User(request.Email));
             else
             {
                 user.ChangeFromUnregisteredToStandard();
@@ -103,8 +98,6 @@ namespace Airslip.Identity.Api.Application.Identity
                     
                     await _userService.Update(user);
                     
-                    await _userProfileService.Create(new UserProfile(user.Id, request.Email));
-
                     _logger.Information("User {UserId} successfully registered with email {Email} at {NowDate}", user.Id, request.Email, DateTimeOffset.UtcNow);
 
                     return await _userLoginService

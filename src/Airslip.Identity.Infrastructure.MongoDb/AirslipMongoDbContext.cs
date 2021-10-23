@@ -23,12 +23,12 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             _database = database;
 
             ConventionRegistry.Register(
-                name: "CustomConventionPack", 
-                conventions: new ConventionPack
+                "CustomConventionPack", 
+                new ConventionPack
                 {
                     new CamelCaseElementNameConvention()
                 },
-                filter: t => true);
+                t => true);
             
             // Enums as integers
             BsonSerializer.RegisterSerializer(new EnumSerializer<EntityStatus>(BsonType.Int32));
@@ -40,7 +40,6 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             mapEntityWithId<ApiKey>();
             mapEntityWithId<QrCode>();
             mapEntityWithId<User>();
-            mapEntityWithId<UserProfile>();
             mapEntityNoId<RefreshToken>();
             mapEntityNoId<OpenBankingProvider>();
             mapEntityNoId<BasicAuditInformation>();
@@ -49,7 +48,6 @@ namespace Airslip.Identity.Infrastructure.MongoDb
             CreateCollection<ApiKey>();
             CreateCollection<QrCode>();
             CreateCollection<User>();
-            CreateCollection<UserProfile>();
         }
 
         private void mapEntityWithId<TType>() where TType : IEntityWithId
@@ -76,7 +74,6 @@ namespace Airslip.Identity.Infrastructure.MongoDb
         }
 
         public IMongoCollection<User> Users => CollectionByType<User>();
-        public IMongoCollection<UserProfile> UserProfiles => CollectionByType<UserProfile>();
         public IMongoCollection<ApiKey> ApiKeys => CollectionByType<ApiKey>();
         public IMongoCollection<QrCode> QrCodes => CollectionByType<QrCode>();
 

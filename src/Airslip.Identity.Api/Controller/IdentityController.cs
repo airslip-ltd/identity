@@ -37,7 +37,6 @@ namespace Airslip.Identity.Api.Controller
     {
         private readonly IMediator _mediator;
         private readonly PublicApiSetting _bankTransactionSettings;
-        private readonly IUserProfileService _userProfileService;
         private readonly IUserService _userService;
         private readonly IUnregisteredUserService _unregisteredUserService;
         private readonly IApiRequestAuthService _apiAuthService;
@@ -48,14 +47,12 @@ namespace Airslip.Identity.Api.Controller
             ILogger logger,
             IOptions<PublicApiSettings> publicApiOptions,
             IMediator mediator,
-            IUserProfileService userProfileService,
             IUserService userService,
             IUnregisteredUserService unregisteredUserService,
             IApiRequestAuthService apiAuthService,
             IHttpContextAccessor httpContextAccessor) : base(tokenService, publicApiOptions, logger)
         {
             _mediator = mediator;
-            _userProfileService = userProfileService;
             _userService = userService;
             _unregisteredUserService = unregisteredUserService;
             _apiAuthService = apiAuthService;
@@ -307,12 +304,12 @@ namespace Airslip.Identity.Api.Controller
             if (!OpenBankingProviders.Names.Contains(provider))
                 return BadRequest(new UnsupportedProvider(string.Join(",", OpenBankingProviders.Names)));
 
-            UserProfile? userProfile = await _userProfileService.GetByEmail(email);
+            User? user = await _userService.GetByEmail(email);
 
-            if (userProfile is null)
+            if (user is null)
                 return NotFound();
 
-            string? yapilyUserId = await _userService.GetProviderId(userProfile.UserId, provider);
+            string? yapilyUserId = await _userService.GetProviderId(user.Id, provider);
 
             return yapilyUserId != null
                 ? Ok(new YapilyUserResponse(yapilyUserId))
