@@ -122,6 +122,7 @@ namespace Airslip.Identity.Api
                 .AddIdentity<ApplicationUser, ApplicationRole>(options =>
                 {
                     options.User.RequireUniqueEmail = true;
+                    options.Password.RequireNonAlphanumeric = false;
                 })
                 .AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>(
                     Configuration["MongoDbSettings:ConnectionString"],
