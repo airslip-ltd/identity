@@ -244,7 +244,7 @@ namespace Airslip.Identity.Api.Controller
 
             return response switch
             {
-                ISuccess => Ok(response),
+                ISuccess => NoContent(),
                 NotFoundResponse r => NotFound(r),
                 _ => BadRequest(response)
             };
