@@ -22,14 +22,9 @@ namespace Airslip.Identity.Api.Controller
         [HttpGet("apple-app-site-association")]
         public IActionResult GetAppleSiteAssociation()
         {
-            //AppleAppSiteAssociation appleAppSiteAssociation = _appleAppIdentificationService.GetAppSiteAssociation();
+            AppleAppSiteAssociation appleAppSiteAssociation = _appleAppIdentificationService.GetAppSiteAssociation();
 
-            string newAppleImplementationString =
-                "{ \"applinks\": { \"details\": [ {\"appIDs\": [ \"CBMZUNS78C.com.airslip.rnairslip\" ], \"components\": [ { \"/\": \"/bank_transactions/v1/consents/*\", \"comment\": \"Matches any URL whose path starts with /bank_transactions/v1/consents/\"  },{ \"/\": \"/v1/identity/password/*\", \"comment\": \"Matches any URL whose path starts with /v1/identity/password/\" }]}]},\"webcredentials\": {\"apps\": [ \"CBMZUNS78C.com.airslip.rnairslip\" ]},\"appclips\": {\"apps\": [\"ABCED12345.com.example.MyApp.Clip\"]}}";
-
-            NewAppleImplementation newAppleImplementation = Json.Deserialize<NewAppleImplementation>(newAppleImplementationString);
-            
-            return Ok(newAppleImplementation);
+            return Ok(appleAppSiteAssociation);
         }
 
         [HttpGet("assetlinks.json")]
