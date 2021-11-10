@@ -1,3 +1,4 @@
+using Airslip.Common.AppIdentifiers;
 using Airslip.Common.Auth.Data;
 using Airslip.Common.Auth.Implementations;
 using Airslip.Common.Auth.Interfaces;
@@ -78,10 +79,12 @@ namespace Airslip.Identity.Api
                 .Configure<EnvironmentSettings>(Configuration.GetSection(nameof(EnvironmentSettings)))
                 .Configure<ApiKeyValidationSettings>(Configuration.GetSection(nameof(ApiKeyValidationSettings)));
 
-            services.AddScoped<IUserLoginService, UserLoginService>();
+            services
+                .AddScoped<IUserLoginService, UserLoginService>();
 
             services
-                .AddSendGrid(Configuration);
+                .AddSendGrid(Configuration)
+                .AddAppIdentifiers(Configuration);
 
             services.AddSingleton<IMongoClient>(serviceProvider =>
             {
@@ -248,14 +251,6 @@ namespace Airslip.Identity.Api
                 c.RoutePrefix = string.Empty;
             });
             
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                ServeUnknownFileTypes = true,
-                DefaultContentType = Json.MediaType,
-                FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, ".well-known")),
-                RequestPath = "/.well-known"
-            });
-
             app.UseHttpsRedirection()
                 .UseRouting()
                 .UseAuthentication()

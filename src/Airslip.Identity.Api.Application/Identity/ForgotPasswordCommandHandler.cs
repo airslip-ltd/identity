@@ -55,7 +55,7 @@ namespace Airslip.Identity.Api.Application.Identity
             if(!outcome.Success)
                 _logger.Error("Error sending email due to {Error}", outcome.ErrorReason);
 
-            return new ForgotPasswordResponse(resetPasswordUrl);
+            return Success.Instance;
         }
     }
 }
