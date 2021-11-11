@@ -40,15 +40,6 @@
 		<ProjectReference Include="..\Airslip.Identity.MongoDb.Contracts\Airslip.Identity.MongoDb.Contracts.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Content Include=".well-known\apple-app-site-association">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	  <Content Include=".well-known\assetlinks.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	</ItemGroup>
-
 	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
 		<DocumentationFile>bin\Debug\Airslip.Identity.Api.xml</DocumentationFile>
 	</PropertyGroup>
