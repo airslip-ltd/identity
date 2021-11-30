@@ -8,7 +8,9 @@ namespace Airslip.Identity.Api.Application.Identity
     public class RegisterUserCommand : IRequest<IResponse>, IAuthenticateRequest
     {
         public RegisterUserCommand(
-            string? applicationUserId, 
+            string? applicationUserId,
+            string? firstName, 
+            string? lastName,
             string? password, 
             string? deviceId, 
             string? entityId, 
@@ -19,6 +21,8 @@ namespace Airslip.Identity.Api.Application.Identity
             DeviceId = deviceId ?? string.Empty;
             EntityId = entityId ?? string.Empty;
             AirslipUserType = airslipUserType;
+            LastName = lastName;
+            FirstName = firstName;
         }
 
         public string Email { get; }
@@ -27,5 +31,7 @@ namespace Airslip.Identity.Api.Application.Identity
         public string? EntityId { get; }
         public AirslipUserType AirslipUserType { get; }
         public string ReferenceId { get; } = Guid.NewGuid().ToString("N");
+        public string? LastName { get; }
+        public string? FirstName { get; }
     }
 }

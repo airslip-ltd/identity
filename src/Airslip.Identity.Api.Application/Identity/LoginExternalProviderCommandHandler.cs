@@ -36,7 +36,7 @@ namespace Airslip.Identity.Api.Application.Identity
             bool isNewUser = user is null;
 
             user = isNewUser 
-                ? await _userService.Create(new User(request.Email))
+                ? await _userService.Create(new User(request.Email, request.FirstName, request.LastName))
                 : await _userService.Get(user!.Id);
             
             string yapilyUserId = user!.GetOpenBankingProviderId("Yapily") ?? string.Empty;

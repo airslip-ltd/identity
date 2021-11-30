@@ -34,7 +34,6 @@ namespace Airslip.Identity.Api.Application.Implementations
                     currentToken,
                     "An incorrect refresh token has been used for this device");
 
-
             return await GenerateUserResponse(user, 
                 false,
                 null,
@@ -62,8 +61,8 @@ namespace Airslip.Identity.Api.Application.Implementations
                 newToken.TokenValue,
                 newToken.TokenExpiry?.ToUnixTimeMilliseconds() ?? 0,
                 newRefreshToken,
-                user.BiometricOn, 
-                isNewUser);
+                isNewUser,
+                user);
         }
     }
 }

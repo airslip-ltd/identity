@@ -100,30 +100,37 @@ namespace Airslip.Identity.Api.Controller
                         Alpha2CountryCodes.GB.ToString()));
                 case IncorrectPasswordResponse incorrectPasswordResponse:
                     return Forbidden(incorrectPasswordResponse);
-                case NotFoundResponse _:
+                case NotFoundResponse respone:
                 {
-                    RegisterUserCommand registerUserCommand = new(
-                        request.Email,
-                        request.Password,
-                        request.DeviceId,
-                        request.EntityId,
-                        request.AirslipUserType);
-
-                    IResponse createUserResponse = await _mediator.Send(registerUserCommand);
-
-                    return createUserResponse switch
+                    if (request.CreateUserIfNotExists)
                     {
-                        AuthenticatedUserResponse response => Created(response.AddHateoasLinks(
-                            _publicApiSettings.Base.BaseUri,
-                            _bankTransactionSettings.BaseUri,
-                            true,
-                            Alpha2CountryCodes.GB.ToString())),
-                        ConflictResponse response => Conflict(response),
-                        NotFoundResponse r => NotFound(r),
-                        ErrorResponse response => BadRequest(response),
-                        IFail response => BadRequest(response),
-                        _ => throw new NotSupportedException()
-                    };
+                        RegisterUserCommand registerUserCommand = new(
+                            request.Email,
+                            request.FirstName,
+                            request.LastName,
+                            request.Password,
+                            request.DeviceId,
+                            request.EntityId,
+                            request.AirslipUserType);
+
+                        IResponse createUserResponse = await _mediator.Send(registerUserCommand);
+
+                        return createUserResponse switch
+                        {
+                            AuthenticatedUserResponse response => Created(response.AddHateoasLinks(
+                                _publicApiSettings.Base.BaseUri,
+                                _bankTransactionSettings.BaseUri,
+                                true,
+                                Alpha2CountryCodes.GB.ToString())),
+                            ConflictResponse response => Conflict(response),
+                            NotFoundResponse r => NotFound(r),
+                            ErrorResponse response => BadRequest(response),
+                            IFail response => BadRequest(response),
+                            _ => throw new NotSupportedException()
+                        };
+                    }
+
+                    return NotFound(respone);
                 }
                 case ErrorResponse response:
                     return BadRequest(response);
@@ -184,7 +191,9 @@ namespace Airslip.Identity.Api.Controller
             LoginExternalProviderCommand loginExternalProviderCommand = new(
                 externalLoginResponse.Email,
                 GoogleDefaults.AuthenticationScheme,
-                externalLoginResponse.DeviceId);
+                externalLoginResponse.DeviceId,
+                null,
+                null);
 
             IResponse loginExternalProviderResponse = await _mediator.Send(loginExternalProviderCommand);
 
@@ -207,7 +216,8 @@ namespace Airslip.Identity.Api.Controller
             LoginExternalProviderCommand loginExternalProviderCommand = new(
                 request.Email,
                 GoogleDefaults.AuthenticationScheme,
-                request.DeviceId);
+                request.DeviceId,
+                null, null);
 
             IResponse loginExternalProviderResponse = await _mediator.Send(loginExternalProviderCommand);
 

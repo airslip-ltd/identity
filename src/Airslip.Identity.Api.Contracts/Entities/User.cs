@@ -14,6 +14,8 @@ namespace Airslip.Identity.Api.Contracts.Entities
     {
         public string Id { get; set; } = Guid.NewGuid().ToString("N");
         public string Email { get; init; }
+        public string? FirstName { get; init; }
+        public string? LastName { get; init; }
 
         public BasicAuditInformation? AuditInformation { get; set; }
 
@@ -32,9 +34,11 @@ namespace Airslip.Identity.Api.Contracts.Entities
         public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>(1);
         public DataConsent DataConsent { get; set; } = new ();
 
-        public User(string email)
+        public User(string email, string? firstName, string? lastName)
         {
             Email = email;
+            FirstName = firstName;
+            LastName = lastName;
         }
         
         public void AddOpenBankingProvider(OpenBankingProvider openBankingProvider)
