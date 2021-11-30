@@ -14,6 +14,8 @@ namespace Airslip.Identity.Api.Contracts.Models
     {
         public string? Id { get; set; }
         public string Email { get; set; } = string.Empty;
+        public string? FirstName { get; init; }
+        public string? LastName { get; init; }
         public BasicAuditInformation? AuditInformation { get; set; }
 
         public EntityStatus EntityStatus { get; set; } = EntityStatus.Active;

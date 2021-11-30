@@ -1,5 +1,6 @@
 ﻿using Airslip.Common.Types.Hateoas;
 using Airslip.Common.Types.Interfaces;
+using Airslip.Identity.Api.Contracts.Entities;
 using JetBrains.Annotations;
 using System.Collections.Generic;
 
@@ -11,16 +12,16 @@ namespace Airslip.Identity.Api.Contracts.Responses
         public string BearerToken { get; }
         public long Expiry { get; }
         public string RefreshToken { get; }
-        public bool BiometricOn { get; }
         public bool IsNewUser { get; }
+        public UserSummary User { get; }
 
-        public AuthenticatedUserResponse(string bearerToken, long expiry, string refreshToken, bool biometricOn, bool isNewUser)
+        public AuthenticatedUserResponse(string bearerToken, long expiry, string refreshToken, bool isNewUser, User user)
         {
             BearerToken = bearerToken;
             Expiry = expiry;
             RefreshToken = refreshToken;
-            BiometricOn = biometricOn;
             IsNewUser = isNewUser;
+            User = new UserSummary(user.Email, user.FirstName, user.LastName);
         }
 
         public AuthenticatedUserResponse AddHateoasLinks(
@@ -50,4 +51,6 @@ namespace Airslip.Identity.Api.Contracts.Responses
             return this;
         }
     }
+
+    public record UserSummary(string Email, string? FirstName, string? LastName);
 }

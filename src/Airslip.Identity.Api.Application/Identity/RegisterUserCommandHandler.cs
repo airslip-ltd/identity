@@ -57,7 +57,7 @@ namespace Airslip.Identity.Api.Application.Identity
             User? user = await _userService.GetByEmail(request.Email);
             
             if (user is null)
-                user = await _userService.Create(new User(request.Email));
+                user = await _userService.Create(new User(request.Email, request.FirstName, request.LastName));
             else
             {
                 user.ChangeFromUnregisteredToStandard();
