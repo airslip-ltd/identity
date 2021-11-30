@@ -21,6 +21,6 @@ namespace Airslip.Identity.Api.Contracts.Requests
         public AirslipUserType AirslipUserType { get; init; } = AirslipUserType.Standard;
         public string? FirstName { get; init; }
         public string? LastName { get; init; }
-        public bool CreateUserIfNotExists { get; init; } = false;
+        public bool CreateUserIfNotExists { get; init; } = true;
     }
 }
