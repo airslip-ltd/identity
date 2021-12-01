@@ -1,8 +1,7 @@
-﻿using Airslip.Identity.MongoDb.Contracts.Identity;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 
-namespace Airslip.Identity.MongoDb.Contracts.Interfaces
+namespace Airslip.Identity.Services.MongoDb.Identity.Interfaces
 {
     public interface IUserManagerService
     {

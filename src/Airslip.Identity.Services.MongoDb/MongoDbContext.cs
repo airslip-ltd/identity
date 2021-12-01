@@ -4,12 +4,11 @@ using Airslip.Common.Types.Configuration;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Entities;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Airslip.Identity.Infrastructure.MongoDb
+namespace Airslip.Identity.Services.MongoDb
 {
     public class MongoDbContext : AirslipMongoDbBase, IIdentityContext
     {
