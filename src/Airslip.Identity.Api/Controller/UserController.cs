@@ -17,81 +17,18 @@ using System.Threading.Tasks;
 
 namespace Airslip.Identity.Api.Controller
 {
-
-    public class RepositoryControllerBase<TEntity, TModel> : ApiControllerBase 
-        where TEntity : class, IEntity 
-        where TModel : class, IModel
-    {
-        protected readonly IRepository<TEntity, TModel> Repository;
-
-        public RepositoryControllerBase(
-            ITokenDecodeService<UserToken> tokenDecodeService, 
-            IOptions<PublicApiSettings> publicApiOptions,
-            IRepository<TEntity, TModel> repository,
-            ILogger logger) : base(tokenDecodeService, publicApiOptions, logger)
-        {
-            Repository = repository;
-        }
-        
-        [HttpGet("{id}")]
-        [ProducesResponseType(typeof(SuccessfulActionResultModel<>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(FailedActionResultModel<>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Get([FromRoute] string id)
-        {
-            IResponse response = await Repository.Get(id);
-
-            return CommonResponseHandler<SuccessfulActionResultModel<TModel>>(response);
-        }
-        
-        [HttpPost("{id}")]
-        [ProducesResponseType(typeof(SuccessfulActionResultModel<>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(FailedActionResultModel<>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Update([FromRoute] string id, [FromBody] TModel model)
-        {
-            IResponse response = await Repository.Update(id, model);
-
-            return CommonResponseHandler<SuccessfulActionResultModel<TModel>>(response);
-        }
-        
-        [HttpPut("")]
-        [ProducesResponseType(typeof(SuccessfulActionResultModel<>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(FailedActionResultModel<>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Add([FromBody] TModel model)
-        {
-            IResponse response = await Repository.Add(model);
-
-            return CommonResponseHandler<SuccessfulActionResultModel<TModel>>(response);
-        }
-        
-        [HttpDelete("{id}")]
-        [ProducesResponseType(typeof(SuccessfulActionResultModel<>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(FailedActionResultModel<>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Delete([FromRoute] string id)
-        {
-            IResponse response = await Repository.Delete(id);
-
-            return CommonResponseHandler<SuccessfulActionResultModel<TModel>>(response);
-        }
-    }
-
     [ApiController]
     [ApiVersion(ApiConstants.VersionOne)]
     [Route("v{version:apiVersion}/user")]
-    public class UserController : RepositoryControllerBase<User, UserModel>
+    public class UserController : ApiControllerBase
     {
+        private readonly IRepository<User, UserModel> _repository;
+
         public UserController(ITokenDecodeService<UserToken> tokenDecodeService, 
             IOptions<PublicApiSettings> publicApiOptions, IRepository<User, UserModel> repository, ILogger logger) : 
-            base(tokenDecodeService, publicApiOptions, repository, logger)
+            base(tokenDecodeService, publicApiOptions, logger)
         {
-            
+            _repository = repository;
         }
         
         [HttpGet("")]
@@ -101,7 +38,55 @@ namespace Airslip.Identity.Api.Controller
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Get()
         {
-            IResponse response = await Repository.Get(Token.UserId);
+            IResponse response = await _repository.Get(Token.UserId);
+
+            return CommonResponseHandler<SuccessfulActionResultModel<UserModel>>(response);
+        }
+        
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(SuccessfulActionResultModel<UserModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Get([FromRoute] string id)
+        {
+            IResponse response = await _repository.Get(id);
+
+            return CommonResponseHandler<SuccessfulActionResultModel<UserModel>>(response);
+        }
+        
+        [HttpPost("{id}")]
+        [ProducesResponseType(typeof(SuccessfulActionResultModel<UserModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Update([FromRoute] string id, [FromBody] UserModel model)
+        {
+            IResponse response = await _repository.Update(id, model);
+
+            return CommonResponseHandler<SuccessfulActionResultModel<UserModel>>(response);
+        }
+        
+        [HttpPut("")]
+        [ProducesResponseType(typeof(SuccessfulActionResultModel<UserModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Add([FromBody] UserModel model)
+        {
+            IResponse response = await _repository.Add(model);
+
+            return CommonResponseHandler<SuccessfulActionResultModel<UserModel>>(response);
+        }
+        
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(SuccessfulActionResultModel<UserModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Delete([FromRoute] string id)
+        {
+            IResponse response = await _repository.Delete(id);
 
             return CommonResponseHandler<SuccessfulActionResultModel<UserModel>>(response);
         }
