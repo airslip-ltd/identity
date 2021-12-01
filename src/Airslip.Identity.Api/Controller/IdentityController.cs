@@ -6,6 +6,7 @@ using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Types;
 using Airslip.Common.Types.Configuration;
 using Airslip.Common.Types.Failures;
+using Airslip.Common.Utilities;
 using Airslip.Identity.Api.Application.Identity;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts;
@@ -37,7 +38,6 @@ namespace Airslip.Identity.Api.Controller
     {
         private readonly IMediator _mediator;
         private readonly PublicApiSetting _bankTransactionSettings;
-        private readonly IUserService _userService;
         private readonly IUnregisteredUserService _unregisteredUserService;
         private readonly IApiRequestAuthService _apiAuthService;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -47,13 +47,11 @@ namespace Airslip.Identity.Api.Controller
             ILogger logger,
             IOptions<PublicApiSettings> publicApiOptions,
             IMediator mediator,
-            IUserService userService,
             IUnregisteredUserService unregisteredUserService,
             IApiRequestAuthService apiAuthService,
             IHttpContextAccessor httpContextAccessor) : base(tokenService, publicApiOptions, logger)
         {
             _mediator = mediator;
-            _userService = userService;
             _unregisteredUserService = unregisteredUserService;
             _apiAuthService = apiAuthService;
             _httpContextAccessor = httpContextAccessor;
@@ -288,45 +286,6 @@ namespace Airslip.Identity.Api.Controller
                 NotFoundResponse r => NotFound(r),
                 _ => BadRequest(response)
             };
-        }
-
-        [HttpPut("biometric")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateBiometric([FromBody] UpdateBiometricRequest request)
-        {
-            ToggleBiometricCommand command = new(
-                Token.UserId,
-                request.BiometricOn);
-
-            IResponse response = await _mediator.Send(command);
-
-            return response is ISuccess
-                ? NoContent()
-                : BadRequest(response);
-        }
-
-        [HttpGet("yapily")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetYapilyUser([FromQuery] string email, [FromQuery] string provider)
-        {
-            if (!OpenBankingProviders.Names.Contains(provider))
-                return BadRequest(new UnsupportedProvider(string.Join(",", OpenBankingProviders.Names)));
-
-            User? user = await _userService.GetByEmail(email);
-
-            if (user is null)
-                return NotFound();
-
-            string? yapilyUserId = await _userService.GetProviderId(user.Id, provider);
-
-            return yapilyUserId != null
-                ? Ok(new YapilyUserResponse(yapilyUserId))
-                : NotFound(new NotFoundResponse(
-                    "YapilyUserId",
-                    email,
-                    $"Unable to find {provider} user with the email {email}"));
         }
 
         [HttpPost("unregistered")]

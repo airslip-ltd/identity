@@ -10,23 +10,23 @@ namespace Airslip.Identity.Api.Application.Implementations
 {
     public class UnregisteredUserService : IUnregisteredUserService
     {
-        private readonly IUserService _userService;
+        private readonly IIdentityContext _context;
         private readonly IModelMapper<UserModel> _modelMapper;
         private readonly IUserRepository _userRepository;
 
         public UnregisteredUserService(
-            IUserService userService,
+            IIdentityContext context,
             IModelMapper<UserModel> modelMapper,
             IUserRepository userRepository)
         {
-            _userService = userService;
+            _context = context;
             _modelMapper = modelMapper;
             _userRepository = userRepository;
         }
 
         public async Task<RepositoryActionResultModel<UserModel>> Create(CreateUnregisteredUserModel createModel)
         {
-                User? user = await _userService.GetByEmail(createModel.Email ?? string.Empty);
+                User? user = await _context.GetByEmail(createModel.Email ?? string.Empty);
 
                 if (user is null)
                 {

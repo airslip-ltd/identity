@@ -19,19 +19,19 @@ namespace Airslip.Identity.Api.Application.Identity
     public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, IResponse>
     {
         private readonly IUserLoginService _userLoginService;
-        private readonly IUserService _userService;
+        private readonly IIdentityContext _context;
         private readonly IYapilyClient _yapilyApis;
         private readonly IUserManagerService _userManagerService;
         private readonly ILogger _logger;
 
         public RegisterUserCommandHandler(
             IUserLoginService userLoginService,
-            IUserService userService,
+            IIdentityContext context,
             IYapilyClient yapilyApis,
             IUserManagerService userManagerService)
         {
             _userLoginService = userLoginService;
-            _userService = userService;
+            _context = context;
             _yapilyApis = yapilyApis;
             _userManagerService = userManagerService;
             _logger = Log.Logger;
@@ -54,14 +54,14 @@ namespace Airslip.Identity.Api.Application.Identity
                         result.Errors.First().Description)
                 };
 
-            User? user = await _userService.GetByEmail(request.Email);
+            User? user = await _context.GetByEmail(request.Email);
             
             if (user is null)
-                user = await _userService.Create(new User(request.Email, request.FirstName, request.LastName));
+                user = await _context.AddEntity(new User(request.Email, request.FirstName, request.LastName));
             else
             {
                 user.ChangeFromUnregisteredToStandard();
-                await _userService.Update(user);
+                await _context.UpdateEntity(user);
             }
 
             user.EntityId = request.EntityId;
@@ -96,7 +96,7 @@ namespace Airslip.Identity.Api.Application.Identity
                     
                     user.AddOpenBankingProvider( new OpenBankingProvider("Yapily", yapilyUserId, yapilyApplicationId, yapilyReferenceId));
                     
-                    await _userService.Update(user);
+                    await _context.UpdateEntity(user);
                     
                     _logger.Information("User {UserId} successfully registered with email {Email} at {NowDate}", user.Id, request.Email, DateTimeOffset.UtcNow);
 

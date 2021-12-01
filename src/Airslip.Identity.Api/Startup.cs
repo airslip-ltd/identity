@@ -3,10 +3,7 @@ using Airslip.Common.Auth.Data;
 using Airslip.Common.Auth.Implementations;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
-using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Middleware;
-using Airslip.Common.Monitoring;
-using Airslip.Common.Monitoring.Implementations.Checks;
 using Airslip.Common.Repository.Extensions;
 using Airslip.Common.Repository.Interfaces;
 using Airslip.Common.Services.AutoMapper.Extensions;
@@ -19,11 +16,9 @@ using Airslip.Identity.Api.Application.Validators;
 using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Models;
-using Airslip.Identity.Infrastructure.MongoDb;
 using Airslip.Identity.MongoDb.Contracts.Identity;
 using Airslip.Infrastructure.BlobStorage;
 using Airslip.Yapily.Client;
-using Airslip.Yapily.Client.Contracts;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Builder;
@@ -36,7 +31,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using MongoDB.Driver;
 using System;
 using System.IO;
 using System.Reflection;
@@ -44,8 +38,9 @@ using Polly;
 using Serilog;
 using Airslip.Common.Auth.AspNetCore.Extensions;
 using Airslip.Common.Auth.Enums;
-using Airslip.Common.Types;
-using Microsoft.Extensions.FileProviders;
+using Airslip.Common.Monitoring;
+using Airslip.Common.Monitoring.Implementations.Checks;
+using Airslip.Yapily.Client.Contracts;
 
 namespace Airslip.Identity.Api
 {
@@ -71,7 +66,6 @@ namespace Airslip.Identity.Api
 
             services
                 .AddOptions()
-                .Configure<MongoDbSettings>(Configuration.GetSection(nameof(MongoDbSettings)))
                 .Configure<PublicApiSettings>(Configuration.GetSection(nameof(PublicApiSettings)))
                 .Configure<YapilySettings>(Configuration.GetSection(nameof(YapilySettings)))
                 .Configure<EmailConfigurationSettings>(Configuration.GetSection(nameof(EmailConfigurationSettings)))
@@ -85,24 +79,6 @@ namespace Airslip.Identity.Api
             services
                 .AddSendGrid(Configuration)
                 .AddAppIdentifiers(Configuration);
-
-            services.AddSingleton<IMongoClient>(serviceProvider =>
-            {
-                IOptions<MongoDbSettings> mongoDbSettingsOptions =
-                    serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>();
-
-                return new MongoClient(mongoDbSettingsOptions.Value.ConnectionString);
-            });
-
-            services.AddSingleton<IMongoDatabase>(serviceProvider =>
-            {
-                IOptions<MongoDbSettings> mongoDbSettingsOptions =
-                    serviceProvider.GetRequiredService<IOptions<MongoDbSettings>>();
-
-                IMongoClient mongoClient = serviceProvider.GetRequiredService<IMongoClient>();
-
-                return mongoClient.GetDatabase(mongoDbSettingsOptions.Value.DatabaseName);
-            });
 
             services
                 .AddScoped<ITokenDecodeService<QrCodeToken>, TokenDecodeService<QrCodeToken>>()
@@ -150,9 +126,7 @@ namespace Airslip.Identity.Api
                 .AddTransientHttpErrorPolicy(p =>
                     p.WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))));
 
-            services.AddSingleton<IStorage<BlobStorageModel>, BlobStorageRepository>(_ => new BlobStorageRepository(
-                Configuration["BlobStorageSettings:ConnectionString"],
-                Configuration["BlobStorageSettings:Container"]));
+            services.AddBlobStorage(Configuration);
 
             services.AddMediatR(ApplicationAssembly.Reference);
             // For all the validators, register them with dependency injection as scoped
@@ -182,8 +156,7 @@ namespace Airslip.Identity.Api
             
             // Add repository content
             services
-                .AddRepositories()
-                .AddSingleton<IContext, MongoDbContext>();
+                .AddRepositories();
             
             // Customised per app
             services.AddScoped<IModelValidator<ApiKeyModel>, ApiKeyModelValidator>();
@@ -222,8 +195,8 @@ namespace Airslip.Identity.Api
                 });
 
             services
-                .AddMongoServices()
-                .AddYapily();
+                .AddMongoServices(Configuration)
+                .AddYapily(Configuration);
 
             services
                 .UseHealthChecks()

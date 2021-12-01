@@ -15,29 +15,29 @@ namespace Airslip.Identity.Api.Application.Identity
     public class LoginExternalProviderCommandHandler : IRequestHandler<LoginExternalProviderCommand, IResponse>
     {
         private readonly IUserLoginService _userLoginService;
-        private readonly IUserService _userService;
+        private readonly IIdentityContext _context;
         private readonly IYapilyClient _yapilyClient;
         private readonly ILogger _logger;
 
         public LoginExternalProviderCommandHandler(
             IUserLoginService userLoginService,
-            IUserService userService,
+            IIdentityContext context,
             IYapilyClient yapilyClient)
         {
             _userLoginService = userLoginService;
-            _userService = userService;
+            _context = context;
             _yapilyClient = yapilyClient;
             _logger = Log.Logger;
         }
 
         public async Task<IResponse> Handle(LoginExternalProviderCommand request, CancellationToken cancellationToken)
         {
-            User? user = await _userService.GetByEmail(request.Email);
+            User? user = await _context.GetByEmail(request.Email);
             bool isNewUser = user is null;
 
             user = isNewUser 
-                ? await _userService.Create(new User(request.Email, request.FirstName, request.LastName))
-                : await _userService.Get(user!.Id);
+                ? await _context.AddEntity(new User(request.Email, request.FirstName, request.LastName))
+                : await _context.GetEntity<User>(user!.Id);
             
             string yapilyUserId = user!.GetOpenBankingProviderId("Yapily") ?? string.Empty;
 

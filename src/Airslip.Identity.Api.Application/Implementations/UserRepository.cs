@@ -5,8 +5,7 @@ using Airslip.Common.Repository.Interfaces;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Models;
-using MongoDB.Driver.Linq;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Airslip.Identity.Api.Application.Implementations
 {
@@ -15,9 +14,11 @@ namespace Airslip.Identity.Api.Application.Implementations
         public UserRepository(
             IContext context, 
             IModelValidator<UserModel> validator, 
-            IModelMapper<UserModel> mapper, 
-            ITokenDecodeService<UserToken> tokenService) 
-            : base(context, validator, mapper, tokenService)
+            IModelMapper<UserModel> mapper,
+            IEnumerable<IModelDeliveryService<UserModel>> deliveryServices,
+            IEnumerable<IEntitySearchFormatter<UserModel>> searchFormatters, 
+            IRepositoryUserService repositoryUserService) : 
+            base(context, validator, mapper, deliveryServices, searchFormatters, repositoryUserService)
         {
         }
     }

@@ -1,4 +1,4 @@
-﻿using Airslip.Common.Types;
+﻿using Airslip.Common.Utilities;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
