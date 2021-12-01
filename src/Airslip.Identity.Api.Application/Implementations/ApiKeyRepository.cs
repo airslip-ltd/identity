@@ -6,6 +6,7 @@ using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Models;
 using MongoDB.Driver.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Airslip.Identity.Api.Application.Implementations
@@ -15,8 +16,11 @@ namespace Airslip.Identity.Api.Application.Implementations
         private readonly IContext _context;
 
         public ApiKeyRepository(IContext context, IModelValidator<ApiKeyModel> validator, 
-            IModelMapper<ApiKeyModel> mapper, ITokenDecodeService<UserToken> tokenService) 
-            : base(context, validator, mapper, tokenService)
+            IModelMapper<ApiKeyModel> mapper,
+            IEnumerable<IModelDeliveryService<ApiKeyModel>> deliveryServices,
+            IEnumerable<IEntitySearchFormatter<ApiKeyModel>> searchFormatters, 
+            IRepositoryUserService repositoryUserService) : 
+            base(context, validator, mapper, deliveryServices, searchFormatters, repositoryUserService)
         {
             _context = context;
         }

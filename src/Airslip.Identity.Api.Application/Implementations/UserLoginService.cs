@@ -2,8 +2,8 @@ using Airslip.Common.Auth.Implementations;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
 using Airslip.Common.Types.Interfaces;
-using Airslip.Common.Types.Extensions;
 using Airslip.Common.Types.Failures;
+using Airslip.Common.Utilities.Extensions;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Responses;
@@ -14,17 +14,17 @@ namespace Airslip.Identity.Api.Application.Implementations
     public class UserLoginService : IUserLoginService
     {
         private readonly ITokenGenerationService<GenerateUserToken> _tokenService;
-        private readonly IUserService _userService;
+        private readonly IIdentityContext _context;
 
-        public UserLoginService(ITokenGenerationService<GenerateUserToken> tokenService, IUserService userService)
+        public UserLoginService(ITokenGenerationService<GenerateUserToken> tokenService, IIdentityContext context)
         {
             _tokenService = tokenService;
-            _userService = userService;
+            _context = context;
         }
         
         public async Task<IResponse> GenerateRefreshToken(string userId, string deviceId, string currentToken)
         {
-            User? user = await _userService.Get(userId);
+            User? user = await _context.GetEntity<User>(userId);
 
             if (user is null)
                 return new NotFoundResponse(userId, userId, "Unable to find user");
@@ -42,8 +42,8 @@ namespace Airslip.Identity.Api.Application.Implementations
 
         public async Task<IResponse> GenerateUserResponse(User user, 
             bool isNewUser,
-            string? yapilyUserId,
-            string deviceId)
+            string? yapilyUserId = null, 
+            string deviceId = "")
         {
             yapilyUserId ??= user.GetOpenBankingProviderId("Yapily");
 
@@ -55,7 +55,7 @@ namespace Airslip.Identity.Api.Application.Implementations
             NewToken newToken = _tokenService.GenerateNewToken(generateUserToken);
             string newRefreshToken = JwtBearerToken.GenerateRefreshToken();
             
-            await _userService.UpdateOrReplaceRefreshToken(user.Id, deviceId, newRefreshToken);
+            await _context.UpdateOrReplaceRefreshToken(user.Id, deviceId, newRefreshToken);
 
             return new AuthenticatedUserResponse(
                 newToken.TokenValue,

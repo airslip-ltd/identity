@@ -1,5 +1,5 @@
 using Airslip.Common.Monitoring.Models;
-using Airslip.Common.Types;
+using Airslip.Common.Utilities;
 using FluentAssertions;
 using System;
 using System.Net;

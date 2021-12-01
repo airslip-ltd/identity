@@ -15,17 +15,17 @@ namespace Airslip.Identity.Api.Application.Identity
     public class GenerateJwtBearerTokenCommandHandler : IRequestHandler<LoginUserCommand, IResponse>
     {
         private readonly IUserLoginService _userLoginService;
-        private readonly IUserService _userService;
+        private readonly IIdentityContext _context;
         private readonly IUserManagerService _userManagerService;
         private readonly ILogger _logger;
 
         public GenerateJwtBearerTokenCommandHandler(
             IUserLoginService userLoginService,
-            IUserService userService,
+            IIdentityContext context,
             IUserManagerService userManagerService)
         {
             _userLoginService = userLoginService;
-            _userService = userService;
+            _context = context;
             _userManagerService = userManagerService;
             _logger = Log.Logger;
         }
@@ -42,11 +42,11 @@ namespace Airslip.Identity.Api.Application.Identity
             if (!canLogin)
                 return new IncorrectPasswordResponse("You have entered an incorrect password.");
 
-            User? user = await _userService.GetByEmail(request.Email);
+            User? user = await _context.GetByEmail(request.Email);
             if (user == null)
                 return new NotFoundResponse(nameof(request.Email), request.Email, "Unable to find user");
 
-            user = (await _userService.Get(user.Id))!;
+            user = (await _context.GetEntity<User>(user.Id))!;
 
             string? yapilyUserId = user.GetOpenBankingProviderId("Yapily");
 

@@ -1,5 +1,5 @@
-﻿using Airslip.Common.Types.Extensions;
-using Airslip.Common.Types.Validator;
+﻿using Airslip.Common.Types.Validator;
+using Airslip.Common.Utilities.Extensions;
 using FluentValidation;
 
 namespace Airslip.Identity.Api.Application.Identity

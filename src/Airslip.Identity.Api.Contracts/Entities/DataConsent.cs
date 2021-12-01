@@ -1,5 +1,5 @@
 using Airslip.Common.Repository.Interfaces;
-using Airslip.Common.Types.Extensions;
+using Airslip.Common.Utilities.Extensions;
 using JetBrains.Annotations;
 
 namespace Airslip.Identity.Api.Contracts.Entities

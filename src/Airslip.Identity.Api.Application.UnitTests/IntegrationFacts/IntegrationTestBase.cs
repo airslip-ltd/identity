@@ -1,4 +1,4 @@
-﻿using Airslip.Common.Types;
+﻿using Airslip.Common.Utilities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,15 +12,13 @@ namespace Airslip.Identity.Api.Application.UnitTests.IntegrationFacts
 {
     public class IntegrationTestBase
     {
-        private static readonly TransactionsApiWebApplicationFactory<Startup> TransactionsFactory;
         protected readonly Uri BaseUri = new("http://localhost/v1/");
         protected const string HeartbeatEndpoint = "heartbeat";
         internal static readonly Mock<ILogger> _mockLogger = new();
+        private static readonly TransactionsApiWebApplicationFactory<Startup> TransactionsFactory = new(_mockLogger.Object);
 
         static IntegrationTestBase()
         {
-            TransactionsFactory = new TransactionsApiWebApplicationFactory<Startup>(_mockLogger.Object);
-            
             TransactionsFactory.WithWebHostBuilder(builder =>
             {
                 builder.UseSerilog(_mockLogger.Object);

@@ -2,7 +2,7 @@
 using Airslip.Common.Types.Configuration;
 using Airslip.Common.Types.Failures;
 using Airslip.Common.Types.Interfaces;
-using Airslip.Identity.Api.Contracts.Responses;
+using Airslip.Email.Client;
 using Airslip.Identity.MongoDb.Contracts.Identity;
 using Airslip.Identity.MongoDb.Contracts.Interfaces;
 using MediatR;
