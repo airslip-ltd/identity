@@ -37,8 +37,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Airslip.Identity.Api.Application\Airslip.Identity.Api.Application.csproj" />
 		<ProjectReference Include="..\Airslip.Identity.Api.Contracts\Airslip.Identity.Api.Contracts.csproj" />
-		<ProjectReference Include="..\Airslip.Identity.Infrastructure.MongoDb\Airslip.Identity.Infrastructure.MongoDb.csproj" />
-		<ProjectReference Include="..\Airslip.Identity.MongoDb.Contracts\Airslip.Identity.MongoDb.Contracts.csproj" />
+		<ProjectReference Include="..\Airslip.Identity.Services.MongoDb\Airslip.Identity.Services.MongoDb.csproj" />
 	</ItemGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

@@ -3,8 +3,8 @@ using Airslip.Common.Types.Configuration;
 using Airslip.Common.Types.Failures;
 using Airslip.Common.Types.Interfaces;
 using Airslip.Email.Client;
-using Airslip.Identity.MongoDb.Contracts.Identity;
-using Airslip.Identity.MongoDb.Contracts.Interfaces;
+using Airslip.Identity.Services.MongoDb.Identity;
+using Airslip.Identity.Services.MongoDb.Identity.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Options;
 using Serilog;
@@ -34,7 +34,7 @@ namespace Airslip.Identity.Api.Application.Identity
         public async Task<IResponse> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
         {
             ApplicationUser? user = await _userManagerService.FindByEmail(request.Email);
-
+            
             if (user is null)
                 return new NotFoundResponse(nameof(request.Email), request.Email, "Unable to find user");
 

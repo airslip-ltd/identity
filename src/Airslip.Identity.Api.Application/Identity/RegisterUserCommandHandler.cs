@@ -3,7 +3,7 @@ using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Entities;
-using Airslip.Identity.MongoDb.Contracts.Interfaces;
+using Airslip.Identity.Services.MongoDb.Identity.Interfaces;
 using Airslip.Yapily.Client.Contracts;
 using MediatR;
 using Microsoft.AspNetCore.Identity;

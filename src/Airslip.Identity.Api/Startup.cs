@@ -16,7 +16,6 @@ using Airslip.Identity.Api.Application.Validators;
 using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Models;
-using Airslip.Identity.MongoDb.Contracts.Identity;
 using Airslip.Infrastructure.BlobStorage;
 using Airslip.Yapily.Client;
 using MediatR;
@@ -40,6 +39,7 @@ using Airslip.Common.Auth.AspNetCore.Extensions;
 using Airslip.Common.Auth.Enums;
 using Airslip.Common.Monitoring;
 using Airslip.Common.Monitoring.Implementations.Checks;
+using Airslip.Identity.Services.MongoDb.Identity;
 using Airslip.Yapily.Client.Contracts;
 
 namespace Airslip.Identity.Api
@@ -176,7 +176,17 @@ namespace Airslip.Identity.Api
                 cfg.CreateMap<CreateQrCodeModel, QrCodeModel>();
                 cfg.CreateMap<DataConsentModel, DataConsent>();
                 cfg.CreateMap<CreateUnregisteredUserModel, UserModel>();
-                cfg.CreateMap<UserModel, User>().ReverseMap();
+                cfg
+                    .CreateMap<UserModel, User>()
+                    .ForMember(o => o.RefreshTokens, 
+                        opt => opt.Ignore())
+                    .ForMember(o => o.OpenBankingProviders, 
+                        opt => opt.Ignore())
+                    .ReverseMap()
+                    .ForMember(o => o.RefreshTokens, 
+                        opt => opt.Ignore())
+                    .ForMember(o => o.OpenBankingProviders, 
+                        opt => opt.Ignore());
             });
 
             services.AddScoped<IApiKeyService, ApiKeyService>();

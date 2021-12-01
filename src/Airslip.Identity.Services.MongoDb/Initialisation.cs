@@ -2,13 +2,10 @@ using Airslip.Common.Repository.Entities;
 using Airslip.Common.Services.MongoDb;
 using Airslip.Common.Services.MongoDb.Extensions;
 using Airslip.Identity.Api.Contracts.Entities;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using System.Threading.Tasks;
 
-namespace Airslip.Identity.Infrastructure.MongoDb
+namespace Airslip.Identity.Services.MongoDb
 {
     public static class Initialisation
     {

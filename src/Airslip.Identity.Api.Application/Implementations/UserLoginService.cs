@@ -1,11 +1,13 @@
 using Airslip.Common.Auth.Implementations;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
+using Airslip.Common.Repository.Interfaces;
 using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Types.Failures;
 using Airslip.Common.Utilities.Extensions;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Entities;
+using Airslip.Identity.Api.Contracts.Models;
 using Airslip.Identity.Api.Contracts.Responses;
 using System.Threading.Tasks;
 
@@ -14,11 +16,14 @@ namespace Airslip.Identity.Api.Application.Implementations
     public class UserLoginService : IUserLoginService
     {
         private readonly ITokenGenerationService<GenerateUserToken> _tokenService;
+        private readonly IModelMapper<UserModel> _mapper;
         private readonly IIdentityContext _context;
 
-        public UserLoginService(ITokenGenerationService<GenerateUserToken> tokenService, IIdentityContext context)
+        public UserLoginService(ITokenGenerationService<GenerateUserToken> tokenService, IModelMapper<UserModel> mapper, 
+            IIdentityContext context)
         {
             _tokenService = tokenService;
+            _mapper = mapper;
             _context = context;
         }
         
@@ -62,7 +67,7 @@ namespace Airslip.Identity.Api.Application.Implementations
                 newToken.TokenExpiry?.ToUnixTimeMilliseconds() ?? 0,
                 newRefreshToken,
                 isNewUser,
-                user);
+                _mapper.Create(user));
         }
     }
 }
