@@ -17,6 +17,7 @@ namespace Airslip.Identity.Api.Contracts.Models
         public string Email { get; set; } = string.Empty;
         public string? FirstName { get; init; }
         public string? LastName { get; init; }
+        public string? DisplayName { get; init; }
         
         [JsonIgnore]
         public BasicAuditInformation? AuditInformation { get; set; }

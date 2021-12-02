@@ -241,7 +241,7 @@ namespace Airslip.Identity.Api
                 .UseMiddleware<ErrorHandlingMiddleware>()
                 .UseMiddleware<JwtTokenMiddleware>()
                 .UseCors(builder => builder
-                    .WithOrigins(Configuration["AllowedHosts"])
+                    .WithOrigins(Configuration["AllowedHosts"].Split(";"))
                     .AllowAnyHeader()
                     .AllowAnyMethod())
                 .UseEndpoints(endpoints =>

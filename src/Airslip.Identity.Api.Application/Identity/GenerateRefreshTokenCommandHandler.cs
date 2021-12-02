@@ -18,7 +18,7 @@ namespace Airslip.Identity.Api.Application.Identity
 
         public async Task<IResponse> Handle(GenerateRefreshTokenCommand request, CancellationToken cancellationToken)
         {
-            return await _userLoginService.GenerateRefreshToken(request.UserId, request.DeviceId, request.Token);
+            return await _userLoginService.GenerateRefreshToken(request.DeviceId, request.Token);
         }
     }
 }

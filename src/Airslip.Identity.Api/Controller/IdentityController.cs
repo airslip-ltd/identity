@@ -17,6 +17,7 @@ using Airslip.Identity.Api.Contracts.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -140,12 +141,12 @@ namespace Airslip.Identity.Api.Controller
         }
 
         [HttpPost("refresh")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(AuthenticatedUserResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GenerateRefreshToken(RefreshTokenRequest request)
         {
             GenerateRefreshTokenCommand command = new(
-                Token.UserId,
                 request.DeviceId,
                 request.RefreshToken);
 

@@ -7,16 +7,6 @@ namespace Airslip.Identity.Api.Application.Identity
     {
         public GenerateRefreshTokenCommandValidator()
         {
-            RuleFor(command => command.UserId).Cascade(CascadeMode.Stop)
-                .NotEmpty()
-                .WithMessage(RequiredConstants.Message)
-                .WithState(command => new
-                {
-                    Attribute = nameof(command.UserId),
-                    Value = command.UserId
-                })
-                .WithErrorCode(RequiredConstants.ErrorCode);
-            
             RuleFor(command => command.Token).Cascade(CascadeMode.Stop)
                 .NotEmpty()
                 .WithMessage(RequiredConstants.Message)

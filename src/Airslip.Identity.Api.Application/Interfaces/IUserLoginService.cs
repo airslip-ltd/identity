@@ -7,6 +7,8 @@ namespace Airslip.Identity.Api.Application.Interfaces
     public interface IUserLoginService
     {
         Task<IResponse> GenerateRefreshToken(string userId, string deviceId, string currentToken);
+        
+        Task<IResponse> GenerateRefreshToken(string deviceId, string currentToken);
 
         Task<IResponse> GenerateUserResponse(User user, bool isNewUser,
             string? yapilyUserId = null, string deviceId = "");
