@@ -17,9 +17,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Airslip.Common.Auth.AspNetCore" Version="3.6.1" />
-		<PackageReference Include="Airslip.Common.Repository" Version="3.6.8" />
-		<PackageReference Include="Airslip.Common.Auth" Version="3.6.0" />
+		<PackageReference Include="Airslip.Common.Auth.AspNetCore" Version="3.7.1" />
+		<PackageReference Include="Airslip.Common.Repository" Version="3.7.0" />
+		<PackageReference Include="Airslip.Common.Auth" Version="3.7.1" />
 	</ItemGroup>
 
 	<ItemGroup>
