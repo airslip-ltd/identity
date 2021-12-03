@@ -5,16 +5,19 @@ using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Entities;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Version = MongoDBMigrations.Version;
 
-namespace Airslip.Identity.Services.MongoDb
+namespace Airslip.Identity.Services.MongoDb.Implementations
 {
     public class MongoDbContext : AirslipMongoDbBase, IIdentityContext
     {
-        public MongoDbContext(MongoClient mongoClient, IOptions<MongoDbSettings> options) : base(mongoClient,options)
+        public MongoDbContext(MongoClient mongoClient, IMongoDbMigrator mongoDbMigrator, 
+            IOptions<MongoDbSettings> options) : base(mongoClient,options)
         {
-
+            mongoDbMigrator.Migrate(new Version(1,0,1));
         }
         
         public async Task<string?> GetProviderId(string id, string provider)

@@ -1,9 +1,10 @@
-﻿using Airslip.Common.Types.Interfaces;
+﻿using Airslip.Common.Auth.Data;
+using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts;
+using Airslip.Identity.Api.Contracts.Data;
 using Airslip.Identity.Api.Contracts.Entities;
-using Airslip.Identity.Services.MongoDb.Identity.Interfaces;
 using Airslip.Yapily.Client.Contracts;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -18,19 +19,19 @@ namespace Airslip.Identity.Api.Application.Identity
 {
     public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, IResponse>
     {
-        private readonly IUserLoginService _userLoginService;
+        private readonly IUserService _userService;
         private readonly IIdentityContext _context;
         private readonly IYapilyClient _yapilyApis;
         private readonly IUserManagerService _userManagerService;
         private readonly ILogger _logger;
 
         public RegisterUserCommandHandler(
-            IUserLoginService userLoginService,
+            IUserService userService,
             IIdentityContext context,
             IYapilyClient yapilyApis,
             IUserManagerService userManagerService)
         {
-            _userLoginService = userLoginService;
+            _userService = userService;
             _context = context;
             _yapilyApis = yapilyApis;
             _userManagerService = userManagerService;
@@ -39,8 +40,9 @@ namespace Airslip.Identity.Api.Application.Identity
 
         public async Task<IResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            IdentityResult result = await _userManagerService.Create(request.Email, request.Password);
-
+            IdentityResult result = await _userManagerService
+                .Create(request.Email, request.Password);
+            
             if (result.Succeeded is false)
                 return result.Errors.First().Code switch
                 {
@@ -54,18 +56,25 @@ namespace Airslip.Identity.Api.Application.Identity
                         result.Errors.First().Description)
                 };
 
-            User? user = await _context.GetByEmail(request.Email);
+            string userRole = request.UserRole ?? UserRoles.User;
             
-            if (user is null)
-                user = await _context.AddEntity(new User(request.Email, request.FirstName, request.LastName));
-            else
-            {
+            await _userManagerService
+                .SetRole(request.Email, userRole);
+            
+            User? user = await _context.GetByEmail(request.Email);
+
+            if (user is null) {
+                User newUser = new(request.Email, request.FirstName, request.LastName, userRole);
+            
+                user = await _context.AddEntity(newUser);
+            } else {
                 user.ChangeFromUnregisteredToStandard();
                 await _context.UpdateEntity(user);
             }
 
             user.EntityId = request.EntityId;
             user.AirslipUserType = request.AirslipUserType;
+            user.UserRole = userRole;
             
             IYapilyResponse response =
                 await _yapilyApis.CreateUser(user.Id, request.ReferenceId, cancellationToken);
@@ -100,7 +109,7 @@ namespace Airslip.Identity.Api.Application.Identity
                     
                     _logger.Information("User {UserId} successfully registered with email {Email} at {NowDate}", user.Id, request.Email, DateTimeOffset.UtcNow);
 
-                    return await _userLoginService
+                    return await _userService
                         .GenerateUserResponse(user, true, yapilyUserId, request.DeviceId);
 
                 default:

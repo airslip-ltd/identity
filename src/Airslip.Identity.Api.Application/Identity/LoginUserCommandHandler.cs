@@ -3,8 +3,6 @@ using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Entities;
-using Airslip.Identity.Services.MongoDb.Identity;
-using Airslip.Identity.Services.MongoDb.Identity.Interfaces;
 using MediatR;
 using Serilog;
 using System.Threading;
@@ -14,17 +12,17 @@ namespace Airslip.Identity.Api.Application.Identity
 {
     public class GenerateJwtBearerTokenCommandHandler : IRequestHandler<LoginUserCommand, IResponse>
     {
-        private readonly IUserLoginService _userLoginService;
+        private readonly IUserService _userService;
         private readonly IIdentityContext _context;
         private readonly IUserManagerService _userManagerService;
         private readonly ILogger _logger;
 
         public GenerateJwtBearerTokenCommandHandler(
-            IUserLoginService userLoginService,
+            IUserService userService,
             IIdentityContext context,
             IUserManagerService userManagerService)
         {
-            _userLoginService = userLoginService;
+            _userService = userService;
             _context = context;
             _userManagerService = userManagerService;
             _logger = Log.Logger;
@@ -55,7 +53,7 @@ namespace Airslip.Identity.Api.Application.Identity
 
             _logger.Information("User {UserId} successfully logged in", user.Id);
 
-            return await _userLoginService.GenerateUserResponse(user, false, yapilyUserId, request.DeviceId);
+            return await _userService.GenerateUserResponse(user, false, yapilyUserId, request.DeviceId);
         }
     }
 }

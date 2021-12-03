@@ -1,7 +1,7 @@
 ﻿using Airslip.Common.Types.Interfaces;
+using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts;
-using Airslip.Identity.Services.MongoDb.Identity;
-using Airslip.Identity.Services.MongoDb.Identity.Interfaces;
+using Airslip.Identity.Api.Contracts.Entities;
 using MediatR;
 using Microsoft.Extensions.Options;
 using System.Threading;

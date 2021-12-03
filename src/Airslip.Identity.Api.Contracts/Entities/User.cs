@@ -1,7 +1,9 @@
-﻿using Airslip.Common.Repository.Entities;
+﻿using Airslip.Common.Auth.Data;
+using Airslip.Common.Repository.Entities;
 using Airslip.Common.Repository.Enums;
 using Airslip.Common.Repository.Interfaces;
 using Airslip.Common.Types.Enums;
+using Airslip.Identity.Api.Contracts.Data;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,7 @@ namespace Airslip.Identity.Api.Contracts.Entities
         public string Email { get; init; }
         public string? FirstName { get; init; }
         public string? LastName { get; init; }
+        public string UserRole { get; set; } = UserRoles.User;
         public string? DisplayName { get; init; }
 
         public BasicAuditInformation? AuditInformation { get; set; }
@@ -34,12 +37,12 @@ namespace Airslip.Identity.Api.Contracts.Entities
 
         public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>(1);
         public DataConsent DataConsent { get; set; } = new ();
-
-        public User(string email, string? firstName, string? lastName)
+        public User(string email, string? firstName, string? lastName, string? userRole)
         {
             Email = email;
             FirstName = firstName;
             LastName = lastName;
+            UserRole = userRole ?? UserRoles.User;
         }
         
         public void AddOpenBankingProvider(OpenBankingProvider openBankingProvider)

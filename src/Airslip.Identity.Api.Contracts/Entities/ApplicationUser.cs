@@ -1,7 +1,7 @@
 ﻿using AspNetCore.Identity.MongoDbCore.Models;
 using System;
 
-namespace Airslip.Identity.Services.MongoDb.Identity
+namespace Airslip.Identity.Api.Contracts.Entities
 {
     public class ApplicationUser : MongoIdentityUser<Guid>
     {

@@ -8,6 +8,7 @@
 		<PackageReference Include="Microsoft.Extensions.Options" Version="$(NetVersion)" />
 		<PackageReference Include="MongoDB.Driver" Version="$(MongoDb)" />
 		<PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="$(MongoDbIdentity)" />
+		<PackageReference Include="MongoDBMigrations" Version="2.1.0" />
 	</ItemGroup>
 	
 	<ItemGroup>
@@ -16,7 +17,10 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\Airslip.Identity.Api.Application\Airslip.Identity.Api.Application.csproj" />
-	  <ProjectReference Include="..\Airslip.Identity.Services.MongoDb.Identity\Airslip.Identity.Services.MongoDb.Identity.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Entities" />
 	</ItemGroup>
 	
 </Project>

@@ -18,7 +18,10 @@ namespace Airslip.Identity.Api.Contracts.Models
         public string? FirstName { get; init; }
         public string? LastName { get; init; }
         public string? DisplayName { get; init; }
-        
+        public string? UserRole { get; private set; }
+        public long CreatedDate { get; init; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        public bool BiometricOn { get; private set; }
+
         [JsonIgnore]
         public BasicAuditInformation? AuditInformation { get; set; }
         [JsonIgnore]
@@ -30,13 +33,12 @@ namespace Airslip.Identity.Api.Contracts.Models
         [JsonIgnore]
         public ICollection<OpenBankingProvider> OpenBankingProviders { get; private set; } =
             new List<OpenBankingProvider>(1);
-
-        public long CreatedDate { get; init; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
-        public bool BiometricOn { get; private set; }
-
         [JsonIgnore]
         public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>(1);
         public DataConsent DataConsent { get; set; } = new ();
+        public void SetRole(string userRole)
+        {
+            UserRole = userRole;
+        }
     }
 }

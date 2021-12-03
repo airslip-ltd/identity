@@ -1,6 +1,8 @@
-﻿using Airslip.Common.Types.Interfaces;
+﻿using Airslip.Common.Auth.Data;
+using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.Interfaces;
+using Airslip.Identity.Api.Contracts.Data;
 using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Yapily.Client.Contracts;
 using MediatR;
@@ -14,17 +16,17 @@ namespace Airslip.Identity.Api.Application.Identity
 {
     public class LoginExternalProviderCommandHandler : IRequestHandler<LoginExternalProviderCommand, IResponse>
     {
-        private readonly IUserLoginService _userLoginService;
+        private readonly IUserService _userService;
         private readonly IIdentityContext _context;
         private readonly IYapilyClient _yapilyClient;
         private readonly ILogger _logger;
 
         public LoginExternalProviderCommandHandler(
-            IUserLoginService userLoginService,
+            IUserService userService,
             IIdentityContext context,
             IYapilyClient yapilyClient)
         {
-            _userLoginService = userLoginService;
+            _userService = userService;
             _context = context;
             _yapilyClient = yapilyClient;
             _logger = Log.Logger;
@@ -36,13 +38,13 @@ namespace Airslip.Identity.Api.Application.Identity
             bool isNewUser = user is null;
 
             user = isNewUser 
-                ? await _context.AddEntity(new User(request.Email, request.FirstName, request.LastName))
+                ? await _context.AddEntity(new User(request.Email, request.FirstName, request.LastName, UserRoles.User))
                 : await _context.GetEntity<User>(user!.Id);
             
             string yapilyUserId = user!.GetOpenBankingProviderId("Yapily") ?? string.Empty;
 
             if (!isNewUser)
-                return await _userLoginService.GenerateUserResponse(user, isNewUser, yapilyUserId, request.DeviceId);
+                return await _userService.GenerateUserResponse(user, isNewUser, yapilyUserId, request.DeviceId);
             
             IYapilyResponse response =
                 await _yapilyClient.CreateUser(user.Id, request.ReferenceId, cancellationToken);
@@ -79,7 +81,7 @@ namespace Airslip.Identity.Api.Application.Identity
                     throw new InvalidOperationException();
             }
 
-            return await _userLoginService.GenerateUserResponse(user, isNewUser, yapilyUserId, request.DeviceId);
+            return await _userService.GenerateUserResponse(user, isNewUser, yapilyUserId, request.DeviceId);
         }
     }
 }
