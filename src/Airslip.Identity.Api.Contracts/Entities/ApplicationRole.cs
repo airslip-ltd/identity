@@ -2,7 +2,7 @@
 using JetBrains.Annotations;
 using System;
 
-namespace Airslip.Identity.Services.MongoDb.Identity
+namespace Airslip.Identity.Api.Contracts.Entities
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public class ApplicationRole : MongoIdentityRole<Guid>

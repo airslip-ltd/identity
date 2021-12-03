@@ -36,10 +36,11 @@ using System.Reflection;
 using Polly;
 using Serilog;
 using Airslip.Common.Auth.AspNetCore.Extensions;
+using Airslip.Common.Auth.AspNetCore.Middleware;
 using Airslip.Common.Auth.Enums;
 using Airslip.Common.Monitoring;
 using Airslip.Common.Monitoring.Implementations.Checks;
-using Airslip.Identity.Services.MongoDb.Identity;
+using Airslip.Identity.Services.MongoDb;
 using Airslip.Yapily.Client.Contracts;
 
 namespace Airslip.Identity.Api
@@ -74,7 +75,7 @@ namespace Airslip.Identity.Api
                 .Configure<ApiKeyValidationSettings>(Configuration.GetSection(nameof(ApiKeyValidationSettings)));
 
             services
-                .AddScoped<IUserLoginService, UserLoginService>();
+                .AddScoped<IUserService, UserService>();
 
             services
                 .AddSendGrid(Configuration)
@@ -103,11 +104,11 @@ namespace Airslip.Identity.Api
                     options.User.RequireUniqueEmail = true;
                     options.Password.RequireNonAlphanumeric = false;
                 })
+                .AddRoles<ApplicationRole>()
+                .AddRoleManager<RoleManager<ApplicationRole>>()
                 .AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>(
                     Configuration["MongoDbSettings:ConnectionString"],
-                    bool.Parse(Environment.GetEnvironmentVariable("DBCONTEXT_INMEMORY") ?? "false")
-                        ? "airslipTestDb"
-                        : Configuration["MongoDbSettings:DatabaseName"])
+                    Configuration["MongoDbSettings:DatabaseName"])
                 .AddDefaultTokenProviders();
 
             services
@@ -162,6 +163,7 @@ namespace Airslip.Identity.Api
             services.AddScoped<IModelValidator<ApiKeyModel>, ApiKeyModelValidator>();
             services.AddScoped<IModelValidator<QrCodeModel>, QrCodeModelValidator>();
             services.AddScoped<IModelValidator<UserModel>, UserModelValidator>();
+            services.AddScoped<IModelValidator<UserRoleUpdateModel>, UserRoleUpdateModelValidator>();
             
             services
                 .AddScoped<ITokenValidator<QrCodeToken>, TokenValidator<QrCodeToken>>();
@@ -176,6 +178,10 @@ namespace Airslip.Identity.Api
                 cfg.CreateMap<CreateQrCodeModel, QrCodeModel>();
                 cfg.CreateMap<DataConsentModel, DataConsent>();
                 cfg.CreateMap<CreateUnregisteredUserModel, UserModel>();
+                cfg.CreateMap<UserRoleUpdateModel, User>()
+                    .ReverseMap();
+                cfg.IgnoreUnmapped<UserRoleUpdateModel, User>();
+                cfg.IgnoreUnmapped<User, UserRoleUpdateModel>();
                 cfg
                     .CreateMap<UserModel, User>()
                     .ForMember(o => o.RefreshTokens, 
@@ -184,6 +190,8 @@ namespace Airslip.Identity.Api
                         opt => opt.Ignore())
                     .ReverseMap()
                     .ForMember(o => o.RefreshTokens, 
+                        opt => opt.Ignore())
+                    .ForMember(o => o.UserRole, 
                         opt => opt.Ignore())
                     .ForMember(o => o.OpenBankingProviders, 
                         opt => opt.Ignore());
@@ -223,6 +231,9 @@ namespace Airslip.Identity.Api
             // Set environments for tokens
             IOptions<EnvironmentSettings>? environment = serviceProvider.GetService<IOptions<EnvironmentSettings>>();
             AirslipSchemeOptions.ThisEnvironment = environment?.Value.EnvironmentName ?? "Development";
+
+            // Initialise roles
+            serviceProvider.InitialiseRoles().GetAwaiter().GetResult();
             
             loggerFactory.AddSerilog();
             

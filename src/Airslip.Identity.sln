@@ -16,8 +16,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Airslip.Identity.Services.M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Airslip.Identity.Api.Application.UnitTests", "Airslip.Identity.Api.Application.UnitTests\Airslip.Identity.Api.Application.UnitTests.csproj", "{61DB39C1-B03D-4D1B-9DCB-01E8AC4CD3C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Airslip.Identity.Services.MongoDb.Identity", "Airslip.Identity.Services.MongoDb.Identity\Airslip.Identity.Services.MongoDb.Identity.csproj", "{D13ECDB8-72C7-40DA-8FE9-F1FAC64229A2}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,9 +42,5 @@ Global
 		{61DB39C1-B03D-4D1B-9DCB-01E8AC4CD3C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61DB39C1-B03D-4D1B-9DCB-01E8AC4CD3C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61DB39C1-B03D-4D1B-9DCB-01E8AC4CD3C5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D13ECDB8-72C7-40DA-8FE9-F1FAC64229A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D13ECDB8-72C7-40DA-8FE9-F1FAC64229A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D13ECDB8-72C7-40DA-8FE9-F1FAC64229A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D13ECDB8-72C7-40DA-8FE9-F1FAC64229A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

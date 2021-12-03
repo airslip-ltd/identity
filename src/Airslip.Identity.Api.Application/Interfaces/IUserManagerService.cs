@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Airslip.Common.Types.Interfaces;
+using Airslip.Identity.Api.Contracts.Entities;
+using Airslip.Identity.Api.Contracts.Models;
+using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 
-namespace Airslip.Identity.Services.MongoDb.Identity.Interfaces
+namespace Airslip.Identity.Api.Application.Interfaces
 {
     public interface IUserManagerService
     {
@@ -10,5 +13,7 @@ namespace Airslip.Identity.Services.MongoDb.Identity.Interfaces
         Task<ApplicationUser?> FindByEmail(string email);
         Task<string> GeneratePasswordResetToken(ApplicationUser user);
         Task<IdentityResult> ResetPassword(ApplicationUser user, string token, string password);
+        Task<IResponse> SetRole(string userId, string userRole);
+        Task<string[]> GetRoles(string userEmail);
     }
 }
