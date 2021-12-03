@@ -24,8 +24,7 @@ namespace Airslip.SmartReceipts.Services.MongoDb.Migrations
             var collectionName = DeriveCollectionName<User>();
 
             var collection = database.GetCollection<BsonDocument>(collectionName);
-            //var list = collection.Find(FilterDefinition<BsonDocument>.Empty).ToList();
-            var list = collection.Find("{email: 'dev-testing-1@airslip.com'}").ToList();
+            var list = collection.Find(FilterDefinition<BsonDocument>.Empty).ToList();
             
             FieldDefinition<BsonDocument, string> fieldDefenition = "userRole";
             foreach (var item in list)
