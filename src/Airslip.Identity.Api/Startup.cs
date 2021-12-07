@@ -186,12 +186,12 @@ namespace Airslip.Identity.Api
                     .CreateMap<UserModel, User>()
                     .ForMember(o => o.RefreshTokens, 
                         opt => opt.Ignore())
+                    .ForMember(o => o.UserRole, 
+                        opt => opt.Ignore())
                     .ForMember(o => o.OpenBankingProviders, 
                         opt => opt.Ignore())
                     .ReverseMap()
                     .ForMember(o => o.RefreshTokens, 
-                        opt => opt.Ignore())
-                    .ForMember(o => o.UserRole, 
                         opt => opt.Ignore())
                     .ForMember(o => o.OpenBankingProviders, 
                         opt => opt.Ignore());
