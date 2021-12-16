@@ -5,6 +5,7 @@ using Airslip.Common.Types.Enums;
 using Airslip.Identity.Api.Contracts.Entities;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 
@@ -26,7 +27,7 @@ namespace Airslip.Identity.Api.Contracts.Models
         public BasicAuditInformation? AuditInformation { get; set; }
         [JsonIgnore]
         public EntityStatus EntityStatus { get; set; } = EntityStatus.Active;
-        [JsonIgnore]
+        [JsonConverter(typeof(StringEnumConverter))] 
         public AirslipUserType AirslipUserType { get; set; } = AirslipUserType.Standard;
         [JsonIgnore]
         public string? EntityId { get; set; }
