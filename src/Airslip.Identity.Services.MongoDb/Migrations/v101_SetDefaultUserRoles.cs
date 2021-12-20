@@ -27,14 +27,18 @@ namespace Airslip.SmartReceipts.Services.MongoDb.Migrations
             var list = collection.Find(FilterDefinition<BsonDocument>.Empty).ToList();
             
             FieldDefinition<BsonDocument, string> fieldDefenition = "userRole";
+            FieldDefinition<BsonDocument, string> fieldDefenition2 = "airslipUserType";
             foreach (var item in list)
             {
                 string? currentUserRole = item.Names.Contains("userRole") ? item["userRole"].ToString() : null;
-                AirslipUserType userType = item.Names.Contains("airslipUserType") ? Enum
-                    .Parse<AirslipUserType>(item["airslipUserType"].ToString() ?? "Standard") : AirslipUserType.Standard;
+                AirslipUserType userType = Enum
+                    .Parse<AirslipUserType>(item["airslipUserType"].ToString() ?? "Standard");
                 string defaultRole = (userType == AirslipUserType.Merchant ? UserRoles.Administrator : UserRoles.User);
                 collection.UpdateOne(new BsonDocument("_id", item["_id"]),
                     Builders<BsonDocument>.Update.Set(fieldDefenition, currentUserRole ?? defaultRole));
+                collection.UpdateOne(new BsonDocument("_id", item["_id"]),
+                    Builders<BsonDocument>.Update.Set(fieldDefenition, currentUserRole ?? defaultRole)
+                        .Set(fieldDefenition2, userType.ToString()));
             }
         }
 
