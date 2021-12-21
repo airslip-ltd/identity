@@ -40,6 +40,7 @@ using Airslip.Common.Auth.AspNetCore.Middleware;
 using Airslip.Common.Auth.Enums;
 using Airslip.Common.Monitoring;
 using Airslip.Common.Monitoring.Implementations.Checks;
+using Airslip.Common.Repository.Implementations;
 using Airslip.Identity.Services.MongoDb;
 using Airslip.Yapily.Client.Contracts;
 
@@ -207,6 +208,9 @@ namespace Airslip.Identity.Api
             services.AddScoped<IDataConsentService, DataConsentService>();
             services.AddScoped<IUnregisteredUserService, UnregisteredUserService>();
             services.AddScoped<IUserRepository, UserRepository>();
+            
+            services.AddScoped<IUserSearchService, UserSearchService>();
+            services.AddScoped(typeof(IEntitySearch<,>), typeof(EntitySearch<,>) );
 
             services
                 .AddApiVersioning(options => { options.ReportApiVersions = true; })

@@ -10,6 +10,7 @@ using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Models;
 using Airslip.Common.Auth.AspNetCore.Attributes;
 using Airslip.Identity.Api.Application.Identity;
+using Airslip.Identity.Api.Application.Implementations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -25,15 +26,18 @@ namespace Airslip.Identity.Api.Controller
     public class UserController : ApiControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IUserSearchService _userSearchService;
 
         public UserController(
             ITokenDecodeService<UserToken> tokenDecodeService, 
             IOptions<PublicApiSettings> publicApiOptions, 
             IUserService userService, 
+            IUserSearchService userSearchService,
             ILogger logger) : 
             base(tokenDecodeService, publicApiOptions, logger)
         {
             _userService = userService;
+            _userSearchService = userSearchService;
         }
         
         [HttpGet("")]
@@ -59,6 +63,19 @@ namespace Airslip.Identity.Api.Controller
             IResponse response = await _userService.Get(id);
 
             return CommonResponseHandler<SuccessfulActionResultModel<UserModel>>(response);
+        }
+        
+        [HttpGet("all")]
+        [ProducesResponseType(typeof(SuccessfulActionResultModel<UserModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        [JwtAuthorize(ApplicationRoles.UserManager)]
+        public async Task<IActionResult> GetAll()
+        {
+            IResponse response = await _userSearchService.FindUsers();
+
+            return CommonResponseHandler<UserSearchResults>(response);
         }
         
         [HttpPost("{id}")]
