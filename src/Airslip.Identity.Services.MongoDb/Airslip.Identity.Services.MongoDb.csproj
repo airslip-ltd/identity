@@ -18,9 +18,5 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\Airslip.Identity.Api.Application\Airslip.Identity.Api.Application.csproj" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Entities" />
-	</ItemGroup>
 	
 </Project>

@@ -64,17 +64,18 @@ namespace Airslip.Identity.Api.Application.Identity
             User? user = await _context.GetByEmail(request.Email);
 
             if (user is null) {
-                User newUser = new(request.Email, request.FirstName, request.LastName, userRole);
-            
+                User newUser = new(request.Email, request.FirstName, request.LastName, userRole)
+                {
+                    DisplayName = $"{request.FirstName} ${request.LastName}".Trim(),
+                    EntityId = request.EntityId,
+                    AirslipUserType = request.AirslipUserType,
+                    UserRole = userRole
+                };
                 user = await _context.AddEntity(newUser);
             } else {
                 user.ChangeFromUnregisteredToStandard();
                 await _context.UpdateEntity(user);
             }
-
-            user.EntityId = request.EntityId;
-            user.AirslipUserType = request.AirslipUserType;
-            user.UserRole = userRole;
             
             IYapilyResponse response =
                 await _yapilyApis.CreateUser(user.Id, request.ReferenceId, cancellationToken);
