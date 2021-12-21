@@ -1,4 +1,5 @@
 ﻿using Airslip.Common.Auth.AspNetCore.Interfaces;
+using Airslip.Common.Auth.Data;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
 using Airslip.Common.Repository.Models;
@@ -99,38 +100,24 @@ namespace Airslip.Identity.Api.Controller
                         Alpha2CountryCodes.GB.ToString()));
                 case IncorrectPasswordResponse incorrectPasswordResponse:
                     return Forbidden(incorrectPasswordResponse);
-                case NotFoundResponse respone:
+                case NotFoundResponse response:
                 {
                     if (request.CreateUserIfNotExists)
                     {
-                        RegisterUserCommand registerUserCommand = new(
-                            request.Email,
-                            request.FirstName,
-                            request.LastName,
-                            request.Password,
-                            request.DeviceId,
-                            request.EntityId,
-                            request.AirslipUserType,
-                            null);
-
-                        IResponse createUserResponse = await _mediator.Send(registerUserCommand);
-
-                        return createUserResponse switch
+                        return await IdentityRegister(new RegisterRequest()
                         {
-                            AuthenticatedUserResponse response => Created(response.AddHateoasLinks(
-                                _publicApiSettings.Base.BaseUri,
-                                _bankTransactionSettings.BaseUri,
-                                true,
-                                Alpha2CountryCodes.GB.ToString())),
-                            ConflictResponse response => Conflict(response),
-                            NotFoundResponse r => NotFound(r),
-                            ErrorResponse response => BadRequest(response),
-                            IFail response => BadRequest(response),
-                            _ => throw new NotSupportedException()
-                        };
+                            Email = request.Email,
+                            Password = request.Password,
+                            DeviceId = request.DeviceId,
+                            EntityId = request.EntityId,
+                            FirstName = request.FirstName,
+                            LastName = request.LastName,
+                            UserRole = UserRoles.User,
+                            AirslipUserType = request.AirslipUserType
+                        });
                     }
 
-                    return NotFound(respone);
+                    return NotFound(response);
                 }
                 case ErrorResponse response:
                     return BadRequest(response);
@@ -139,6 +126,39 @@ namespace Airslip.Identity.Api.Controller
                 default:
                     throw new NotSupportedException();
             }
+        }
+        
+        [HttpPost("register")]
+        [ProducesResponseType(typeof(AuthenticatedUserResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AuthenticatedUserResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> IdentityRegister(RegisterRequest request)
+        {
+            RegisterUserCommand registerUserCommand = new(
+                request.Email,
+                request.FirstName,
+                request.LastName,
+                request.Password,
+                request.DeviceId,
+                request.EntityId,
+                request.AirslipUserType,
+                request.UserRole);
+
+            IResponse createUserResponse = await _mediator.Send(registerUserCommand);
+
+            return createUserResponse switch
+            {
+                AuthenticatedUserResponse response => Created(response.AddHateoasLinks(
+                    _publicApiSettings.Base.BaseUri,
+                    _bankTransactionSettings.BaseUri,
+                    true,
+                    Alpha2CountryCodes.GB.ToString())),
+                ConflictResponse response => Conflict(response),
+                NotFoundResponse r => NotFound(r),
+                ErrorResponse response => BadRequest(response),
+                IFail response => BadRequest(response),
+                _ => throw new NotSupportedException()
+            };
         }
 
         [HttpPost("refresh")]

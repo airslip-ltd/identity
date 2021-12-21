@@ -23,6 +23,8 @@ namespace Airslip.Identity.Api.Contracts.Models
         public long CreatedDate { get; init; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         public bool BiometricOn { get; private set; }
 
+        public bool AccountVerified { get; init; }
+
         [JsonIgnore]
         public BasicAuditInformation? AuditInformation { get; set; }
         [JsonIgnore]
