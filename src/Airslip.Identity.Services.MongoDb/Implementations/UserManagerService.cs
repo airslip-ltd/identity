@@ -32,11 +32,19 @@ namespace Airslip.Identity.Services.MongoDb.Implementations
             return await _userManager.CheckPasswordAsync(user, password);
         }
 
-        public async Task<IdentityResult> Create(string email, string password)
+        public async Task<IdentityResult> Create(string email, string? password = null)
         {
             ApplicationUser applicationUser = new() { UserName = email, Email = email };
-
-            IdentityResult result = await _userManager.CreateAsync(applicationUser, password);
+            IdentityResult result;
+                
+            if (password != null)
+            {
+                result = await _userManager.CreateAsync(applicationUser, password);
+            }
+            else
+            {
+                result = await _userManager.CreateAsync(applicationUser);
+            }
 
             return result;
         }
@@ -44,6 +52,34 @@ namespace Airslip.Identity.Services.MongoDb.Implementations
         public async Task<ApplicationUser?> FindByEmail(string email)
         {
            return await _userManager.FindByEmailAsync(email);
+        }
+
+        public async Task<IdentityResult> ChangeEmail(string oldEmail, string newEmail)
+        {
+            if (oldEmail.Equals(newEmail)) return IdentityResult.Success;
+            
+            ApplicationUser? applicationUser = await FindByEmail(oldEmail);
+            if (applicationUser == null) 
+                return IdentityResult.Failed(new IdentityError()
+                {
+                    Description = "User not found"
+                });
+            
+            applicationUser.Email = newEmail;
+            
+            return await _userManager.UpdateAsync(applicationUser);
+        }
+
+        public async Task<IdentityResult> Delete(string email)
+        {
+            ApplicationUser? applicationUser = await FindByEmail(email);
+            if (applicationUser == null) 
+                return IdentityResult.Failed(new IdentityError()
+                {
+                    Description = "User not found"
+                });
+            
+            return await _userManager.DeleteAsync(applicationUser);
         }
 
         public Task<string> GeneratePasswordResetToken(ApplicationUser user) => _userManager.GeneratePasswordResetTokenAsync(user);
@@ -92,7 +128,7 @@ namespace Airslip.Identity.Services.MongoDb.Implementations
         {
             ApplicationUser? user = await _userManager.FindByEmailAsync(userEmail);
 
-            var roles = _roleManager
+            IQueryable<string> roles = _roleManager
                 .Roles
                 .Where(o => user.Roles.Contains(o.Id))
                 .Select(o => o.Name);

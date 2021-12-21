@@ -1,12 +1,6 @@
-﻿using Airslip.Common.Repository.Entities;
-using Airslip.Common.Repository.Enums;
+﻿using Airslip.Common.Repository.Enums;
 using Airslip.Common.Repository.Interfaces;
-using Airslip.Common.Types.Enums;
-using Airslip.Identity.Api.Contracts.Entities;
 using JetBrains.Annotations;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 
 namespace Airslip.Identity.Api.Contracts.Models
 {

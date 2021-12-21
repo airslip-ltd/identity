@@ -1,6 +1,4 @@
-﻿using Airslip.Common.Types.Enums;
-using Airslip.Common.Types.Interfaces;
-using Airslip.Identity.Api.Contracts.Data;
+﻿using Airslip.Common.Types.Interfaces;
 using MediatR;
 using System;
 
@@ -14,25 +12,19 @@ namespace Airslip.Identity.Api.Application.Identity
             string? lastName,
             string? password, 
             string? deviceId, 
-            string? entityId,
-            AirslipUserType airslipUserType, 
             string? userRole)
         {
             Email = applicationUserId ?? string.Empty;
-            Password = password ?? string.Empty;
+            Password = password;
             DeviceId = deviceId ?? string.Empty;
-            EntityId = entityId ?? string.Empty;
-            AirslipUserType = airslipUserType;
             LastName = lastName;
             UserRole = userRole;
             FirstName = firstName;
         }
 
         public string Email { get; }
-        public string Password { get; }
+        public string? Password { get; }
         public string DeviceId { get; }
-        public string? EntityId { get; }
-        public AirslipUserType AirslipUserType { get; }
         public string ReferenceId { get; } = Guid.NewGuid().ToString("N");
         public string? LastName { get; }
         public string? UserRole { get; }
