@@ -3,7 +3,6 @@ using Airslip.Common.Repository.Entities;
 using Airslip.Common.Repository.Enums;
 using Airslip.Common.Repository.Interfaces;
 using Airslip.Common.Types.Enums;
-using Airslip.Identity.Api.Contracts.Data;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;

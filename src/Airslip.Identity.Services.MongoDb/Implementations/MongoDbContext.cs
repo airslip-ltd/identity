@@ -5,7 +5,6 @@ using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Entities;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Version = MongoDBMigrations.Version;

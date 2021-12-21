@@ -18,13 +18,12 @@ namespace Airslip.Identity.Api.Contracts.Models
         public string Email { get; set; } = string.Empty;
         public string? FirstName { get; init; }
         public string? LastName { get; init; }
-        public string? DisplayName { get; init; }
+        public string? DisplayName { get; set; }
         public string? UserRole { get; private set; }
         public long CreatedDate { get; init; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         public bool BiometricOn { get; private set; }
 
         public bool AccountVerified { get; init; }
-
         [JsonIgnore]
         public BasicAuditInformation? AuditInformation { get; set; }
         [JsonIgnore]

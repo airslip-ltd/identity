@@ -11,7 +11,6 @@ using Airslip.Common.Utilities;
 using Airslip.Identity.Api.Application.Identity;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts;
-using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Models;
 using Airslip.Identity.Api.Contracts.Requests;
 using Airslip.Identity.Api.Contracts.Responses;
@@ -140,8 +139,6 @@ namespace Airslip.Identity.Api.Controller
                 request.LastName,
                 request.Password,
                 request.DeviceId,
-                request.EntityId,
-                request.AirslipUserType,
                 request.UserRole);
 
             IResponse createUserResponse = await _mediator.Send(registerUserCommand);

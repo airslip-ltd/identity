@@ -2,7 +2,6 @@
 using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Application.Interfaces;
-using Airslip.Identity.Api.Contracts.Data;
 using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Yapily.Client.Contracts;
 using MediatR;

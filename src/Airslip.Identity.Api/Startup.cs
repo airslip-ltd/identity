@@ -184,6 +184,10 @@ namespace Airslip.Identity.Api
                 cfg.IgnoreUnmapped<User, UserRoleUpdateModel>();
                 cfg
                     .CreateMap<UserModel, User>()
+                    .ForMember(o => o.EntityId, 
+                        opt => opt.Ignore())
+                    .ForMember(o => o.AirslipUserType, 
+                        opt => opt.Ignore())
                     .ForMember(o => o.RefreshTokens, 
                         opt => opt.Ignore())
                     .ForMember(o => o.UserRole, 

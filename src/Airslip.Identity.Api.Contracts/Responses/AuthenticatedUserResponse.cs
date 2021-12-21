@@ -1,6 +1,5 @@
 ﻿using Airslip.Common.Types.Hateoas;
 using Airslip.Common.Types.Interfaces;
-using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Models;
 using JetBrains.Annotations;
 using System.Collections.Generic;
