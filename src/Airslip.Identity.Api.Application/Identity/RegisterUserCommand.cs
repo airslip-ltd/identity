@@ -1,4 +1,5 @@
-﻿using Airslip.Common.Types.Interfaces;
+﻿using Airslip.Common.Types.Enums;
+using Airslip.Common.Types.Interfaces;
 using MediatR;
 using System;
 
@@ -29,5 +30,7 @@ namespace Airslip.Identity.Api.Application.Identity
         public string? LastName { get; }
         public string? UserRole { get; }
         public string? FirstName { get; }
+        public string? EntityId { get; init; }
+        public AirslipUserType AirslipUserType { get; init; } = AirslipUserType.Standard;
     }
 }

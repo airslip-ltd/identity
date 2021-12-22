@@ -198,8 +198,12 @@ namespace Airslip.Identity.Api.Application.Implementations
                 User newUser = new(model.Email, model.FirstName, model.LastName, userRole)
                 {
                     DisplayName = $"{model.FirstName} {model.LastName}".Trim(),
-                    EntityId = _userToken.EntityId.IsNullOrWhitespace() ? null : _userToken.EntityId,
-                    AirslipUserType = _userToken.AirslipUserType,
+                    EntityId = _userToken.IsAuthenticated ?? false ? 
+                        _userToken.EntityId : 
+                        model.EntityId,
+                    AirslipUserType = _userToken.IsAuthenticated ?? false ? 
+                        _userToken.AirslipUserType : 
+                        model.AirslipUserType,
                     UserRole = userRole,
                     AuditInformation = new BasicAuditInformation
                     {
