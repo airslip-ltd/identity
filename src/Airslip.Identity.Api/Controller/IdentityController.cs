@@ -139,7 +139,11 @@ namespace Airslip.Identity.Api.Controller
                 request.LastName,
                 request.Password,
                 request.DeviceId,
-                request.UserRole);
+                request.UserRole)
+            {
+                EntityId = request.EntityId,
+                AirslipUserType = request.AirslipUserType
+            };
 
             IResponse createUserResponse = await _mediator.Send(registerUserCommand);
 
