@@ -24,7 +24,7 @@
 		<PackageReference Include="Airslip.Common.Auth" Version="3.7.2" />
 		<PackageReference Include="Airslip.Common.Middleware" Version="3.7.2" />
 		<PackageReference Include="Airslip.Common.Monitoring" Version="3.6.0" />
-		<PackageReference Include="Airslip.Common.Types" Version="3.6.2" />
+		<PackageReference Include="Airslip.Common.Types" Version="3.7.4" />
 
 		<PackageReference Include="Airslip.Common.Repository" Version="3.7.0" />
 		<PackageReference Include="Airslip.Common.Services.AutoMapper" Version="3.7.0" />
