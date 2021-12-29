@@ -104,6 +104,7 @@ namespace Airslip.Identity.Api
                 {
                     options.User.RequireUniqueEmail = true;
                     options.Password.RequireNonAlphanumeric = false;
+                    options.SignIn.RequireConfirmedEmail = true;
                 })
                 .AddRoles<ApplicationRole>()
                 .AddRoleManager<RoleManager<ApplicationRole>>()

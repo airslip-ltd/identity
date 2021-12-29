@@ -53,6 +53,26 @@ namespace Airslip.Identity.Services.MongoDb.Implementations
         {
            return await _userManager.FindByEmailAsync(email);
         }
+        
+        public async Task<string?> GenerateEmailConfirmationTokenAsync(string email)
+        {
+            ApplicationUser? user = await FindByEmail(email);
+
+            if (user is null)
+                return null;
+            
+            return await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        }
+
+        public async Task<IdentityResult?> ConfirmEmailAsync(string email, string token)
+        {
+            ApplicationUser? user = await FindByEmail(email);
+
+            if (user is null)
+                return null;
+            
+            return await _userManager.ConfirmEmailAsync(user, token);
+        }
 
         public async Task<IdentityResult> ChangeEmail(string oldEmail, string newEmail)
         {
