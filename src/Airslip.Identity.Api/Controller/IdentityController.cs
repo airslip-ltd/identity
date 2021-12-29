@@ -1,17 +1,13 @@
-﻿using Airslip.Common.Auth.AspNetCore.Interfaces;
-using Airslip.Common.Auth.Data;
+﻿using Airslip.Common.Auth.Data;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
-using Airslip.Common.Repository.Models;
 using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Types;
 using Airslip.Common.Types.Configuration;
 using Airslip.Common.Types.Failures;
 using Airslip.Common.Utilities;
 using Airslip.Identity.Api.Application.Identity;
-using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts;
-using Airslip.Identity.Api.Contracts.Models;
 using Airslip.Identity.Api.Contracts.Requests;
 using Airslip.Identity.Api.Contracts.Responses;
 using MediatR;
@@ -39,23 +35,14 @@ namespace Airslip.Identity.Api.Controller
     {
         private readonly IMediator _mediator;
         private readonly PublicApiSetting _bankTransactionSettings;
-        private readonly IUnregisteredUserService _unregisteredUserService;
-        private readonly IApiRequestAuthService _apiAuthService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public IdentityController(
             ITokenDecodeService<UserToken> tokenService,
             ILogger logger,
             IOptions<PublicApiSettings> publicApiOptions,
-            IMediator mediator,
-            IUnregisteredUserService unregisteredUserService,
-            IApiRequestAuthService apiAuthService,
-            IHttpContextAccessor httpContextAccessor) : base(tokenService, publicApiOptions, logger)
+            IMediator mediator) : base(tokenService, publicApiOptions, logger)
         {
             _mediator = mediator;
-            _unregisteredUserService = unregisteredUserService;
-            _apiAuthService = apiAuthService;
-            _httpContextAccessor = httpContextAccessor;
             _bankTransactionSettings = publicApiOptions.Value.BankTransactions ?? throw new ArgumentException(
                 "PublicApiSettings:BankTransactions section missing from appSettings",
                 nameof(publicApiOptions));
@@ -311,29 +298,6 @@ namespace Airslip.Identity.Api.Controller
             };
         }
 
-        [HttpPost("unregistered")]
-        [ProducesResponseType( StatusCodes.Status204NoContent)]
-        [ProducesResponseType( StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateRegisteredUser([FromBody] CreateUnregisteredUserModel model)
-        {
-            KeyAuthenticationResult authResult = await _apiAuthService.Handle(_httpContextAccessor.HttpContext!.Request);
-
-            if (authResult.AuthResult == AuthResult.Fail)
-                return BadRequest(authResult.Message);
-            
-            try
-            {
-                RepositoryActionResultModel<UserModel> result = await _unregisteredUserService.Create(model);
-                
-                return RepositoryActionToResult(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Exception when creating unregistered user");
-                return BadRequest(ex.Message);
-            }
-        }
-        
         private static ExternalLoginResponse GetExternalLoginResponse(
             ClaimsIdentity claimIdentity,
             DateTimeOffset? expires)

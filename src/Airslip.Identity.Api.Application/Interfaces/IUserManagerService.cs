@@ -16,5 +16,7 @@ namespace Airslip.Identity.Api.Application.Interfaces
         Task<IdentityResult> ResetPassword(ApplicationUser user, string token, string password);
         Task<IResponse> SetRole(string userId, string userRole);
         Task<string[]> GetRoles(string userEmail);
+        Task<string?> GenerateEmailConfirmationTokenAsync(string email);
+        Task<IdentityResult?> ConfirmEmailAsync(string email, string token);
     }
 }
