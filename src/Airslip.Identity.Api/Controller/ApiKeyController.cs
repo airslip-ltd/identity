@@ -1,8 +1,10 @@
+using Airslip.Common.Auth.AspNetCore.Implementations;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
 using Airslip.Common.Repository.Types.Models;
 using Airslip.Common.Types;
 using Airslip.Common.Types.Configuration;
+using Airslip.Common.Types.Interfaces;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -18,7 +20,7 @@ namespace Airslip.Identity.Api.Controller
     [ApiController]
     [ApiVersion(ApiConstants.VersionOne)]
     [Route("v{version:apiVersion}/apikey")]
-    public class ApiKeyController : ApiResponse
+    public class ApiKeyController : ApiControllerBase
     {
         private readonly IApiKeyService _apiKeyService;
 
@@ -37,7 +39,7 @@ namespace Airslip.Identity.Api.Controller
         [ProducesResponseType(typeof(RepositoryActionResultModel<ApiKeyModel>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Add([FromBody] CreateApiKeyModel model)
         {
-            RepositoryActionResultModel<ApiKeyModel> result;
+            IResponse result;
             
             try
             {
@@ -49,7 +51,7 @@ namespace Airslip.Identity.Api.Controller
                 return BadRequest(ex.Message);
             }
             
-            return RepositoryActionToResult(result);
+            return HandleResponse<SuccessfulActionResultModel<ApiKeyModel>>(result);
         }
         
         [HttpGet]
@@ -59,7 +61,7 @@ namespace Airslip.Identity.Api.Controller
         [ProducesResponseType(typeof(RepositoryActionResultModel<ApiKeyModel>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(string id)
         {
-            RepositoryActionResultModel<ApiKeyModel> result;
+            IResponse result;
             
             try
             {
@@ -71,7 +73,7 @@ namespace Airslip.Identity.Api.Controller
                 return BadRequest(ex.Message);
             }
 
-            return RepositoryActionToResult(result);
+            return HandleResponse<SuccessfulActionResultModel<ApiKeyModel>>(result);
         }
         
         [HttpPost]
@@ -80,7 +82,7 @@ namespace Airslip.Identity.Api.Controller
         [ProducesResponseType(typeof(ApiKeyValidationResultModel), StatusCodes.Status200OK)]
         public async Task<IActionResult> Validate(ApiKeyValidationModel model)
         {
-            ApiKeyValidationResultModel result;
+            IResponse result;
             
             try
             {
@@ -91,7 +93,7 @@ namespace Airslip.Identity.Api.Controller
                 return BadRequest(ex.Message);
             }
 
-            return Ok(result);
+            return HandleResponse<ApiKeyValidationResultModel>(result);
         }
     }
 }

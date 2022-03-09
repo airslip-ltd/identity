@@ -1,4 +1,5 @@
-﻿using Airslip.Common.Auth.AspNetCore.Interfaces;
+﻿using Airslip.Common.Auth.AspNetCore.Implementations;
+using Airslip.Common.Auth.AspNetCore.Interfaces;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
 using Airslip.Common.Types.Interfaces;
@@ -20,7 +21,6 @@ namespace Airslip.Identity.Api.Controller
 {
     [ApiController]
     [ApiVersion(ApiConstants.VersionOne)]
-    // ReSharper disable once RouteTemplates.RouteParameterConstraintNotResolved
     [Route("v{version:apiVersion}/identity")]
     [Produces(Json.MediaType)]
     public class IdentityNewController : ApiControllerBase
@@ -86,7 +86,7 @@ namespace Airslip.Identity.Api.Controller
             {
                 IResponse result = await _unregisteredUserService.ConfirmEmail(email, token);
 
-                return CommonResponseHandler<Success>(result);
+                return HandleResponse<Success>(result);
             }
             catch (Exception ex)
             {

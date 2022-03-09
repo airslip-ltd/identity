@@ -8,6 +8,7 @@ using Airslip.Common.Types.Interfaces;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Models;
 using Airslip.Common.Auth.AspNetCore.Attributes;
+using Airslip.Common.Auth.AspNetCore.Implementations;
 using Airslip.Common.Repository.Types.Models;
 using Airslip.Identity.Api.Application.Identity;
 using Airslip.Identity.Api.Application.Implementations;
@@ -49,7 +50,7 @@ namespace Airslip.Identity.Api.Controller
         {
             IResponse response = await _userService.Get(Token.UserId);
 
-            return CommonResponseHandler<SuccessfulActionResultModel<UserModel>>(response);
+            return HandleResponse<SuccessfulActionResultModel<UserModel>>(response);
         }
         
         [HttpGet("{id}")]
@@ -62,7 +63,7 @@ namespace Airslip.Identity.Api.Controller
         {
             IResponse response = await _userService.Get(id);
 
-            return CommonResponseHandler<SuccessfulActionResultModel<UserModel>>(response);
+            return HandleResponse<SuccessfulActionResultModel<UserModel>>(response);
         }
         
         [HttpGet("all")]
@@ -75,7 +76,7 @@ namespace Airslip.Identity.Api.Controller
         {
             IResponse response = await _userSearchService.FindUsers();
 
-            return CommonResponseHandler<UserSearchResults>(response);
+            return HandleResponse<UserSearchResults>(response);
         }
         
         [HttpPost("{id}")]
@@ -88,7 +89,7 @@ namespace Airslip.Identity.Api.Controller
         {
             IResponse response = await _userService.Update(id, model);
 
-            return CommonResponseHandler<SuccessfulActionResultModel<UserModel>>(response);
+            return HandleResponse<SuccessfulActionResultModel<UserModel>>(response);
         }
         
         [HttpPut("")]
@@ -109,7 +110,7 @@ namespace Airslip.Identity.Api.Controller
             
             IResponse response = await _userService.Add(registerUserCommand, CancellationToken.None);
 
-            return CommonResponseHandler<SuccessfulActionResultModel<UserModel>>(response);
+            return HandleResponse<SuccessfulActionResultModel<UserModel>>(response);
         }
         
         [HttpDelete("{id}")]
@@ -122,7 +123,7 @@ namespace Airslip.Identity.Api.Controller
         {
             IResponse response = await _userService.Delete(id);
 
-            return CommonResponseHandler<SuccessfulActionResultModel<UserModel>>(response);
+            return HandleResponse<SuccessfulActionResultModel<UserModel>>(response);
         }
         
         [HttpPost("{id}/setrole/{roleName}")]
@@ -135,7 +136,7 @@ namespace Airslip.Identity.Api.Controller
         {
             IResponse response = await _userService.SetRole(id, roleName);
 
-            return CommonResponseHandler<SuccessfulActionResultModel<UserModel>>(response);
+            return HandleResponse<SuccessfulActionResultModel<UserModel>>(response);
         }
     }
 }

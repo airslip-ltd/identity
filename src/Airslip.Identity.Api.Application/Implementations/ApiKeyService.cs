@@ -5,9 +5,12 @@ using Airslip.Common.Repository.Types.Enums;
 using Airslip.Common.Repository.Types.Interfaces;
 using Airslip.Common.Repository.Types.Models;
 using Airslip.Common.Types.Configuration;
+using Airslip.Common.Types.Interfaces;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Application.Validators;
+using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Models;
+using FluentValidation.Results;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
@@ -34,7 +37,7 @@ namespace Airslip.Identity.Api.Application.Implementations
             _validationSettings = options.Value;
         }
 
-        public async Task<RepositoryActionResultModel<ApiKeyModel>> CreateNewApiKey(CreateApiKeyModel createApiKeyModel)
+        public async Task<IResponse> CreateNewApiKey(CreateApiKeyModel createApiKeyModel)
         {
             UserToken userToken = _userTokenService.GetCurrentToken();
             ApiKeyModel apiKeyModel = _modelMapper.Create(createApiKeyModel);
@@ -47,43 +50,43 @@ namespace Airslip.Identity.Api.Application.Implementations
             
             RepositoryActionResultModel<ApiKeyModel> result = await _repository.Add(apiKeyModel);
 
-            if (result.ResultType == ResultType.Success)
-            {
-                GenerateApiKeyToken generateApiKeyToken = new(userToken.EntityId, 
-                    apiKeyModel.KeyValue, 
-                    userToken.AirslipUserType);
+            if (result is not SuccessfulActionResultModel<ApiKeyModel> success) 
+                return result;
+            
+            GenerateApiKeyToken generateApiKeyToken = new(userToken.EntityId, 
+                apiKeyModel.KeyValue, 
+                userToken.AirslipUserType);
 
-                NewToken newToken = _apiKeyTokenService.GenerateNewToken(generateApiKeyToken);
+            NewToken newToken = _apiKeyTokenService.GenerateNewToken(generateApiKeyToken);
 
-                result.CurrentVersion!.TokenValue = newToken.TokenValue;                
-            }
+            success.CurrentVersion!.TokenValue = newToken.TokenValue;
 
-            return result;
+            return success;
         }
 
-        public Task<RepositoryActionResultModel<ApiKeyModel>> ExpireApiKey(string id)
+        public Task<IResponse> ExpireApiKey(string id)
         {
             // TODO: Add deletion logic
             throw new NotImplementedException();
         }
 
-        public async Task<ApiKeyValidationResultModel> ValidateApiKey(ApiKeyValidationModel model)
+        public async Task<IResponse> ValidateApiKey(ApiKeyValidationModel model)
         {
-            var validator = new ApiKeyValidationModelValidator();
+            ApiKeyValidationModelValidator validator = new ApiKeyValidationModelValidator();
 
             if (model.VerificationToken == null || !model.VerificationToken.Equals(_validationSettings.VerificationToken))
             {
                 return new ApiKeyValidationResultModel(false, "Invalid verification token");
             }
 
-            var validationResult = await validator.ValidateAsync(model);
+            ValidationResult? validationResult = await validator.ValidateAsync(model);
 
             if (!validationResult.IsValid)
             {
                 return new ApiKeyValidationResultModel(false, validationResult.Errors.First().ErrorMessage);
             }
             
-            var apiKey = await _repository.GetApiKeyByKeyValue(model.ApiKey!);
+            ApiKey? apiKey = await _repository.GetApiKeyByKeyValue(model.ApiKey!);
             
             if (apiKey == null) return new ApiKeyValidationResultModel(false, 
                 "ApiKey not found");

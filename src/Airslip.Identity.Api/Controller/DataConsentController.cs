@@ -1,3 +1,4 @@
+using Airslip.Common.Auth.AspNetCore.Implementations;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
 using Airslip.Common.Types;
@@ -16,7 +17,7 @@ namespace Airslip.Identity.Api.Controller
     [ApiController]
     [ApiVersion(ApiConstants.VersionOne)]
     [Route("v{version:apiVersion}/users/data-consent")]
-    public class DataConsentController : ApiResponse
+    public class DataConsentController : ApiControllerBase
     {
         private readonly IDataConsentService _dataConsentService;
 
