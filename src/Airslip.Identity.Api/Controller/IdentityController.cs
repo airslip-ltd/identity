@@ -1,4 +1,5 @@
-﻿using Airslip.Common.Auth.Data;
+﻿using Airslip.Common.Auth.AspNetCore.Implementations;
+using Airslip.Common.Auth.Data;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
 using Airslip.Common.Types.Interfaces;
@@ -28,10 +29,9 @@ namespace Airslip.Identity.Api.Controller
 {
     [ApiController]
     [ApiVersion(ApiConstants.VersionOne)]
-    // ReSharper disable once RouteTemplates.RouteParameterConstraintNotResolved
     [Route("v{version:apiVersion}/identity")]
     [Produces(Json.MediaType)]
-    public class IdentityController : ApiResponse
+    public class IdentityController : ApiControllerBase
     {
         private readonly IMediator _mediator;
         private readonly PublicApiSetting _bankTransactionSettings;
@@ -77,41 +77,24 @@ namespace Airslip.Identity.Api.Controller
                 request.Password,
                 request.DeviceId);
 
-            IResponse getUserByEmailResponse = await _mediator.Send(loginUserCommand);
-            switch (getUserByEmailResponse)
-            {
-                case AuthenticatedUserResponse response:
-                    return Ok(response.AddHateoasLinks(_publicApiSettings.Base.BaseUri,
-                        _bankTransactionSettings.BaseUri, false,
-                        Alpha2CountryCodes.GB.ToString()));
-                case IncorrectPasswordResponse incorrectPasswordResponse:
-                    return Forbidden(incorrectPasswordResponse);
-                case NotFoundResponse response:
-                {
-                    if (request.CreateUserIfNotExists)
-                    {
-                        return await IdentityRegister(new RegisterRequest()
-                        {
-                            Email = request.Email,
-                            Password = request.Password,
-                            DeviceId = request.DeviceId,
-                            EntityId = request.EntityId,
-                            FirstName = request.FirstName,
-                            LastName = request.LastName,
-                            UserRole = UserRoles.User,
-                            AirslipUserType = request.AirslipUserType
-                        });
-                    }
+            IResponse result = await _mediator.Send(loginUserCommand);
 
-                    return NotFound(response);
-                }
-                case ErrorResponse response:
-                    return BadRequest(response);
-                case IFail response:
-                    return BadRequest(response);
-                default:
-                    throw new NotSupportedException();
+            if (result is NotFoundResponse && request.CreateUserIfNotExists)
+            {
+                return await IdentityRegister(new RegisterRequest
+                {
+                    Email = request.Email,
+                    Password = request.Password,
+                    DeviceId = request.DeviceId,
+                    EntityId = request.EntityId,
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    UserRole = UserRoles.User,
+                    AirslipUserType = request.AirslipUserType
+                });
             }
+
+            return HandleResponse<AuthenticatedUserResponse>(result);
         }
         
         [HttpPost("register")]
@@ -132,21 +115,9 @@ namespace Airslip.Identity.Api.Controller
                 AirslipUserType = request.AirslipUserType
             };
 
-            IResponse createUserResponse = await _mediator.Send(registerUserCommand);
+            IResponse response = await _mediator.Send(registerUserCommand);
 
-            return createUserResponse switch
-            {
-                AuthenticatedUserResponse response => Created(response.AddHateoasLinks(
-                    _publicApiSettings.Base.BaseUri,
-                    _bankTransactionSettings.BaseUri,
-                    true,
-                    Alpha2CountryCodes.GB.ToString())),
-                ConflictResponse response => Conflict(response),
-                NotFoundResponse r => NotFound(r),
-                ErrorResponse response => BadRequest(response),
-                IFail response => BadRequest(response),
-                _ => throw new NotSupportedException()
-            };
+            return HandleResponse<AuthenticatedUserResponse>(response);
         }
 
         [HttpPost("refresh")]
@@ -160,86 +131,8 @@ namespace Airslip.Identity.Api.Controller
                 request.RefreshToken);
 
             IResponse response = await _mediator.Send(command);
-            return response switch
-            {
-                AuthenticatedUserResponse r => Ok(r.AddHateoasLinks(
-                    _publicApiSettings.Base.BaseUri,
-                    _bankTransactionSettings.BaseUri,
-                    false,
-                    Alpha2CountryCodes.GB.ToString())),
-                NotFoundResponse r => NotFound(r),
-                ErrorResponse r => BadRequest(r),
-                IFail r => BadRequest(r),
-                _ => throw new NotSupportedException()
-            };
-        }
-
-        [HttpGet("google-login")]
-        public IActionResult GoogleLogin()
-        {
-            AuthenticationProperties properties = new() { RedirectUri = Url.Action("GoogleResponse") };
-            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
-        }
-
-        [ApiExplorerSettings(IgnoreApi = true)]
-        [HttpGet("google-response")]
-        public async Task<IActionResult> GoogleResponse()
-        {
-            AuthenticateResult result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
-
-            ClaimsIdentity? claimIdentity = result.Principal?.Identities.FirstOrDefault();
-
-            if (claimIdentity == null)
-                return BadRequest(new ExternalLoginFailed(GoogleDefaults.AuthenticationScheme));
-
-            ExternalLoginResponse externalLoginResponse = GetExternalLoginResponse(
-                claimIdentity,
-                result.Properties?.ExpiresUtc);
-
-            LoginExternalProviderCommand loginExternalProviderCommand = new(
-                externalLoginResponse.Email,
-                GoogleDefaults.AuthenticationScheme,
-                externalLoginResponse.DeviceId,
-                null,
-                null);
-
-            IResponse loginExternalProviderResponse = await _mediator.Send(loginExternalProviderCommand);
-
-            return loginExternalProviderResponse switch
-            {
-                AuthenticatedUserResponse response => Ok(response.AddHateoasLinks(
-                    _publicApiSettings.Base.BaseUri,
-                    _bankTransactionSettings.BaseUri,
-                    response.IsNewUser,
-                    Alpha2CountryCodes.GB.ToString())),
-                ErrorResponse response => BadRequest(response),
-                IFail response => BadRequest(response),
-                _ => throw new NotSupportedException()
-            };
-        }
-
-        [HttpPost("google")]
-        public async Task<IActionResult> GoogleSignin(GoogleSigninRequest request)
-        {
-            LoginExternalProviderCommand loginExternalProviderCommand = new(
-                request.Email,
-                GoogleDefaults.AuthenticationScheme,
-                request.DeviceId,
-                null, null);
-
-            IResponse loginExternalProviderResponse = await _mediator.Send(loginExternalProviderCommand);
-
-            return loginExternalProviderResponse switch
-            {
-                AuthenticatedUserResponse response => Ok(response.AddHateoasLinks(
-                    _publicApiSettings.Base.BaseUri,
-                    _bankTransactionSettings.BaseUri,
-                    response.IsNewUser,
-                    Alpha2CountryCodes.GB.ToString())),
-                ErrorResponse response => BadRequest(response),
-                IFail response => BadRequest(response),
-                _ => throw new NotSupportedException()
-            };
+            
+            return HandleResponse<AuthenticatedUserResponse>(response);
         }
 
         [HttpGet("logout")]
@@ -260,23 +153,7 @@ namespace Airslip.Identity.Api.Controller
 
             IResponse response = await _mediator.Send(command);
 
-            return response switch
-            {
-                ISuccess => NoContent(),
-                NotFoundResponse r => NotFound(r),
-                _ => BadRequest(response)
-            };
-        }
-
-        [HttpGet("password")]
-        public IActionResult ResetPassword([FromQuery] string token, [FromQuery] string email)
-        {
-            return Ok(new
-            {
-                Token = token.Replace(" ",
-                    "+"), // Need to find out if there is a better as the query string is losing the + character
-                Email = email
-            });
+            return HandleResponse<Success>(response);
         }
 
         [HttpPost("password")]
@@ -290,35 +167,7 @@ namespace Airslip.Identity.Api.Controller
 
             IResponse response = await _mediator.Send(command);
 
-            return response switch
-            {
-                ISuccess => Ok(response),
-                NotFoundResponse r => NotFound(r),
-                _ => BadRequest(response)
-            };
-        }
-
-        private static ExternalLoginResponse GetExternalLoginResponse(
-            ClaimsIdentity claimIdentity,
-            DateTimeOffset? expires)
-        {
-            var claims = claimIdentity.Claims.Select(claim => new
-            {
-                claim.Type,
-                claim.Value
-            }).ToList();
-
-            var firstNameClaim = claims.FirstOrDefault(x => x.Type.Contains("givenname"))!;
-            var surnameClaim = claims.FirstOrDefault(x => x.Type.Contains("surname"))!;
-            var emailAddressClaim = claims.FirstOrDefault(x => x.Type.Contains("emailaddress"))!;
-            var nameIdentifier = claims.FirstOrDefault(x => x.Type.Contains("nameidentifier"))!;
-
-            return new ExternalLoginResponse(
-                firstNameClaim.Value,
-                surnameClaim.Value,
-                emailAddressClaim.Value,
-                nameIdentifier.Value,
-                expires);
+            return HandleResponse<Success>(response);
         }
     }
 }

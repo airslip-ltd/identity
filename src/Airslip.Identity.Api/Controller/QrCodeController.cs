@@ -1,3 +1,4 @@
+using Airslip.Common.Auth.AspNetCore.Implementations;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
 using Airslip.Common.Repository.Types.Models;
@@ -17,7 +18,7 @@ namespace Airslip.Identity.Api.Controller
     [ApiController]
     [ApiVersion(ApiConstants.VersionOne)]
     [Route("v{version:apiVersion}/qrcode")]
-    public class QrCodeController : ApiResponse
+    public class QrCodeController : ApiControllerBase
     {
         private readonly IQrCodeService _qrCodeService;
 
