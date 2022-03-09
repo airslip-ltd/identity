@@ -10,9 +10,9 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      DOTNET_CORE_VERSION: 5.0.x
+      DOTNET_CORE_VERSION: 6.0.x
       BUILD_PATH: ./src/Airslip.Identity.sln
-      BUILD_OUTPUT_PATH: ./src/Airslip.Identity.Api/bin/Debug/net5.0
+      BUILD_OUTPUT_PATH: ./src/Airslip.Identity.Api/bin/Debug/net6.0
       STARTUP_ASSEMBLY: Airslip.Identity.Api.dll
       SWAGGER_FILENAME: Airslip.Identity.Api.json
       SWAGGER_DOC_NAME: v1
@@ -26,7 +26,7 @@ jobs:
     - name: Add nuget feed
       run: dotnet nuget add source --username ${{ secrets.PACKAGE_USER }} --password ${{ secrets.PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/airslip-ltd/index.json"
     - name: Install Swagger toolset
-      run: dotnet tool install -g --version 6.1.4 Swashbuckle.AspNetCore.Cli
+      run: dotnet tool install -g --version 6.2.3 Swashbuckle.AspNetCore.Cli
 
     - name: Install dependencies
       run: dotnet restore ${{ env.BUILD_PATH }}
