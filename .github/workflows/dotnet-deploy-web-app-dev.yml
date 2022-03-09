@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: Development
     env:
-      DOTNET_CORE_VERSION: 5.0.x
+      DOTNET_CORE_VERSION: 6.0.x
       PUBLISH_PATH: ./src/Airslip.Identity.Api
       RESOURCE_GROUP_NAME: airslip-dev-resources
       APPSERVICE_NAME: airslip-dev-identity-api

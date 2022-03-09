@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: QA
     env:
-      DOTNET_CORE_VERSION: 5.0.x
+      DOTNET_CORE_VERSION: 6.0.x
       PUBLISH_PATH: ./src/Airslip.Identity.Api
       RESOURCE_GROUP_NAME: airslip-qa-resources
       APPSERVICE_NAME: airslip-qa-identity-api
@@ -59,7 +59,7 @@ jobs:
     needs: [deploy-web-app-qa]
     environment: Production
     env:
-      DOTNET_CORE_VERSION: 5.0.x
+      DOTNET_CORE_VERSION: 6.0.x
       PUBLISH_PATH: ./src/Airslip.Identity.Api
       RESOURCE_GROUP_NAME: airslip-prod-resources
       APPSERVICE_NAME: airslip-prod-identity-api
