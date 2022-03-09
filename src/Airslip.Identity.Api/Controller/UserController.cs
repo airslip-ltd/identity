@@ -11,7 +11,6 @@ using Airslip.Common.Auth.AspNetCore.Attributes;
 using Airslip.Common.Auth.AspNetCore.Implementations;
 using Airslip.Common.Repository.Types.Models;
 using Airslip.Identity.Api.Application.Identity;
-using Airslip.Identity.Api.Application.Implementations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -27,18 +26,15 @@ namespace Airslip.Identity.Api.Controller
     public class UserController : ApiControllerBase
     {
         private readonly IUserService _userService;
-        private readonly IUserSearchService _userSearchService;
 
         public UserController(
             ITokenDecodeService<UserToken> tokenDecodeService, 
             IOptions<PublicApiSettings> publicApiOptions, 
             IUserService userService, 
-            IUserSearchService userSearchService,
             ILogger logger) : 
             base(tokenDecodeService, publicApiOptions, logger)
         {
             _userService = userService;
-            _userSearchService = userSearchService;
         }
         
         [HttpGet("")]
@@ -66,17 +62,16 @@ namespace Airslip.Identity.Api.Controller
             return HandleResponse<SuccessfulActionResultModel<UserModel>>(response);
         }
         
-        [HttpGet("all")]
-        [ProducesResponseType(typeof(SuccessfulActionResultModel<UserModel>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        [HttpPost]
+        [ProducesResponseType(typeof(EntitySearchResponse<UserModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status400BadRequest)]
         [JwtAuthorize(ApplicationRoles = ApplicationRoles.UserManager)]
-        public async Task<IActionResult> GetAll()
+        [Route("search")]
+        public async Task<IActionResult> Search([FromBody] EntitySearchQueryModel query)
         {
-            IResponse response = await _userSearchService.FindUsers();
+            IResponse response = await _userService.Search(query);
 
-            return HandleResponse<UserSearchResults>(response);
+            return HandleResponse<EntitySearchResponse<UserModel>>(response);
         }
         
         [HttpPost("{id}")]
@@ -92,27 +87,6 @@ namespace Airslip.Identity.Api.Controller
             return HandleResponse<SuccessfulActionResultModel<UserModel>>(response);
         }
         
-        [HttpPut("")]
-        [ProducesResponseType(typeof(SuccessfulActionResultModel<UserModel>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        [JwtAuthorize(ApplicationRoles = ApplicationRoles.UserManager)]
-        public async Task<IActionResult> Add([FromBody]UserAddModel request)
-        {
-            RegisterUserCommand registerUserCommand = new(
-                request.Email,
-                request.FirstName,
-                request.LastName,
-                null,
-                null,
-                request.UserRole);
-            
-            IResponse response = await _userService.Add(registerUserCommand, CancellationToken.None);
-
-            return HandleResponse<SuccessfulActionResultModel<UserModel>>(response);
-        }
-        
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(SuccessfulActionResultModel<UserModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
@@ -122,19 +96,6 @@ namespace Airslip.Identity.Api.Controller
         public async Task<IActionResult> Delete([FromRoute] string id)
         {
             IResponse response = await _userService.Delete(id);
-
-            return HandleResponse<SuccessfulActionResultModel<UserModel>>(response);
-        }
-        
-        [HttpPost("{id}/setrole/{roleName}")]
-        [ProducesResponseType(typeof(SuccessfulActionResultModel<UserModel>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        [JwtAuthorize(ApplicationRoles = ApplicationRoles.UserManager)]
-        public async Task<IActionResult> SetRole([FromRoute] string id, [FromRoute] string roleName)
-        {
-            IResponse response = await _userService.SetRole(id, roleName);
 
             return HandleResponse<SuccessfulActionResultModel<UserModel>>(response);
         }

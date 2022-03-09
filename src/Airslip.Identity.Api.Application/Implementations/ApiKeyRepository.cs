@@ -4,9 +4,7 @@ using Airslip.Common.Repository.Types.Interfaces;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Models;
-using JetBrains.Annotations;
 using MongoDB.Driver.Linq;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Airslip.Identity.Api.Application.Implementations

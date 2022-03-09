@@ -8,6 +8,5 @@ namespace Airslip.Identity.Api.Application.Interfaces
     {
         Task<User?> GetByEmail(string email);
         Task UpdateOrReplaceRefreshToken(string id, string deviceId, string token);
-        Task<string?> GetProviderId(string id, string provider);
     }
 }
