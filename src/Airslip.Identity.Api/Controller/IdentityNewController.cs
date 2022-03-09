@@ -79,6 +79,7 @@ namespace Airslip.Identity.Api.Controller
         [Route("confirm-email")]
         [ProducesResponseType( StatusCodes.Status204NoContent)]
         [ProducesResponseType( StatusCodes.Status400BadRequest)]
+        [HttpPost]
         public async Task<IActionResult> ConfirmEmail([FromQuery] string email, string token)
         {
             try
