@@ -1,4 +1,5 @@
-﻿using Airslip.Common.Services.MongoDb;
+﻿using Airslip.Common.Repository.Types.Interfaces;
+using Airslip.Common.Services.MongoDb;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Services.MongoDb;
 using Airslip.Identity.Services.MongoDb.Implementations;
@@ -16,7 +17,10 @@ namespace Airslip.Identity.Api
                 .services
                 .AddSingleton<IIdentityContext>(provider => provider.GetService<MongoDbContext>()!)
                 .AddScoped<IUserManagerService, UserManagerService>()
-                .AddSingleton<IMongoDbMigrator, MongoDbMigrator>();
+                .AddSingleton<IMongoDbMigrator, MongoDbMigrator>()
+                .AddSingleton<SearchContext>()
+                .AddSingleton<ISearchContext>(provider => provider.GetService<SearchContext>()!);
+
             return services;
         }
     }
