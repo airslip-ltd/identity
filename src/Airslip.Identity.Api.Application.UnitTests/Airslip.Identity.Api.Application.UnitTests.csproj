@@ -3,22 +3,22 @@
 	<Import Project="..\common.props" />
 
     <ItemGroup>
-        <PackageReference Include="Airslip.Common.Types" Version="3.7.4" />
-        <PackageReference Include="FluentAssertions" Version="6.1.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(NetTestSdk)" />
-        <PackageReference Include="Moq" Version="4.16.1" />
-        <PackageReference Include="xunit" Version="$(Xunit)" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitRunner)">
+        <PackageReference Include="Airslip.Common.Types" Version="6.0.11" />
+        <PackageReference Include="FluentAssertions" Version="6.5.1" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+        <PackageReference Include="Moq" Version="4.17.2" />
+        <PackageReference Include="xunit" Version="2.4.1" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="coverlet.collector" Version="$(Coverlet)">
+        <PackageReference Include="coverlet.collector" Version="3.1.2">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="5.0.10" />
-		<PackageReference Include="Serilog.AspNetCore" Version="$(SerilogAspNetCore)" />
-		<PackageReference Include="Serilog.Sinks.Logz.Io" Version="5.1.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.3" />
+		<PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
+		<PackageReference Include="Serilog.Sinks.Logz.Io" Version="6.0.0" />
 	</ItemGroup>
 
     <ItemGroup>

@@ -1,12 +1,11 @@
 using Airslip.Common.Auth.Data;
-using Airslip.Common.Auth.Extensions;
 using Airslip.Common.Auth.Implementations;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
 using Airslip.Common.Repository.Data;
-using Airslip.Common.Repository.Entities;
-using Airslip.Common.Repository.Interfaces;
-using Airslip.Common.Repository.Models;
+using Airslip.Common.Repository.Types.Entities;
+using Airslip.Common.Repository.Types.Interfaces;
+using Airslip.Common.Repository.Types.Models;
 using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Types.Failures;
 using Airslip.Common.Utilities.Extensions;

@@ -1,7 +1,7 @@
 ﻿using Airslip.Common.Auth.Data;
-using Airslip.Common.Repository.Entities;
-using Airslip.Common.Repository.Enums;
-using Airslip.Common.Repository.Interfaces;
+using Airslip.Common.Repository.Types.Entities;
+using Airslip.Common.Repository.Types.Enums;
+using Airslip.Common.Repository.Types.Interfaces;
 using Airslip.Common.Types.Enums;
 using JetBrains.Annotations;
 using System;

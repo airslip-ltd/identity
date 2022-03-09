@@ -1,4 +1,4 @@
-using Airslip.Common.Repository.Interfaces;
+using Airslip.Common.Repository.Types.Interfaces;
 using Airslip.Identity.Api.Contracts.Entities;
 using System.Threading.Tasks;
 

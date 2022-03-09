@@ -3,35 +3,33 @@
 	<Import Project="..\common.props" />
 
 	<ItemGroup>
-		<PackageReference Include="Airslip.Common.Utilities" Version="3.6.12" />
-		<PackageReference Include="JetBrains.Annotations" Version="$(JetBrainsAnnoations)" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="$(NetVersion)" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(NetVersion)" NoWarn="NU1605" />
-		<PackageReference Include="Microsoft.Extensions.Http.Polly" Version="$(NetVersion)" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(NetVersion)" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="$(NetVersion)" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="$(NetVersion)" />
-		<PackageReference Include="Microsoft.Extensions.Options" Version="$(NetVersion)" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-		<PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="$(MongoDbIdentity)" />
-		<PackageReference Include="Serilog.AspNetCore" Version="$(SerilogAspNetCore)" />
-		<PackageReference Include="Serilog.Sinks.Logz.Io" Version="5.1.0" />
+		<PackageReference Include="Airslip.Common.Utilities" Version="6.0.4" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.3" NoWarn="NU1605" />
+		<PackageReference Include="Microsoft.Extensions.Http.Polly" Version="6.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
+		<PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="3.1.2" />
+		<PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
+		<PackageReference Include="Serilog.Sinks.Logz.Io" Version="6.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Airslip.Common.AppIdentifiers" Version="1.0.4" />
-		<PackageReference Include="Airslip.Common.Auth.AspNetCore" Version="3.7.3" />
-		<PackageReference Include="Airslip.Common.Auth" Version="3.7.2" />
-		<PackageReference Include="Airslip.Common.Middleware" Version="3.7.2" />
-		<PackageReference Include="Airslip.Common.Monitoring" Version="3.6.0" />
-		<PackageReference Include="Airslip.Common.Types" Version="3.7.4" />
+		<PackageReference Include="Airslip.Common.AppIdentifiers" Version="6.0.0" />
+		<PackageReference Include="Airslip.Common.Auth.AspNetCore" Version="6.0.1" />
+		<PackageReference Include="Airslip.Common.Auth" Version="6.0.0" />
+		<PackageReference Include="Airslip.Common.Middleware" Version="6.0.0" />
+		<PackageReference Include="Airslip.Common.Monitoring" Version="6.0.0" />
+		<PackageReference Include="Airslip.Common.Types" Version="6.0.11" />
 
-		<PackageReference Include="Airslip.Common.Repository" Version="3.7.0" />
-		<PackageReference Include="Airslip.Common.Services.AutoMapper" Version="3.7.0" />
+		<PackageReference Include="Airslip.Common.Repository" Version="6.1.4" />
+		<PackageReference Include="Airslip.Common.Services.AutoMapper" Version="6.0.0" />
 		
-		<PackageReference Include="Airslip.Email.Client" Version="1.3.0" />
-		<PackageReference Include="Airslip.Infrastructure.BlobStorage" Version="3.6.0" />
-		<PackageReference Include="Airslip.Yapily.Client" Version="4.2.2" />
+		<PackageReference Include="Airslip.Email.Client" Version="6.0.0" />
+		<PackageReference Include="Airslip.Infrastructure.BlobStorage" Version="6.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

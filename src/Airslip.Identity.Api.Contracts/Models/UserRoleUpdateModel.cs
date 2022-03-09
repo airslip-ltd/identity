@@ -1,5 +1,5 @@
-﻿using Airslip.Common.Repository.Enums;
-using Airslip.Common.Repository.Interfaces;
+﻿using Airslip.Common.Repository.Types.Enums;
+using Airslip.Common.Repository.Types.Interfaces;
 using JetBrains.Annotations;
 
 namespace Airslip.Identity.Api.Contracts.Models

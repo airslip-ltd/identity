@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace Airslip.Identity.Api.Application
 {
     public class ValidatorBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>, IDisposable
-        where TRequest : notnull
+        where TRequest : notnull, IRequest<TResponse>
     {
         private readonly ILogger _logger;
         private readonly IServiceScope _scope;
