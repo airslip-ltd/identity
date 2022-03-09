@@ -8,17 +8,17 @@ namespace Airslip.Identity.Api.Application.Identity
 {
     public class GenerateRefreshTokenCommandHandler : IRequestHandler<GenerateRefreshTokenCommand, IResponse>
     {
-        private readonly IUserService _userService;
+        private readonly IUserLifecycle _userLifecycle;
 
         public GenerateRefreshTokenCommandHandler(
-            IUserService userService)
+            IUserLifecycle userLifecycle)
         {
-            _userService = userService;
+            _userLifecycle = userLifecycle;
         }
 
         public async Task<IResponse> Handle(GenerateRefreshTokenCommand request, CancellationToken cancellationToken)
         {
-            return await _userService.GenerateRefreshToken(request.DeviceId, request.Token);
+            return await _userLifecycle.GenerateRefreshToken(request.DeviceId, request.Token);
         }
     }
 }

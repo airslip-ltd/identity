@@ -12,17 +12,17 @@ namespace Airslip.Identity.Api.Application.Identity
 {
     public class GenerateJwtBearerTokenCommandHandler : IRequestHandler<LoginUserCommand, IResponse>
     {
-        private readonly IUserService _userService;
+        private readonly IUserLifecycle _userLifecycle;
         private readonly IIdentityContext _context;
         private readonly IUserManagerService _userManagerService;
         private readonly ILogger _logger;
 
         public GenerateJwtBearerTokenCommandHandler(
-            IUserService userService,
+            IUserLifecycle userLifecycle,
             IIdentityContext context,
             IUserManagerService userManagerService)
         {
-            _userService = userService;
+            _userLifecycle = userLifecycle;
             _context = context;
             _userManagerService = userManagerService;
             _logger = Log.Logger;
@@ -46,14 +46,10 @@ namespace Airslip.Identity.Api.Application.Identity
 
             user = (await _context.GetEntity<User>(user.Id))!;
 
-            string? yapilyUserId = user.GetOpenBankingProviderId("Yapily");
-
-            if (yapilyUserId is null)
-                return new InvalidResource("YapilyUserId", "Doesn't exist");
 
             _logger.Information("User {UserId} successfully logged in", user.Id);
 
-            return await _userService.GenerateUserResponse(user, false, yapilyUserId, request.DeviceId);
+            return await _userLifecycle.GenerateUserResponse(user, false, request.DeviceId);
         }
     }
 }

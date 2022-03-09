@@ -27,6 +27,7 @@ namespace Airslip.Identity.Api.Contracts.Entities
         public AirslipUserType AirslipUserType { get; set; } = AirslipUserType.Standard;
         public string? EntityId { get; set; }
 
+        [Obsolete]
         public ICollection<OpenBankingProvider> OpenBankingProviders { get; private set; } =
             new List<OpenBankingProvider>(1);
 
@@ -42,16 +43,6 @@ namespace Airslip.Identity.Api.Contracts.Entities
             FirstName = firstName;
             LastName = lastName;
             UserRole = userRole ?? UserRoles.User;
-        }
-        
-        public void AddOpenBankingProvider(OpenBankingProvider openBankingProvider)
-        {
-            OpenBankingProviders.Add(openBankingProvider);
-        }
-        
-        public string? GetOpenBankingProviderId(string name)
-        {
-            return OpenBankingProviders.FirstOrDefault(obp => obp.Name == name)?.Id;
         }
         
         public void AddRefreshToken(string deviceId, string token)

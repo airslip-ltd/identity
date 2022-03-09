@@ -18,15 +18,6 @@ namespace Airslip.Identity.Services.MongoDb.Implementations
         {
             mongoDbMigrator.Migrate(new Version(1,0,1));
         }
-        
-        public async Task<string?> GetProviderId(string id, string provider)
-        {
-            IMongoCollection<User> collection = Database.CollectionByType<User>();
-            User? user = await collection.Find(user => user.Id == id).FirstOrDefaultAsync();
-            return user.OpenBankingProviders.Where(o => o.Name == provider)
-                .Select(u => u.Id)
-                .FirstOrDefault();
-        }
 
         public async Task<User?> GetByEmail(string email)
         {

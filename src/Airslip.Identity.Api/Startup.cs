@@ -16,7 +16,6 @@ using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Models;
 using Airslip.Infrastructure.BlobStorage;
-using Airslip.Yapily.Client;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Builder;
@@ -32,7 +31,6 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.IO;
 using System.Reflection;
-using Polly;
 using Serilog;
 using Airslip.Common.Auth.AspNetCore.Extensions;
 using Airslip.Common.Auth.AspNetCore.Middleware;
@@ -42,7 +40,6 @@ using Airslip.Common.Monitoring.Implementations.Checks;
 using Airslip.Common.Repository.Implementations;
 using Airslip.Common.Repository.Types.Interfaces;
 using Airslip.Identity.Services.MongoDb;
-using Airslip.Yapily.Client.Contracts;
 
 namespace Airslip.Identity.Api
 {
@@ -69,13 +66,13 @@ namespace Airslip.Identity.Api
             services
                 .AddOptions()
                 .Configure<PublicApiSettings>(Configuration.GetSection(nameof(PublicApiSettings)))
-                .Configure<YapilySettings>(Configuration.GetSection(nameof(YapilySettings)))
                 .Configure<EmailConfigurationSettings>(Configuration.GetSection(nameof(EmailConfigurationSettings)))
                 .Configure<WelcomeSettings>(Configuration.GetSection(nameof(WelcomeSettings)))
                 .Configure<EnvironmentSettings>(Configuration.GetSection(nameof(EnvironmentSettings)))
                 .Configure<ApiKeyValidationSettings>(Configuration.GetSection(nameof(ApiKeyValidationSettings)));
 
             services
+                .AddScoped<IUserLifecycle, UserLifecycle>()
                 .AddScoped<IUserService, UserService>();
 
             services
@@ -112,22 +109,6 @@ namespace Airslip.Identity.Api
                     Configuration["MongoDbSettings:ConnectionString"],
                     Configuration["MongoDbSettings:DatabaseName"])
                 .AddDefaultTokenProviders();
-
-            services
-                .AddHttpClient<IYapilyClient>(
-                    nameof(YapilyClient), 
-                    (serviceProvider, yapilyHttpClient) =>
-                    {
-                        IOptions<YapilySettings> yapilySettingsOptions =
-                            serviceProvider.GetRequiredService<IOptions<YapilySettings>>();
-
-                        yapilyHttpClient.AddDefaults(
-                            yapilySettingsOptions.Value.BaseUri,
-                            "Basic",
-                            $"{yapilySettingsOptions.Value.ApiKey}:{yapilySettingsOptions.Value.ApiSecret}");
-                    })
-                .AddTransientHttpErrorPolicy(p =>
-                    p.WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))));
 
             services.AddBlobStorage(Configuration);
 
@@ -194,8 +175,6 @@ namespace Airslip.Identity.Api
                         opt => opt.Ignore())
                     .ForMember(o => o.UserRole, 
                         opt => opt.Ignore())
-                    .ForMember(o => o.OpenBankingProviders, 
-                        opt => opt.Ignore())
                     .ReverseMap()
                     .ForMember(o => o.RefreshTokens, 
                         opt => opt.Ignore())
@@ -209,7 +188,6 @@ namespace Airslip.Identity.Api
             services.AddScoped<IDataConsentService, DataConsentService>();
             services.AddScoped<IUnregisteredUserService, UnregisteredUserService>();
             
-            services.AddScoped<IUserSearchService, UserSearchService>();
             services.AddScoped(typeof(IEntitySearch<>), typeof(EntitySearch<>) );
 
             services
@@ -221,8 +199,7 @@ namespace Airslip.Identity.Api
                 });
 
             services
-                .AddMongoServices(Configuration)
-                .AddYapily(Configuration);
+                .AddMongoServices(Configuration);
 
             services
                 .UseHealthChecks()

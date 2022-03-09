@@ -8,17 +8,17 @@ namespace Airslip.Identity.Api.Application.Identity
 {
     public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, IResponse>
     {
-        private readonly IUserService _userService;
+        private readonly IUserLifecycle _userLifecycle;
 
         public RegisterUserCommandHandler(
-            IUserService userService)
+            IUserLifecycle userLifecycle)
         {
-            _userService = userService;
+            _userLifecycle = userLifecycle;
         }
 
         public async Task<IResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            return await _userService.Register(request, cancellationToken);
+            return await _userLifecycle.Register(request, cancellationToken);
         }
     }
 }
