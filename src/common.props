@@ -1,52 +1,8 @@
 ﻿<Project>
-
 	<PropertyGroup>
-		<TargetFramework>net5.0</TargetFramework>
-		<NetVersion>5.0.*</NetVersion>
+		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
 		<LangVersion>latest</LangVersion>
-	</PropertyGroup>
-
-	<PropertyGroup>
-		<AspNetCoreAuthentication>2.2.0</AspNetCoreAuthentication>
-		<AspNetCoreHttpAbstractions>2.2.0</AspNetCoreHttpAbstractions>
-		<AzureCosmos>3.17.0</AzureCosmos>
-		<BlobStorage>12.8.0</BlobStorage>
-		<Coverlet>3.1.0</Coverlet>
-		<FluentAssertions>6.1.0</FluentAssertions>
-		<FluentValidation>10.3.3</FluentValidation>
-		<IdentityJwt>6.12.2</IdentityJwt>
-		<JetBrainsAnnoations>2021.2.0</JetBrainsAnnoations>
-		<MediatR>9.0.0</MediatR>
-		<MicrosoftAspNetCoreHttp>2.2.0</MicrosoftAspNetCoreHttp>
-		<MicrosoftAspNetWebApiClient>5.2.7</MicrosoftAspNetWebApiClient>
-		<MongoDb>2.13.1</MongoDb>
-		<Moq>4.16.1</Moq>
-		<NetTestSdk>16.11.0</NetTestSdk>
-		<MongoDbIdentity>3.1.1</MongoDbIdentity>
-		<NewtonsoftJson>13.0.1</NewtonsoftJson>
-		<SerilogAspNetCore>4.1.0</SerilogAspNetCore>
-		<SerilogSinkLogzIo>3.0.1</SerilogSinkLogzIo>
-		<SerilogEnrichersCorrelationId>3.0.1</SerilogEnrichersCorrelationId>
-		<Swashbuckle>6.2.1</Swashbuckle>
-		<Xunit>2.4.1</Xunit>
-		<XunitRunner>2.4.3</XunitRunner>
-		<AutoMapper>10.1.1</AutoMapper>
-		<QRCoder>1.4.1</QRCoder>
-	</PropertyGroup>
-
-	<PropertyGroup>
-		<AirslipCommonAuth>1.1.2</AirslipCommonAuth>
-		<AirslipCommonRepository>1.1.2</AirslipCommonRepository>
-		<AirslipCommonServicesAutoMapper>1.0.0</AirslipCommonServicesAutoMapper>
-		<AirslipCommonMiddleware>1.0.1</AirslipCommonMiddleware>
-		<AirslipCommonTypes>3.2.6</AirslipCommonTypes>
-		<AirslipCommonMonitoring>1.0.2</AirslipCommonMonitoring>
-		<AirslipEmailClient>1.1.0</AirslipEmailClient>
-		<AirslipYapilyClient>2.0.3</AirslipYapilyClient>
-		<AirslipYapilyClientContracts>2.0.3</AirslipYapilyClientContracts>
-		<AirslipInfrastructureBlobStorage>0.1.0</AirslipInfrastructureBlobStorage>
 	</PropertyGroup>
 </Project>

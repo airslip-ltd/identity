@@ -1,9 +1,9 @@
 ﻿using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
 using Airslip.Common.Types.Interfaces;
-using Airslip.Common.Repository.Enums;
-using Airslip.Common.Repository.Interfaces;
-using Airslip.Common.Repository.Models;
+using Airslip.Common.Repository.Types.Enums;
+using Airslip.Common.Repository.Types.Interfaces;
+using Airslip.Common.Repository.Types.Models;
 using Airslip.Common.Types.Configuration;
 using Airslip.Common.Types.Failures;
 using Airslip.Identity.Api.Contracts;

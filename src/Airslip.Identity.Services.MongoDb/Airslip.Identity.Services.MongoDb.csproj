@@ -3,16 +3,16 @@
 	<Import Project="..\common.props" />
 
 	<ItemGroup>
-		<PackageReference Include="Airslip.Common.Services.MongoDb" Version="3.7.0" />
-		<PackageReference Include="Airslip.Common.Utilities" Version="3.6.12" />
-		<PackageReference Include="Microsoft.Extensions.Options" Version="$(NetVersion)" />
-		<PackageReference Include="MongoDB.Driver" Version="$(MongoDb)" />
-		<PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="$(MongoDbIdentity)" />
-		<PackageReference Include="MongoDBMigrations" Version="2.1.0" />
+		<PackageReference Include="Airslip.Common.Services.MongoDb" Version="6.0.0" />
+		<PackageReference Include="Airslip.Common.Utilities" Version="6.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+		<PackageReference Include="MongoDB.Driver" Version="2.14.1" />
+		<PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="3.1.2" />
+		<PackageReference Include="MongoDBMigrations" Version="2.2.0" />
 	</ItemGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="Airslip.Common.Types" Version="3.7.4" />
+		<PackageReference Include="Airslip.Common.Types" Version="6.0.11" />
 	</ItemGroup>
 
 	<ItemGroup>

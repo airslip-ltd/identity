@@ -1,6 +1,5 @@
 ﻿using Airslip.Common.Types.Interfaces;
 using Newtonsoft.Json;
-using System;
 using System.Web;
 
 namespace Airslip.Identity.Api.Contracts.Responses

@@ -1,6 +1,6 @@
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
-using Airslip.Common.Repository.Models;
+using Airslip.Common.Repository.Types.Models;
 using Airslip.Common.Types;
 using Airslip.Common.Types.Configuration;
 using Airslip.Identity.Api.Application.Interfaces;

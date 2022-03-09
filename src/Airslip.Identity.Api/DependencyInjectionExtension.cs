@@ -13,6 +13,7 @@ namespace Airslip.Identity.Api
         {
             services
                 .AddAirslipMongoDb<MongoDbContext>(configuration, Initialisation.InitialiseSettings)
+                .services
                 .AddSingleton<IIdentityContext>(provider => provider.GetService<MongoDbContext>()!)
                 .AddScoped<IUserManagerService, UserManagerService>()
                 .AddSingleton<IMongoDbMigrator, MongoDbMigrator>();

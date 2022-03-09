@@ -1,5 +1,5 @@
 using Airslip.Common.Auth.Data;
-using Airslip.Common.Repository.Entities;
+using Airslip.Common.Repository.Types.Entities;
 using Airslip.Common.Services.MongoDb;
 using Airslip.Common.Services.MongoDb.Extensions;
 using Airslip.Identity.Api.Contracts.Entities;

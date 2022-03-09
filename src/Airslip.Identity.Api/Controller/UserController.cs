@@ -1,7 +1,6 @@
 using Airslip.Common.Auth.Data;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
-using Airslip.Common.Repository.Models;
 using Airslip.Common.Types;
 using Airslip.Common.Types.Configuration;
 using Airslip.Common.Types.Failures;
@@ -9,6 +8,7 @@ using Airslip.Common.Types.Interfaces;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Models;
 using Airslip.Common.Auth.AspNetCore.Attributes;
+using Airslip.Common.Repository.Types.Models;
 using Airslip.Identity.Api.Application.Identity;
 using Airslip.Identity.Api.Application.Implementations;
 using Microsoft.AspNetCore.Http;
@@ -57,7 +57,7 @@ namespace Airslip.Identity.Api.Controller
         [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        [JwtAuthorize(ApplicationRoles.UserManager)]
+        [JwtAuthorize(ApplicationRoles = ApplicationRoles.UserManager)]
         public async Task<IActionResult> Get([FromRoute] string id)
         {
             IResponse response = await _userService.Get(id);
@@ -70,7 +70,7 @@ namespace Airslip.Identity.Api.Controller
         [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        [JwtAuthorize(ApplicationRoles.UserManager)]
+        [JwtAuthorize(ApplicationRoles = ApplicationRoles.UserManager)]
         public async Task<IActionResult> GetAll()
         {
             IResponse response = await _userSearchService.FindUsers();
@@ -83,7 +83,7 @@ namespace Airslip.Identity.Api.Controller
         [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        [JwtAuthorize(ApplicationRoles.UserManager)]
+        [JwtAuthorize(ApplicationRoles = ApplicationRoles.UserManager)]
         public async Task<IActionResult> Update([FromRoute] string id, [FromBody] UserModel model)
         {
             IResponse response = await _userService.Update(id, model);
@@ -96,7 +96,7 @@ namespace Airslip.Identity.Api.Controller
         [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        [JwtAuthorize(ApplicationRoles.UserManager)]
+        [JwtAuthorize(ApplicationRoles = ApplicationRoles.UserManager)]
         public async Task<IActionResult> Add([FromBody]UserAddModel request)
         {
             RegisterUserCommand registerUserCommand = new(
@@ -117,7 +117,7 @@ namespace Airslip.Identity.Api.Controller
         [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        [JwtAuthorize(ApplicationRoles.UserManager)]
+        [JwtAuthorize(ApplicationRoles = ApplicationRoles.UserManager)]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {
             IResponse response = await _userService.Delete(id);
@@ -130,7 +130,7 @@ namespace Airslip.Identity.Api.Controller
         [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        [JwtAuthorize(ApplicationRoles.UserManager)]
+        [JwtAuthorize(ApplicationRoles = ApplicationRoles.UserManager)]
         public async Task<IActionResult> SetRole([FromRoute] string id, [FromRoute] string roleName)
         {
             IResponse response = await _userService.SetRole(id, roleName);

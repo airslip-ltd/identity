@@ -1,5 +1,5 @@
-using Airslip.Common.Repository.Interfaces;
-using Airslip.Common.Repository.Models;
+using Airslip.Common.Repository.Types.Interfaces;
+using Airslip.Common.Repository.Types.Models;
 using Airslip.Common.Types;
 using Airslip.Common.Types.Enums;
 using Airslip.Common.Types.Failures;
@@ -7,7 +7,6 @@ using Airslip.Common.Types.Interfaces;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Models;
 using Airslip.Identity.Api.Contracts.Responses;
-using Elastic.CommonSchema;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,13 +18,14 @@ namespace Airslip.Identity.Api.Application.Implementations
     {
         private readonly IIdentityContext _context;
         private readonly IModelMapper<UserModel> _modelMapper;
-        private readonly IUserRepository _userRepository;
+        private readonly IRepository<User, UserModel> _userRepository;
         private readonly IUserManagerService _userManagerService;
 
         public UnregisteredUserService(
             IIdentityContext context,
             IModelMapper<UserModel> modelMapper,
-            IUserRepository userRepository, IUserManagerService userManagerService)
+            IRepository<User, UserModel> userRepository, 
+            IUserManagerService userManagerService)
         {
             _context = context;
             _modelMapper = modelMapper;
