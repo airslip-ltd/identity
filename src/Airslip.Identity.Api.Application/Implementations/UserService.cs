@@ -103,6 +103,7 @@ namespace Airslip.Identity.Api.Application.Implementations
                 .GetSearchResults<User>(query,
                     new List<SearchFilterModel>
                     {
+                        new(nameof(User.EntityStatus), EntityStatus.Active),
                         new(nameof(User.EntityId), _userToken.EntityId),
                         new(nameof(User.AirslipUserType), _userToken.AirslipUserType)
                     });
