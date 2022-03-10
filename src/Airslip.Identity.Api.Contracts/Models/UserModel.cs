@@ -19,10 +19,9 @@ namespace Airslip.Identity.Api.Contracts.Models
         public string? FirstName { get; init; }
         public string? LastName { get; init; }
         public string? DisplayName { get; set; }
-        public string? UserRole { get; private set; }
+        public string? UserRole { get; set; }
         public long CreatedDate { get; init; } = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         public bool BiometricOn { get; private set; }
-
         public bool AccountVerified { get; private set; }
         [JsonIgnore]
         public BasicAuditInformation? AuditInformation { get; set; }

@@ -11,4 +11,5 @@ public interface IUserService
     Task<IResponse> Delete(string id, string? userId = null);
     Task<IResponse> Get(string id);
     Task<IResponse> Search(EntitySearchQueryModel query);
+    Task<IResponse> Create(UserModel model);
 }

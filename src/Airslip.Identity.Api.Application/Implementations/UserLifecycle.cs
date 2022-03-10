@@ -151,7 +151,7 @@ namespace Airslip.Identity.Api.Application.Implementations
             if (user is null) {
                 User newUser = new(model.Email, model.FirstName, model.LastName, userRole)
                 {
-                    DisplayName = $"{model.FirstName} {model.LastName}".Trim(),
+                    DisplayName = model.DisplayName ?? $"{model.FirstName} {model.LastName}".Trim(),
                     EntityId = _userToken.IsAuthenticated ?? false ? 
                         _userToken.EntityId : 
                         model.EntityId,

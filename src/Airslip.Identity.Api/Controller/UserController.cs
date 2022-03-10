@@ -74,7 +74,7 @@ namespace Airslip.Identity.Api.Controller
             return HandleResponse<EntitySearchResponse<UserModel>>(response);
         }
         
-        [HttpPost("{id}")]
+        [HttpPut("{id}")]
         [ProducesResponseType(typeof(SuccessfulActionResultModel<UserModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
@@ -83,6 +83,19 @@ namespace Airslip.Identity.Api.Controller
         public async Task<IActionResult> Update([FromRoute] string id, [FromBody] UserModel model)
         {
             IResponse response = await _userService.Update(id, model);
+
+            return HandleResponse<SuccessfulActionResultModel<UserModel>>(response);
+        }
+        
+        [HttpPost()]
+        [ProducesResponseType(typeof(SuccessfulActionResultModel<UserModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        [JwtAuthorize(ApplicationRoles = ApplicationRoles.UserManager)]
+        public async Task<IActionResult> Create([FromBody] UserModel model)
+        {
+            IResponse response = await _userService.Create(model);
 
             return HandleResponse<SuccessfulActionResultModel<UserModel>>(response);
         }

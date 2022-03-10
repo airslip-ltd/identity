@@ -173,8 +173,6 @@ namespace Airslip.Identity.Api
                         opt => opt.Ignore())
                     .ForMember(o => o.RefreshTokens, 
                         opt => opt.Ignore())
-                    .ForMember(o => o.UserRole, 
-                        opt => opt.Ignore())
                     .ReverseMap()
                     .ForMember(o => o.RefreshTokens, 
                         opt => opt.Ignore())
