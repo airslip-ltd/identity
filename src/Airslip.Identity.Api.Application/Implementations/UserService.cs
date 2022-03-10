@@ -7,12 +7,14 @@ using Airslip.Common.Repository.Types.Interfaces;
 using Airslip.Common.Repository.Types.Models;
 using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Types.Failures;
+using Airslip.Identity.Api.Application.Identity;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Models;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Airslip.Identity.Api.Application.Implementations
@@ -44,16 +46,31 @@ namespace Airslip.Identity.Api.Application.Implementations
 
         public async Task<IResponse> Update(string id, UserModel model, string? userId = null)
         {
+            RepositoryActionResultModel<UserModel> getResult = await _repository.Get(id);
+
+            if (getResult is not SuccessfulActionResultModel<UserModel> getSuccess)
+                return getResult;
+
+            UserModel currentModel = getSuccess.CurrentVersion!;
+            
+            if (currentModel.Id == _userToken.UserId && currentModel.UserRole != model.UserRole)
+            {
+                return new ErrorResponse(ErrorCodes.ValidationFailed,
+                    "You cannot change your own role, please ask a system administrator for help");
+            }
+            
             RepositoryActionResultModel<UserModel> repositoryActionResult = await _repository.Update(id, model, userId);
 
             if (repositoryActionResult is not SuccessfulActionResultModel<UserModel> success)
                 return repositoryActionResult;
             
-            await _userManagerService
-                .ChangeEmail(success.PreviousVersion!.Email, success.CurrentVersion!.Email);
+            if (success.PreviousVersion!.Email != success.CurrentVersion!.Email)
+                await _userManagerService
+                    .ChangeEmail(success.PreviousVersion!.Email, success.CurrentVersion!.Email);
                 
-            await _userLifecycle.SetRole(success.CurrentVersion!.Id ?? throw new ArgumentException(), 
-                success.CurrentVersion.UserRole ?? UserRoles.User);
+            if (success.PreviousVersion!.UserRole != success.CurrentVersion!.UserRole)
+                await _userLifecycle.SetRole(success.CurrentVersion!.Id ?? throw new ArgumentException(), 
+                    success.CurrentVersion.UserRole ?? UserRoles.User);
 
             return repositoryActionResult;
         }
@@ -91,6 +108,20 @@ namespace Airslip.Identity.Api.Application.Implementations
                     });
             
             return searchResults;
+        }
+
+        public async Task<IResponse> Create(UserModel model)
+        {
+            IResponse createUser = await _userLifecycle.Add(new RegisterUserCommand(model.Email, model.FirstName, 
+                model.LastName, null, null,
+                model.UserRole, model.DisplayName), CancellationToken.None);
+
+            if (createUser is not SuccessfulActionResultModel<UserModel> success)
+                return createUser;
+
+            model.Id = success.CurrentVersion?.Id;
+
+            return await Update(model.Id!, model);
         }
     }
 }

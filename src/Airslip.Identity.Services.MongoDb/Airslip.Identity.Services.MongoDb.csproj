@@ -3,7 +3,7 @@
 	<Import Project="..\common.props" />
 
 	<ItemGroup>
-		<PackageReference Include="Airslip.Common.Services.MongoDb" Version="6.0.0" />
+		<PackageReference Include="Airslip.Common.Services.MongoDb" Version="6.0.1" />
 		<PackageReference Include="Airslip.Common.Utilities" Version="6.0.4" />
 		<PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
 		<PackageReference Include="MongoDB.Driver" Version="2.14.1" />
