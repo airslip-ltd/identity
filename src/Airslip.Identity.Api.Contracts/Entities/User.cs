@@ -11,7 +11,7 @@ using System.Linq;
 namespace Airslip.Identity.Api.Contracts.Entities
 {
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    public record User : IEntity
+    public record User : IEntityWithOwnership
     {
         public string Id { get; set; } = Guid.NewGuid().ToString("N");
         public string Email { get; init; }
@@ -19,12 +19,10 @@ namespace Airslip.Identity.Api.Contracts.Entities
         public string? LastName { get; init; }
         public string UserRole { get; set; } = UserRoles.User;
         public string? DisplayName { get; init; }
-
         public BasicAuditInformation? AuditInformation { get; set; }
-
         public EntityStatus EntityStatus { get; set; } = EntityStatus.Active;
-
         public AirslipUserType AirslipUserType { get; set; } = AirslipUserType.Standard;
+        public string? UserId { get; set; }
         public string? EntityId { get; set; }
 
         [Obsolete]
@@ -37,7 +35,7 @@ namespace Airslip.Identity.Api.Contracts.Entities
 
         public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>(1);
         public DataConsent DataConsent { get; set; } = new ();
-        public User(string email, string? firstName, string? lastName, string? userRole)
+        public User(string email, string? firstName, string? lastName, string? userRole = UserRoles.User)
         {
             Email = email;
             FirstName = firstName;

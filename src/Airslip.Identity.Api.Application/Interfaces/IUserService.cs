@@ -12,4 +12,6 @@ public interface IUserService
     Task<IResponse> Get(string id);
     Task<IResponse> Search(EntitySearchQueryModel query);
     Task<IResponse> Create(UserModel model);
+    Task<IResponse> GetMyDetails();
+    Task<IResponse> UpdateMyDetails(ProfileModel model);
 }

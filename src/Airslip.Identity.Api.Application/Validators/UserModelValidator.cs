@@ -12,13 +12,6 @@ namespace Airslip.Identity.Api.Application.Validators
     /// </summary>
     public class UserModelValidator : AbstractValidator<UserModel>, IModelValidator<UserModel>
     {
-        private const int NameMaxLength = 50;
-
-        public UserModelValidator()
-        {
-            
-        }
-        
         public async Task<ValidationResultModel> ValidateAdd(UserModel model)
         {
             ValidationResult? validationResult = await ValidateAsync(model);

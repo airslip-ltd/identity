@@ -37,7 +37,7 @@ namespace Airslip.Identity.Api.Controller
             _userLifecycle = userLifecycle;
         }
         
-        [HttpPut("")]
+        [HttpPost("")]
         [ProducesResponseType(typeof(SuccessfulActionResultModel<UserModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]

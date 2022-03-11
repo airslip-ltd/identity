@@ -146,6 +146,7 @@ namespace Airslip.Identity.Api
             services.AddScoped<IModelValidator<ApiKeyModel>, ApiKeyModelValidator>();
             services.AddScoped<IModelValidator<QrCodeModel>, QrCodeModelValidator>();
             services.AddScoped<IModelValidator<UserModel>, UserModelValidator>();
+            services.AddScoped<IModelValidator<ProfileModel>, ProfileModelValidator>();
             services.AddScoped<IModelValidator<UserRoleUpdateModel>, UserRoleUpdateModelValidator>();
             
             services
@@ -165,6 +166,13 @@ namespace Airslip.Identity.Api
                     .ReverseMap();
                 cfg.IgnoreUnmapped<UserRoleUpdateModel, User>();
                 cfg.IgnoreUnmapped<User, UserRoleUpdateModel>();
+                cfg
+                    .CreateMap<ProfileModel, User>()
+                    .ForMember(o => o.EntityId, 
+                        opt => opt.Ignore())
+                    .ForMember(o => o.AirslipUserType, 
+                        opt => opt.Ignore())
+                    .ReverseMap();
                 cfg
                     .CreateMap<UserModel, User>()
                     .ForMember(o => o.EntityId, 

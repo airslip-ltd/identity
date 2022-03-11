@@ -147,7 +147,7 @@ namespace Airslip.Identity.Api.Controller
         public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest forgotPasswordRequest)
         {
             ForgotPasswordCommand command = new(
-                "v1/identity/password",
+                "auth/forgot",
                 forgotPasswordRequest.Email
             );
 
