@@ -28,7 +28,7 @@
 		<PackageReference Include="Airslip.Common.Repository" Version="6.1.4" />
 		<PackageReference Include="Airslip.Common.Services.AutoMapper" Version="6.0.0" />
 		
-		<PackageReference Include="Airslip.Email.Client" Version="6.0.2" />
+		<PackageReference Include="Airslip.Email.Client" Version="6.0.4" />
 		<PackageReference Include="Airslip.Infrastructure.BlobStorage" Version="6.0.0" />
 	</ItemGroup>
 
