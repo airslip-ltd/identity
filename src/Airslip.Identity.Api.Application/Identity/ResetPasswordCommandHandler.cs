@@ -45,7 +45,7 @@ namespace Airslip.Identity.Api.Application.Identity
                     identityError.Description))
                 .ToList();
 
-            return new ErrorResponses(errors);
+            return errors.First();
         }
     }
 }
