@@ -22,6 +22,7 @@ namespace Airslip.Identity.Api.Application.Implementations
     public class UserService : IUserService
     {
         private readonly IRepository<User, UserModel> _repository;
+        private readonly IRepository<User, ProfileModel> _profileRepository;
         private readonly IEntitySearch<UserModel> _userSearch;
         private readonly IUserManagerService _userManagerService;
         private readonly IUserLifecycle _userLifecycle;
@@ -31,6 +32,7 @@ namespace Airslip.Identity.Api.Application.Implementations
         public UserService(
             ITokenDecodeService<UserToken> tokenDecodeService,
             IRepository<User, UserModel> repository,
+            IRepository<User, ProfileModel> profileRepository,
             IEntitySearch<UserModel> userSearch, 
             IUserManagerService userManagerService,
             IUserLifecycle userLifecycle,
@@ -38,6 +40,7 @@ namespace Airslip.Identity.Api.Application.Implementations
         {
             _userToken = tokenDecodeService.GetCurrentToken();
             _repository = repository;
+            _profileRepository = profileRepository;
             _userSearch = userSearch;
             _userManagerService = userManagerService;
             _userLifecycle = userLifecycle;
@@ -123,6 +126,16 @@ namespace Airslip.Identity.Api.Application.Implementations
             model.Id = success.CurrentVersion?.Id;
 
             return await Update(model.Id!, model);
+        }
+
+        public async Task<IResponse> GetMyDetails()
+        {
+            return await _profileRepository.Get(_userToken.UserId);
+        }
+
+        public async Task<IResponse> UpdateMyDetails(ProfileModel model)
+        {
+            return await _profileRepository.Update(_userToken.UserId, model);
         }
     }
 }

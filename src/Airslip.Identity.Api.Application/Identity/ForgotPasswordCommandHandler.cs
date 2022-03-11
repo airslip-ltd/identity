@@ -2,6 +2,7 @@
 using Airslip.Common.Types.Configuration;
 using Airslip.Common.Types.Failures;
 using Airslip.Common.Types.Interfaces;
+using Airslip.Common.Utilities.Extensions;
 using Airslip.Email.Client;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Entities;
@@ -17,7 +18,7 @@ namespace Airslip.Identity.Api.Application.Identity
     {
         private readonly IEmailSender _emailSender;
         private readonly IUserManagerService _userManagerService;
-        private readonly PublicApiSettings _publicApiSettings;
+        private readonly PublicApiSetting _publicApiSettings;
         private readonly ILogger _logger;
 
         public ForgotPasswordCommandHandler(
@@ -27,7 +28,7 @@ namespace Airslip.Identity.Api.Application.Identity
         {
             _userManagerService = userManagerService;
             _emailSender = emailSender;
-            _publicApiSettings = publicApiOptions.Value;
+            _publicApiSettings = publicApiOptions.Value.GetSettingByName("UI");
             _logger = Log.Logger;
         }
 
@@ -41,7 +42,7 @@ namespace Airslip.Identity.Api.Application.Identity
             string token = await _userManagerService.GeneratePasswordResetToken(user);
 
             string resetPasswordUrl = ForgotPasswordEmailConstants.GetPasswordResetUrl(
-                _publicApiSettings.Base.BaseUri, 
+                _publicApiSettings.BaseUri, 
                 request.RelativeEndpoint,
                 token, 
                 user.Email);

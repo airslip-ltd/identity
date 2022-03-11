@@ -10,12 +10,11 @@ using Airslip.Identity.Api.Contracts.Models;
 using Airslip.Common.Auth.AspNetCore.Attributes;
 using Airslip.Common.Auth.AspNetCore.Implementations;
 using Airslip.Common.Repository.Types.Models;
-using Airslip.Identity.Api.Application.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Serilog;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Airslip.Identity.Api.Controller
@@ -42,11 +41,23 @@ namespace Airslip.Identity.Api.Controller
         [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetMyDetails()
         {
             IResponse response = await _userService.Get(Token.UserId);
 
             return HandleResponse<SuccessfulActionResultModel<UserModel>>(response);
+        }
+        
+        [HttpPut("")]
+        [ProducesResponseType(typeof(SuccessfulActionResultModel<ProfileModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(FailedActionResultModel<ProfileModel>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateMyDetails([FromBody] ProfileModel model)
+        {
+            IResponse response = await _userService.UpdateMyDetails(model);
+
+            return HandleResponse<SuccessfulActionResultModel<ProfileModel>>(response);
         }
         
         [HttpGet("{id}")]
