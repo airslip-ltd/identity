@@ -37,27 +37,6 @@ namespace Airslip.Identity.Api.Controller
             _userLifecycle = userLifecycle;
         }
         
-        [HttpPost("")]
-        [ProducesResponseType(typeof(SuccessfulActionResultModel<UserModel>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(NotFoundResponse),StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        [JwtAuthorize(ApplicationRoles = ApplicationRoles.UserManager)]
-        public async Task<IActionResult> Add([FromBody]UserAddModel request)
-        {
-            RegisterUserCommand registerUserCommand = new(
-                request.Email,
-                request.FirstName,
-                request.LastName,
-                null,
-                null,
-                request.UserRole);
-            
-            IResponse response = await _userLifecycle.Add(registerUserCommand, CancellationToken.None);
-
-            return HandleResponse<SuccessfulActionResultModel<UserModel>>(response);
-        }
-        
         [HttpPost("{id}/setrole/{roleName}")]
         [ProducesResponseType(typeof(SuccessfulActionResultModel<UserModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(FailedActionResultModel<UserModel>), StatusCodes.Status400BadRequest)]

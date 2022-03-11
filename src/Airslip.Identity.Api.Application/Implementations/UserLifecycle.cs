@@ -34,6 +34,7 @@ namespace Airslip.Identity.Api.Application.Implementations
         private readonly IUserManagerService _userManagerService;
         private readonly IModelMapper<UserModel> _mapper;
         private readonly IIdentityContext _context;
+        private readonly IEmailNotificationService _emailNotificationService;
         private readonly ILogger _logger;
         private readonly UserToken _userToken;
 
@@ -44,6 +45,7 @@ namespace Airslip.Identity.Api.Application.Implementations
             IUserManagerService userManagerService,
             IModelMapper<UserModel> mapper, 
             IIdentityContext context,
+            IEmailNotificationService emailNotificationService,
             ILogger logger)
         {
             _tokenGenerationService = tokenGenerationService;
@@ -53,6 +55,7 @@ namespace Airslip.Identity.Api.Application.Implementations
             _userManagerService = userManagerService;
             _mapper = mapper;
             _context = context;
+            _emailNotificationService = emailNotificationService;
             _logger = logger;
         }
         
@@ -172,6 +175,8 @@ namespace Airslip.Identity.Api.Application.Implementations
                 user.ChangeFromUnregisteredToStandard();
                 await _context.UpdateEntity(user);
             }
+
+            await _emailNotificationService.SendNewUserEmail(user.Email, "auth/create");
 
             return await _repository.Get(user.Id);
         }
