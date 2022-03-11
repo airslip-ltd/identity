@@ -72,6 +72,7 @@ namespace Airslip.Identity.Api
                 .Configure<ApiKeyValidationSettings>(Configuration.GetSection(nameof(ApiKeyValidationSettings)));
 
             services
+                .AddScoped<IEmailNotificationService, EmailNotificationService>()
                 .AddScoped<IUserLifecycle, UserLifecycle>()
                 .AddScoped<IUserService, UserService>();
 

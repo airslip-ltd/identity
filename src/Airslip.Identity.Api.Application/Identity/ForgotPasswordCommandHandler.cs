@@ -1,14 +1,6 @@
-﻿using Airslip.Common.Types;
-using Airslip.Common.Types.Configuration;
-using Airslip.Common.Types.Failures;
-using Airslip.Common.Types.Interfaces;
-using Airslip.Common.Utilities.Extensions;
-using Airslip.Email.Client;
+﻿using Airslip.Common.Types.Interfaces;
 using Airslip.Identity.Api.Application.Interfaces;
-using Airslip.Identity.Api.Contracts.Entities;
 using MediatR;
-using Microsoft.Extensions.Options;
-using Serilog;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,47 +8,17 @@ namespace Airslip.Identity.Api.Application.Identity
 {
     public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordCommand, IResponse>
     {
-        private readonly IEmailSender _emailSender;
-        private readonly IUserManagerService _userManagerService;
-        private readonly PublicApiSetting _publicApiSettings;
-        private readonly ILogger _logger;
+        private readonly IEmailNotificationService _emailNotificationService;
 
         public ForgotPasswordCommandHandler(
-            IUserManagerService userManagerService,
-            IEmailSender emailSender,
-            IOptions<PublicApiSettings> publicApiOptions)
+            IEmailNotificationService emailNotificationService)
         {
-            _userManagerService = userManagerService;
-            _emailSender = emailSender;
-            _publicApiSettings = publicApiOptions.Value.GetSettingByName("UI");
-            _logger = Log.Logger;
+            _emailNotificationService = emailNotificationService;
         }
 
-        public async Task<IResponse> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
+        public Task<IResponse> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
         {
-            ApplicationUser? user = await _userManagerService.FindByEmail(request.Email);
-            
-            if (user is null)
-                return new NotFoundResponse(nameof(request.Email), request.Email, "Unable to find user");
-
-            string token = await _userManagerService.GeneratePasswordResetToken(user);
-
-            string resetPasswordUrl = ForgotPasswordEmailConstants.GetPasswordResetUrl(
-                _publicApiSettings.BaseUri, 
-                request.RelativeEndpoint,
-                token, 
-                user.Email);
-
-            EmailOutcome outcome = await _emailSender.SendEmail(
-                new [] {new EmailAddressRecipient(user.Email, user.UserName)},
-                ForgotPasswordEmailConstants.Subject,
-                ForgotPasswordEmailConstants.GetPlainTextContent(resetPasswordUrl),
-                string.Empty);
-
-            if(!outcome.Success)
-                _logger.Error("Error sending email due to {Error}", outcome.ErrorReason);
-
-            return Success.Instance;
+            return _emailNotificationService.SendPasswordReset(request.Email, request.RelativeEndpoint);
         }
     }
 }
