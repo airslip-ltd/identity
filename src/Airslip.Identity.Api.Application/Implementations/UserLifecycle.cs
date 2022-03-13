@@ -128,8 +128,18 @@ namespace Airslip.Identity.Api.Application.Implementations
 
         public async Task<IResponse> Add(RegisterUserCommand model, CancellationToken cancellationToken, string? userId = null)
         {
-            IdentityResult result = await _userManagerService
-                .Create(model.Email, model.Password);
+            IdentityResult result;
+            if (!string.IsNullOrEmpty(model.Password))
+            {
+                result = await _userManagerService
+                    .Create(model.Email, model.Password);
+            }
+            else
+            {
+                result = await _userManagerService
+                    .Create(model.Email);
+
+            }
             
             if (result.Succeeded is false)
                 return result.Errors.First().Code switch
