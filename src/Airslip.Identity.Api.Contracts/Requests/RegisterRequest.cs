@@ -12,7 +12,6 @@ namespace Airslip.Identity.Api.Contracts.Requests
         [EmailAddress] 
         public string? Email { get; init; }
 
-        [Required]
         [DataType(DataType.Password)]
         public string? Password { get; init; }
         
