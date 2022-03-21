@@ -28,7 +28,6 @@ jobs:
         files: '["${{ env.PUBLISH_PATH }}/*.json"]'
       env:
         LOGZ_IO_AUTH_TOKEN: ${{ secrets.LOGZ_IO_AUTH_TOKEN }}
-        LOGZ_IO_LOG_LEVEL: Debug
         LOGZ_IO_ENVIRONMENT: QA
         LOGZ_IO_SERVICE_NAME: ${{ env.APPSERVICE_NAME }}
         LOGZ_IO_HOSTING_NAME: Azure
@@ -77,7 +76,6 @@ jobs:
         files: '["${{ env.PUBLISH_PATH }}/*.json"]'
       env:
         LOGZ_IO_AUTH_TOKEN: ${{ secrets.LOGZ_IO_AUTH_TOKEN }}
-        LOGZ_IO_LOG_LEVEL: Debug
         LOGZ_IO_ENVIRONMENT: Production
         LOGZ_IO_SERVICE_NAME: ${{ env.APPSERVICE_NAME }}
         LOGZ_IO_HOSTING_NAME: Azure
