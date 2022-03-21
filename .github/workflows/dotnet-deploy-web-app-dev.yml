@@ -32,6 +32,7 @@ jobs:
         LOGZ_IO_ENVIRONMENT: Development
         LOGZ_IO_SERVICE_NAME: ${{ env.APPSERVICE_NAME }}
         LOGZ_IO_HOSTING_NAME: Azure
+        LOGZ_IO_LOG_LEVEL: Information
 
     - name: Add nuget feed
       run: dotnet nuget add source --username ${{ secrets.PACKAGE_USER }} --password ${{ secrets.PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/airslip-ltd/index.json"
