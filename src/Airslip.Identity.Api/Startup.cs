@@ -144,7 +144,7 @@ namespace Airslip.Identity.Api
             
             // Add repository content
             services
-                .AddRepositories();
+                .AddRepositories(Configuration);
             
             // This is a temporary workaround and needs fixing before go live
             ServiceDescriptor? serviceDescriptor = services
