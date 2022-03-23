@@ -6,7 +6,6 @@ using Airslip.Common.Types.Enums;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Airslip.Identity.Api.Contracts.Entities
 {

@@ -2,7 +2,6 @@ using Airslip.Common.Repository.Types.Constants;
 using Airslip.Common.Repository.Types.Enums;
 using Airslip.Common.Repository.Types.Interfaces;
 using Airslip.Common.Repository.Types.Models;
-using Airslip.Common.Types.Enums;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;

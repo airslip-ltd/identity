@@ -27,7 +27,8 @@ public class EmailNotificationService : IEmailNotificationService
         IOptions<PublicApiSettings> publicApiOptions,
         ILogger logger)
     {
-        _userManagerService = userManagerService; _emailSender = emailSender;
+        _userManagerService = userManagerService; 
+        _emailSender = emailSender;
         _logger = logger;
         _context = context;
         _publicApiSettings = publicApiOptions.Value.GetSettingByName("UI");

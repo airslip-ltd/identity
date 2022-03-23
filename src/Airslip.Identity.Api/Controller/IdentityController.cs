@@ -12,18 +12,13 @@ using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Requests;
 using Airslip.Identity.Api.Contracts.Responses;
 using MediatR;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Serilog;
 using System;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Alpha2CountryCodes = Airslip.Common.Types.Enums.Alpha2CountryCodes;
 
 namespace Airslip.Identity.Api.Controller
 {
@@ -34,7 +29,6 @@ namespace Airslip.Identity.Api.Controller
     public class IdentityController : ApiControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly PublicApiSetting _bankTransactionSettings;
 
         public IdentityController(
             ITokenDecodeService<UserToken> tokenService,
@@ -43,9 +37,6 @@ namespace Airslip.Identity.Api.Controller
             IMediator mediator) : base(tokenService, publicApiOptions, logger)
         {
             _mediator = mediator;
-            _bankTransactionSettings = publicApiOptions.Value.BankTransactions ?? throw new ArgumentException(
-                "PublicApiSettings:BankTransactions section missing from appSettings",
-                nameof(publicApiOptions));
         }
 
         [HttpPost("check")]

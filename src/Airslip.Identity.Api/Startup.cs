@@ -38,7 +38,6 @@ using Airslip.Common.Auth.Enums;
 using Airslip.Common.Monitoring;
 using Airslip.Common.Monitoring.Implementations.Checks;
 using Airslip.Common.Repository.Implementations;
-using Airslip.Common.Repository.Implementations.Events.Entity.PreProcess;
 using Airslip.Common.Repository.Implementations.Events.Entity.PreValidate;
 using Airslip.Common.Repository.Types.Interfaces;
 using Airslip.Identity.Services.MongoDb;

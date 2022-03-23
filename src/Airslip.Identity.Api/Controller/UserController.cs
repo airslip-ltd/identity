@@ -10,7 +10,6 @@ using Airslip.Identity.Api.Contracts.Models;
 using Airslip.Common.Auth.AspNetCore.Attributes;
 using Airslip.Common.Auth.AspNetCore.Implementations;
 using Airslip.Common.Repository.Types.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
