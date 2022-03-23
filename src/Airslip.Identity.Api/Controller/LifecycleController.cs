@@ -10,12 +10,10 @@ using Airslip.Identity.Api.Contracts.Models;
 using Airslip.Common.Auth.AspNetCore.Attributes;
 using Airslip.Common.Auth.AspNetCore.Implementations;
 using Airslip.Common.Repository.Types.Models;
-using Airslip.Identity.Api.Application.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Serilog;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Airslip.Identity.Api.Controller

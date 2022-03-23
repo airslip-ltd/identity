@@ -1,14 +1,10 @@
-﻿using Airslip.Common.Repository.Types.Enums;
-using Airslip.Common.Repository.Types.Interfaces;
+﻿using Airslip.Common.Repository.Types.Interfaces;
 using Airslip.Common.Repository.Types.Models;
 using Airslip.Common.Services.MongoDb;
 using Airslip.Common.Services.MongoDb.Extensions;
 using Airslip.Common.Types.Configuration;
-using Airslip.Common.Types.Enums;
-using Airslip.Common.Types.Interfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;

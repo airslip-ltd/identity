@@ -16,7 +16,6 @@ using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Models;
 using Airslip.Identity.Api.Contracts.Responses;
 using Microsoft.AspNetCore.Identity;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +34,6 @@ namespace Airslip.Identity.Api.Application.Implementations
         private readonly IModelMapper<UserModel> _mapper;
         private readonly IIdentityContext _context;
         private readonly IEmailNotificationService _emailNotificationService;
-        private readonly ILogger _logger;
         private readonly UserToken _userToken;
 
         public UserLifecycle(
@@ -45,8 +43,7 @@ namespace Airslip.Identity.Api.Application.Implementations
             IUserManagerService userManagerService,
             IModelMapper<UserModel> mapper, 
             IIdentityContext context,
-            IEmailNotificationService emailNotificationService,
-            ILogger logger)
+            IEmailNotificationService emailNotificationService)
         {
             _tokenGenerationService = tokenGenerationService;
             _tokenDecodeService = tokenDecodeService;
@@ -56,7 +53,6 @@ namespace Airslip.Identity.Api.Application.Implementations
             _mapper = mapper;
             _context = context;
             _emailNotificationService = emailNotificationService;
-            _logger = logger;
         }
         
         private async Task<IResponse> GenerateRefreshToken(string userId, string deviceId, string currentToken)

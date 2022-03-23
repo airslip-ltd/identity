@@ -11,7 +11,6 @@ using Airslip.Identity.Api.Application.Identity;
 using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Models;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -26,7 +25,6 @@ namespace Airslip.Identity.Api.Application.Implementations
         private readonly IEntitySearch<UserModel> _userSearch;
         private readonly IUserManagerService _userManagerService;
         private readonly IUserLifecycle _userLifecycle;
-        private readonly ILogger _logger;
         private readonly UserToken _userToken;
 
         public UserService(
@@ -35,8 +33,7 @@ namespace Airslip.Identity.Api.Application.Implementations
             IRepository<User, ProfileModel> profileRepository,
             IEntitySearch<UserModel> userSearch, 
             IUserManagerService userManagerService,
-            IUserLifecycle userLifecycle,
-            ILogger logger)
+            IUserLifecycle userLifecycle)
         {
             _userToken = tokenDecodeService.GetCurrentToken();
             _repository = repository;
@@ -44,7 +41,6 @@ namespace Airslip.Identity.Api.Application.Implementations
             _userSearch = userSearch;
             _userManagerService = userManagerService;
             _userLifecycle = userLifecycle;
-            _logger = logger;
         }
 
         public async Task<IResponse> Update(string id, UserModel model, string? userId = null)
