@@ -6,5 +6,5 @@ namespace Airslip.Identity.Api.Application.Interfaces;
 public interface IEmailNotificationService
 {
     Task<IResponse> SendPasswordReset(string email, string relativeEndpoint);
-    Task<IResponse> SendNewUserEmail(string email, string relativeEndpoint);
+    Task<IResponse> SendNewUserEmail(string email, string firstName, string relativeEndpoint);
 }

@@ -186,7 +186,7 @@ namespace Airslip.Identity.Api.Application.Implementations
                 await _context.UpdateEntity(user);
             }
 
-            await _emailNotificationService.SendNewUserEmail(user.Email, "auth/create");
+            await _emailNotificationService.SendNewUserEmail(user.Email, user.FirstName ?? user.Email, "auth/create");
 
             return await _repository.Get(user.Id);
         }
