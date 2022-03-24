@@ -8,6 +8,7 @@ using Airslip.Identity.Api.Application.Interfaces;
 using Airslip.Identity.Api.Contracts.Entities;
 using Microsoft.Extensions.Options;
 using Serilog;
+using System;
 using System.Threading.Tasks;
 
 namespace Airslip.Identity.Api.Application.Implementations;
@@ -34,32 +35,33 @@ public class EmailNotificationService : IEmailNotificationService
         _publicApiSettings = publicApiOptions.Value.GetSettingByName("UI");
     }
 
-    public async Task<IResponse> SendNewUserEmail(string email, string firstName, string relativeEndpoint)
+    public Task<IResponse> SendNewUserEmail(string email, string firstName, string relativeEndpoint)
     {
-        ApplicationUser? user = await _userManagerService.FindByEmail(email);
-            
-        if (user is null)
-            return Success.Instance;
-
-        EmailOutcome outcome = await _emailSender.NewUser(user.Email, firstName, relativeEndpoint);
-
-        if(!outcome.Success)
-            _logger.Error("Error sending email due to {Error}", outcome.ErrorReason);
-
-        return Success.Instance;
+        return _sendEmail(email, firstName, relativeEndpoint, _emailSender.NewUser);
     }
     
-    public async Task<IResponse> SendPasswordReset(string email, string relativeEndpoint)
+    public Task<IResponse> SendPasswordReset(string email, string relativeEndpoint)
+    {
+        return _sendEmail(email, null, relativeEndpoint, _emailSender.ForgotPassword);
+    }
+    
+    private async Task<IResponse> _sendEmail(string email, string? firstName, string relativeEndpoint, 
+        Func<string, string, string, Task<EmailOutcome>> emailFunction)
     {
         ApplicationUser? applicationUser = await _userManagerService.FindByEmail(email);
         
         if (applicationUser is null)
             return Success.Instance;
+
+        if (firstName == null)
+        {
+            User? user = await _context.GetByEmail(email);
         
-        User? user = await _context.GetByEmail(email);
-        
-        if (user is null)
-            return Success.Instance;
+            if (user is null)
+                return Success.Instance;
+
+            firstName = user.FirstName;
+        }
         
         string token = await _userManagerService.GeneratePasswordResetToken(applicationUser);
 
@@ -69,11 +71,13 @@ public class EmailNotificationService : IEmailNotificationService
             token, 
             applicationUser.Email);
 
-        EmailOutcome outcome = await _emailSender.ForgotPassword(applicationUser.Email, user.FirstName ?? applicationUser.Email, resetPasswordUrl);
+        EmailOutcome outcome = await emailFunction(applicationUser.Email, 
+            firstName ?? applicationUser.Email, resetPasswordUrl);
 
         if(!outcome.Success)
             _logger.Error("Error sending email due to {Error}", outcome.ErrorReason);
 
         return Success.Instance;
     }
+    
 }
