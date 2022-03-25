@@ -125,6 +125,8 @@ namespace Airslip.Identity.Api.Application.Implementations
         public async Task<IResponse> Add(RegisterUserCommand model, CancellationToken cancellationToken, string? userId = null)
         {
             IdentityResult result;
+            bool sendWelcomeEmail = false;
+            
             if (!string.IsNullOrEmpty(model.Password))
             {
                 result = await _userManagerService
@@ -134,7 +136,7 @@ namespace Airslip.Identity.Api.Application.Implementations
             {
                 result = await _userManagerService
                     .Create(model.Email);
-
+                sendWelcomeEmail = true;
             }
             
             if (result.Succeeded is false)
@@ -182,7 +184,11 @@ namespace Airslip.Identity.Api.Application.Implementations
                 await _context.UpdateEntity(user);
             }
 
-            await _emailNotificationService.SendNewUserEmail(user.Email, user.FirstName ?? user.Email, "auth/create");
+            if (sendWelcomeEmail)
+            {
+                await _emailNotificationService
+                    .SendNewUserEmail(user.Email, user.FirstName ?? user.Email, "auth/create");
+            }
 
             return await _repository.Get(user.Id);
         }
