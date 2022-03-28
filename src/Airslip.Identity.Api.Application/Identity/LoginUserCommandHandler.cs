@@ -33,7 +33,8 @@ namespace Airslip.Identity.Api.Application.Identity
             ApplicationUser? applicationUser = await _userManagerService.FindByEmail(request.Email);
 
             if (applicationUser is null)
-                return new NotFoundResponse(nameof(request.Email), request.Email, "New user");
+                return new NotFoundResponse(nameof(request.Email), request.Email, 
+                    "This email isn't registered");
 
             bool canLogin = await _userManagerService.TryToLogin(applicationUser, request.Password);
             
