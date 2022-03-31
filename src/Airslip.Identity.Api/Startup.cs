@@ -15,7 +15,6 @@ using Airslip.Identity.Api.Application.Validators;
 using Airslip.Identity.Api.Contracts;
 using Airslip.Identity.Api.Contracts.Entities;
 using Airslip.Identity.Api.Contracts.Models;
-using Airslip.Infrastructure.BlobStorage;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Builder;
@@ -112,8 +111,6 @@ namespace Airslip.Identity.Api
                     Configuration["MongoDbSettings:ConnectionString"],
                     Configuration["MongoDbSettings:DatabaseName"])
                 .AddDefaultTokenProviders();
-
-            services.AddBlobStorage(Configuration);
 
             services.AddMediatR(ApplicationAssembly.Reference);
             // For all the validators, register them with dependency injection as scoped
