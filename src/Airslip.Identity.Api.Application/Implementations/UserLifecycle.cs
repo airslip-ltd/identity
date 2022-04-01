@@ -63,8 +63,7 @@ namespace Airslip.Identity.Api.Application.Implementations
                 return new NotFoundResponse(userId, userId, "Unable to find user");
             
             if (!user.RefreshTokens.Contains(new RefreshToken(deviceId, currentToken)))
-                return new NotFoundResponse(nameof(RefreshToken),
-                    currentToken,
+                return new HandledError(nameof(GenerateRefreshToken),
                     "An incorrect refresh token has been used for this device");
 
             return await GenerateUserResponse(user, 

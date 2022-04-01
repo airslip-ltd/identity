@@ -14,16 +14,8 @@ namespace Airslip.Identity.Api.Application.UnitTests.IntegrationFacts
     {
         protected readonly Uri BaseUri = new("http://localhost/v1/");
         protected const string HeartbeatEndpoint = "heartbeat";
-        internal static readonly Mock<ILogger> _mockLogger = new();
+        private static readonly Mock<ILogger> _mockLogger = new();
         private static readonly TransactionsApiWebApplicationFactory<Startup> TransactionsFactory = new(_mockLogger.Object);
-
-        static IntegrationTestBase()
-        {
-            TransactionsFactory.WithWebHostBuilder(builder =>
-            {
-                builder.UseSerilog(_mockLogger.Object);
-            });
-        }
 
         protected static HttpClient GetUnauthorizedHttpClient()
         {
@@ -53,7 +45,7 @@ namespace Airslip.Identity.Api.Application.UnitTests.IntegrationFacts
                     });
                     
                     webHostBuilder.UseStartup(typeof(Startup));
-                });
+                }).UseSerilog(_logger);;
 
             return builder;
         }
