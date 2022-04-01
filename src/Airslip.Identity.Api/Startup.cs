@@ -1,4 +1,3 @@
-using Airslip.Common.AppIdentifiers;
 using Airslip.Common.Auth.Data;
 using Airslip.Common.Auth.Implementations;
 using Airslip.Common.Auth.Interfaces;
@@ -78,8 +77,7 @@ namespace Airslip.Identity.Api
                 .AddScoped<IUserService, UserService>();
 
             services
-                .AddSendGrid(Configuration)
-                .AddAppIdentifiers(Configuration);
+                .AddSendGrid(Configuration);
 
             services
                 .AddScoped<ITokenDecodeService<QrCodeToken>, TokenDecodeService<QrCodeToken>>()
