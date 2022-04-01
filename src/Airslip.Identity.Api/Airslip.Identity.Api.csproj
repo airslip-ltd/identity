@@ -18,7 +18,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Airslip.Common.AppIdentifiers" Version="6.0.0" />
 		<PackageReference Include="Airslip.Common.Auth.AspNetCore" Version="6.0.6" />
 		<PackageReference Include="Airslip.Common.Auth" Version="6.0.0" />
 		<PackageReference Include="Airslip.Common.Middleware" Version="6.0.1" />
