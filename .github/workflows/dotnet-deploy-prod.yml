@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOTNET_CORE_VERSION: 6.0.x
-      TERRAFORM_MODULE_VERSION: 6.3.2
+      TERRAFORM_MODULE_VERSION: 6.3.4
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core SDK
@@ -26,26 +26,16 @@ jobs:
       run: nuget install Airslip.Terraform.Modules -Version ${{ env.TERRAFORM_MODULE_VERSION }} -OutputDirectory ./env/tf_modules -x
 
     - name: Build
-      run: dotnet build ./src/Airslip.CustomerPortal.sln
+      run: dotnet build ./src/Airslip.Identity.sln
 
     - name: Publish the App
-      run: dotnet publish ./src/Airslip.CustomerPortal.Api -c Release -o WebApp
-
-    - name: Publish the Processor Function App
-      run: dotnet publish ./src/Airslip.CustomerPortal.Processor -c Release -o ProcessorApp
+      run: dotnet publish ./src/Airslip.Identity.Api -c Release -o WebApp
 
     - name: Upload App Artifact
       uses: actions/upload-artifact@v2.2.2
       with:
         name: WebApp
         path: ./WebApp/**
-        if-no-files-found: error
-
-    - name: Upload Processor Artifact
-      uses: actions/upload-artifact@v2.2.2
-      with:
-        name: ProcessorApp
-        path: ./ProcessorApp/**
         if-no-files-found: error
 
     - name: Upload Environment Artifact
@@ -77,12 +67,15 @@ jobs:
       with:
         files: '["./env/variables/secrets.tfvars"]'
       env:
-        SQL_ADMIN_PASSWORD: ${{ secrets.SQL_ADMIN_PASSWORD }}
-        SQL_ADMIN_LOGIN: ${{ secrets.SQL_ADMIN_LOGIN }}
-        API_KEY: ${{ secrets.API_KEY }}
+        CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
         ALLOWED_DOMAINS: ${{ secrets.ALLOWED_DOMAINS }}
         SEND_ALL: ${{ secrets.SEND_ALL }}
-        LOGZ_IO_LOG_LEVEL: Warning
+        LOGZ_IO_LOG_LEVEL: Information
+        RELEASE_NAME: v${{ github.run_id }}
+
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_PROD_DEPLOY }}
 
     - name: Terraform Update
       id: "terraform_update"
@@ -92,6 +85,7 @@ jobs:
         ARM_SUBSCRIPTION_ID: ${{ secrets.NON_PROD_SUBSCRIPTION_ID }}
         ARM_TENANT_ID: ${{ secrets.NON_PROD_ARM_TENANT_ID }}
       run: |
+        az config set extension.use_dynamic_install=yes_without_prompt
         terraform init -backend-config=variables/${{ env.ENVIRONMENT_NAME_SHORT }}/backend.tfvars
         terraform plan -var-file=variables/${{ env.ENVIRONMENT_NAME_SHORT }}/variables.tfvars -var-file=variables/secrets.tfvars -out=terraform.tfplan
         terraform apply terraform.tfplan
@@ -113,7 +107,7 @@ jobs:
       ENVIRONMENT_NAME: QA
       ENVIRONMENT_NAME_SHORT: qa
       PUBLISH_PATH: ./
-      APPSERVICE_NAME: customer-portal-api
+      APPSERVICE_NAME: identity-api
     steps:
     - name: Download WebApp Artifact
       uses: actions/download-artifact@v2.0.8
@@ -171,127 +165,8 @@ jobs:
         package: ./WebApp
         publish-profile: ${{ steps.publishprofile.outputs.profile }}
 
-  qa-deploy-processor-app:
-    needs: qa-build-environment
-    runs-on: ubuntu-latest
-    environment: QA
-    env:
-      ENVIRONMENT_NAME: QA
-      ENVIRONMENT_NAME_SHORT: qa
-      PUBLISH_PATH: ./
-      APPSERVICE_NAME: customer-portal-api
-    steps:
-
-    - name: Download Processor Artifact
-      uses: actions/download-artifact@v2.0.8
-      with:
-        name: ProcessorApp
-        path: ./ProcessorApp
-
-    - name: Download Environment Settings Artifact
-      uses: actions/download-artifact@v2.0.8
-      with:
-        name: Settings
-        path: ./
-
-    - uses: cschleiden/replace-tokens@v1
-      with:
-        files: '["${{ env.PUBLISH_PATH }}/**/*.json"]'
-      env:
-        LOGZ_IO_AUTH_TOKEN: ${{ secrets.LOGZ_IO_AUTH_TOKEN }}
-        LOGZ_IO_ENVIRONMENT: ${{ env.ENVIRONMENT_NAME }}
-        LOGZ_IO_SERVICE_NAME: ${{ env.APPSERVICE_NAME }}
-        LOGZ_IO_HOSTING_NAME: Azure
-
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
-      with:
-        terraform_wrapper: false
-
-    - name: Extract Environment Settings
-      id: "env_settings"
-      run: |
-        content=`cat ./environment.json`
-        content="${content//'%'/'%25'}"
-        content="${content//$'\n'/'%0A'}"
-        content="${content//$'\r'/'%0D'}"
-        echo "::set-output name=envJson::$content"
-
-    - name: Write Outputs
-      run: |
-        echo "${{ fromJson(steps.env_settings.outputs.envJson).resource_group_name.value }}"
-        echo "${{ fromJson(steps.env_settings.outputs.envJson).function_app_names.value[0] }}"
-
-    - name: Get AppService publish profile
-      id: publishprofile_processor
-      uses: aliencube/publish-profile-actions@v1
-      env:
-        AZURE_CREDENTIALS: ${{ secrets.AZURE_PROD_DEPLOY }}
-      with:
-        resourceGroupName: ${{ fromJson(steps.env_settings.outputs.envJson).resource_group_name.value }}
-        appName: ${{ fromJson(steps.env_settings.outputs.envJson).function_app_names.value[0] }}
-
-    - name: 'Deploy Processor Function App'
-      uses: Azure/functions-action@v1
-      id: function_app_processor
-      with:
-        app-name: ${{ fromJson(steps.env_settings.outputs.envJson).function_app_names.value[0] }}
-        package: ./ProcessorApp
-        publish-profile: ${{ steps.publishprofile_processor.outputs.profile }}
-  
-  qa-update-database:
-    needs: qa-build-environment
-    runs-on: ubuntu-latest
-    environment: QA
-    env:
-      DOTNET_CORE_VERSION: 6.0.x
-      CONTEXT_PATH: ./src/Airslip.CustomerPortal.Services.SqlServer
-      SOLUTION_PATH: ./src/Airslip.CustomerPortal.sln
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Download Environment Settings Artifact
-      uses: actions/download-artifact@v2.0.8
-      with:
-        name: Settings
-        path: ./
-    
-    - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v1.7.2
-      with:
-        dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
-
-    - name: Add nuget feed
-      run: |
-        dotnet nuget add source --username ${{ secrets.PACKAGE_USER }} --password ${{ secrets.PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/airslip-ltd/index.json"
-
-    - name: Build
-      run: dotnet build ${{ env.SOLUTION_PATH }}
-
-    - name: Dotnet tool install
-      run: dotnet tool install --global dotnet-ef
-
-    - name: Extract Environment Settings
-      id: "env_settings"
-      run: |
-        content=`cat ./environment.json`
-        content="${content//'%'/'%25'}"
-        content="${content//$'\n'/'%0A'}"
-        content="${content//$'\r'/'%0D'}"
-        echo "::set-output name=envJson::$content"
-
-    - name: Write Outputs
-      run: |
-        echo "${{ fromJson(steps.env_settings.outputs.envJson).database_connection_string.value }}"
-
-    - name: Migrate Database
-      run: |
-        dotnet ef database update --connection "${{ fromJson(steps.env_settings.outputs.envJson).database_connection_string.value }}"
-      working-directory: ${{ env.CONTEXT_PATH }}
-
   prod-build-environment:
-    needs: [qa-deploy-web-app, qa-deploy-processor-app, qa-update-database]
+    needs: [qa-deploy-web-app]
     runs-on: ubuntu-latest
     environment: Production
     env:
@@ -312,12 +187,15 @@ jobs:
       with:
         files: '["./env/variables/secrets.tfvars"]'
       env:
-        SQL_ADMIN_PASSWORD: ${{ secrets.SQL_ADMIN_PASSWORD }}
-        SQL_ADMIN_LOGIN: ${{ secrets.SQL_ADMIN_LOGIN }}
-        API_KEY: ${{ secrets.API_KEY }}
+        CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
         ALLOWED_DOMAINS: ${{ secrets.ALLOWED_DOMAINS }}
         SEND_ALL: ${{ secrets.SEND_ALL }}
-        LOGZ_IO_LOG_LEVEL: Warning
+        LOGZ_IO_LOG_LEVEL: Information
+        RELEASE_NAME: v${{ github.run_id }}
+
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_PROD_DEPLOY }}
 
     - name: Terraform Update
       id: "terraform_update"
@@ -327,6 +205,7 @@ jobs:
         ARM_SUBSCRIPTION_ID: ${{ secrets.NON_PROD_SUBSCRIPTION_ID }}
         ARM_TENANT_ID: ${{ secrets.NON_PROD_ARM_TENANT_ID }}
       run: |
+        az config set extension.use_dynamic_install=yes_without_prompt
         terraform init -backend-config=variables/${{ env.ENVIRONMENT_NAME_SHORT }}/backend.tfvars
         terraform plan -var-file=variables/${{ env.ENVIRONMENT_NAME_SHORT }}/variables.tfvars -var-file=variables/secrets.tfvars -out=terraform.tfplan
         terraform apply terraform.tfplan
@@ -348,7 +227,7 @@ jobs:
       ENVIRONMENT_NAME: Production
       ENVIRONMENT_NAME_SHORT: prod
       PUBLISH_PATH: ./
-      APPSERVICE_NAME: customer-portal-api
+      APPSERVICE_NAME: identity-api
     steps:
     - name: Download WebApp Artifact
       uses: actions/download-artifact@v2.0.8
@@ -405,122 +284,3 @@ jobs:
         app-name: ${{ fromJson(steps.env_settings.outputs.envJson).app_service_name.value }}
         package: ./WebApp
         publish-profile: ${{ steps.publishprofile.outputs.profile }}
-
-  prod-deploy-processor-app:
-    needs: prod-build-environment
-    runs-on: ubuntu-latest
-    environment: Production - Applications
-    env:
-      ENVIRONMENT_NAME: Production
-      ENVIRONMENT_NAME_SHORT: prod
-      PUBLISH_PATH: ./
-      APPSERVICE_NAME: customer-portal-api
-    steps:
-
-    - name: Download Processor Artifact
-      uses: actions/download-artifact@v2.0.8
-      with:
-        name: ProcessorApp
-        path: ./ProcessorApp
-
-    - name: Download Environment Settings Artifact
-      uses: actions/download-artifact@v2.0.8
-      with:
-        name: Settings
-        path: ./
-
-    - uses: cschleiden/replace-tokens@v1
-      with:
-        files: '["${{ env.PUBLISH_PATH }}/**/*.json"]'
-      env:
-        LOGZ_IO_AUTH_TOKEN: ${{ secrets.LOGZ_IO_AUTH_TOKEN }}
-        LOGZ_IO_ENVIRONMENT: ${{ env.ENVIRONMENT_NAME }}
-        LOGZ_IO_SERVICE_NAME: ${{ env.APPSERVICE_NAME }}
-        LOGZ_IO_HOSTING_NAME: Azure
-
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
-      with:
-        terraform_wrapper: false
-
-    - name: Extract Environment Settings
-      id: "env_settings"
-      run: |
-        content=`cat ./environment.json`
-        content="${content//'%'/'%25'}"
-        content="${content//$'\n'/'%0A'}"
-        content="${content//$'\r'/'%0D'}"
-        echo "::set-output name=envJson::$content"
-
-    - name: Write Outputs
-      run: |
-        echo "${{ fromJson(steps.env_settings.outputs.envJson).resource_group_name.value }}"
-        echo "${{ fromJson(steps.env_settings.outputs.envJson).function_app_names.value[0] }}"
-
-    - name: Get AppService publish profile
-      id: publishprofile_processor
-      uses: aliencube/publish-profile-actions@v1
-      env:
-        AZURE_CREDENTIALS: ${{ secrets.AZURE_PROD_DEPLOY }}
-      with:
-        resourceGroupName: ${{ fromJson(steps.env_settings.outputs.envJson).resource_group_name.value }}
-        appName: ${{ fromJson(steps.env_settings.outputs.envJson).function_app_names.value[0] }}
-
-    - name: 'Deploy Processor Function App'
-      uses: Azure/functions-action@v1
-      id: function_app_processor
-      with:
-        app-name: ${{ fromJson(steps.env_settings.outputs.envJson).function_app_names.value[0] }}
-        package: ./ProcessorApp
-        publish-profile: ${{ steps.publishprofile_processor.outputs.profile }}
-
-  prod-update-database:
-    needs: prod-build-environment
-    runs-on: ubuntu-latest
-    environment: Production - Applications
-    env:
-      DOTNET_CORE_VERSION: 6.0.x
-      CONTEXT_PATH: ./src/Airslip.CustomerPortal.Services.SqlServer
-      SOLUTION_PATH: ./src/Airslip.CustomerPortal.sln
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Download Environment Settings Artifact
-      uses: actions/download-artifact@v2.0.8
-      with:
-        name: Settings
-        path: ./
-    
-    - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v1.7.2
-      with:
-        dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
-
-    - name: Add nuget feed
-      run: |
-        dotnet nuget add source --username ${{ secrets.PACKAGE_USER }} --password ${{ secrets.PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/airslip-ltd/index.json"
-
-    - name: Build
-      run: dotnet build ${{ env.SOLUTION_PATH }}
-
-    - name: Dotnet tool install
-      run: dotnet tool install --global dotnet-ef
-
-    - name: Extract Environment Settings
-      id: "env_settings"
-      run: |
-        content=`cat ./environment.json`
-        content="${content//'%'/'%25'}"
-        content="${content//$'\n'/'%0A'}"
-        content="${content//$'\r'/'%0D'}"
-        echo "::set-output name=envJson::$content"
-
-    - name: Write Outputs
-      run: |
-        echo "${{ fromJson(steps.env_settings.outputs.envJson).database_connection_string.value }}"
-
-    - name: Migrate Database
-      run: |
-        dotnet ef database update --connection "${{ fromJson(steps.env_settings.outputs.envJson).database_connection_string.value }}"
-      working-directory: ${{ env.CONTEXT_PATH }}
