@@ -222,7 +222,6 @@ ClientBin/
 *.dbmdl
 *.dbproj.schemaview
 *.jfm
-*.pfx
 *.publishsettings
 orleans.codegen.cs
 
@@ -341,3 +340,20 @@ ASALocalRun/
 
 
 # End of https://www.gitignore.io/api/visualstudio
+
+.DS_Store
+
+# Terraform 
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfplan
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+*.lock.*
+*.secrets.tfvars
+env/tf_modules
+**/local.settings.json

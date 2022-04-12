@@ -1,0 +1,161 @@
+name: Development - Build and Deploy
+
+on:
+ workflow_dispatch:
+ push:
+   branches:
+     - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_CORE_VERSION: 6.0.x
+      TERRAFORM_MODULE_VERSION: 6.3.3
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v1.7.2
+      with:
+        dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+    - name: Add nuget feed
+      run: |
+        dotnet nuget add source --username ${{ secrets.PACKAGE_USER }} --password ${{ secrets.PACKAGE_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/airslip-ltd/index.json"
+        nuget sources add -name "github" -Source "https://nuget.pkg.github.com/airslip-ltd/index.json" -UserName ${{ secrets.PACKAGE_USER }} -Password ${{ secrets.PACKAGE_TOKEN }} -StorePasswordInClearTex
+        
+    - name: Install Terraform Modules
+      run: nuget install Airslip.Terraform.Modules -Version ${{ env.TERRAFORM_MODULE_VERSION }} -OutputDirectory ./env/tf_modules -x
+
+    - name: Build
+      run: dotnet build ./src/Airslip.Identity.sln
+
+    - name: Publish the App
+      run: dotnet publish ./src/Airslip.Identity.Api -c Release -o WebApp
+
+    - name: Upload App Artifact
+      uses: actions/upload-artifact@v2.2.2
+      with:
+        name: WebApp
+        path: ./WebApp/**
+        if-no-files-found: error
+
+    - name: Upload Environment Artifact
+      uses: actions/upload-artifact@v2.2.2
+      with:
+        name: Environment
+        path: ./env/**
+        if-no-files-found: error
+
+  build-environment:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: Development
+    env:
+      ENVIRONMENT_NAME_SHORT: dev
+    steps:
+    - name: Download Environment Artifact
+      uses: actions/download-artifact@v2.0.8
+      with:
+        name: Environment
+        path: ./env
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_wrapper: false
+
+    - uses: cschleiden/replace-tokens@v1
+      with:
+        files: '["./env/variables/secrets.tfvars"]'
+      env:
+        CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+        ALLOWED_DOMAINS: ${{ secrets.ALLOWED_DOMAINS }}
+        SEND_ALL: ${{ secrets.SEND_ALL }}
+        LOGZ_IO_LOG_LEVEL: Information
+
+    - name: Terraform Update
+      id: "terraform_update"
+      env:
+        ARM_CLIENT_ID: ${{ secrets.NON_PROD_ARM_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.NON_PROD_ARM_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.NON_PROD_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.NON_PROD_ARM_TENANT_ID }}
+      run: |
+        terraform init -backend-config=variables/${{ env.ENVIRONMENT_NAME_SHORT }}/backend.tfvars
+        terraform plan -var-file=variables/${{ env.ENVIRONMENT_NAME_SHORT }}/variables.tfvars -var-file=variables/secrets.tfvars -out=terraform.tfplan
+        terraform apply terraform.tfplan
+        terraform output -json >> environment.json
+      working-directory: ./env
+
+    - name: Upload Environment Settings Artifact
+      uses: actions/upload-artifact@v2.2.2
+      with:
+        name: Settings
+        path: ./env/environment.json
+        if-no-files-found: error
+
+  deploy-web-app:
+    needs: build-environment
+    runs-on: ubuntu-latest
+    environment: Development
+    env:
+      ENVIRONMENT_NAME: Development
+      ENVIRONMENT_NAME_SHORT: dev
+      PUBLISH_PATH: ./
+      APPSERVICE_NAME: identity-api
+    steps:
+    - name: Download WebApp Artifact
+      uses: actions/download-artifact@v2.0.8
+      with:
+        name: WebApp
+        path: ./WebApp
+
+    - name: Download Environment Settings Artifact
+      uses: actions/download-artifact@v2.0.8
+      with:
+        name: Settings
+        path: ./
+
+    - uses: cschleiden/replace-tokens@v1
+      with:
+        files: '["${{ env.PUBLISH_PATH }}/**/*.json"]'
+      env:
+        LOGZ_IO_AUTH_TOKEN: ${{ secrets.LOGZ_IO_AUTH_TOKEN }}
+        LOGZ_IO_ENVIRONMENT: ${{ env.ENVIRONMENT_NAME }}
+        LOGZ_IO_SERVICE_NAME: ${{ env.APPSERVICE_NAME }}
+        LOGZ_IO_HOSTING_NAME: Azure
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_wrapper: false
+
+    - name: Extract Environment Settings
+      id: "env_settings"
+      run: |
+        content=`cat ./environment.json`
+        content="${content//'%'/'%25'}"
+        content="${content//$'\n'/'%0A'}"
+        content="${content//$'\r'/'%0D'}"
+        echo "::set-output name=envJson::$content"
+
+    - name: Write Outputs
+      run: |
+        echo "${{ fromJson(steps.env_settings.outputs.envJson).resource_group_name.value }}"
+        echo "${{ fromJson(steps.env_settings.outputs.envJson).app_service_name.value }}"
+
+    - name: Get AppService publish profile
+      id: publishprofile
+      uses: aliencube/publish-profile-actions@v1
+      env:
+        AZURE_CREDENTIALS: ${{ secrets.AZURE_PROD_DEPLOY }}
+      with:
+        resourceGroupName: ${{ fromJson(steps.env_settings.outputs.envJson).resource_group_name.value }}
+        appName: ${{ fromJson(steps.env_settings.outputs.envJson).app_service_name.value }}
+
+    - name: 'Run Azure webapp deploy action using publish profile credentials'
+      uses: azure/webapps-deploy@v2
+      with: 
+        app-name: ${{ fromJson(steps.env_settings.outputs.envJson).app_service_name.value }}
+        package: ./WebApp
+        publish-profile: ${{ steps.publishprofile.outputs.profile }}
