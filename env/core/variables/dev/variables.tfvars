@@ -2,7 +2,7 @@ short_environment = "dev"
 location = "UK South"
 environment = "Development"
 
-hostname = "dev-auth2.airslip.com"
+hostname = "dev-auth.airslip.com"
 ui_hostname = "https://dev-secure.airslip.com"
 send_all = "dev-testing@airslip.com"
 allowed_domains = "airslip.com"
