@@ -24,7 +24,10 @@ jobs:
         nuget sources add -name "github" -Source "https://nuget.pkg.github.com/airslip-ltd/index.json" -UserName ${{ secrets.PACKAGE_USER }} -Password ${{ secrets.PACKAGE_TOKEN }} -StorePasswordInClearTex
         
     - name: Install Terraform Modules
-      run: nuget install Airslip.Terraform.Modules -Version ${{ env.TERRAFORM_MODULE_VERSION }} -OutputDirectory ./env/tf_modules -x
+      run: nuget install Airslip.Terraform.Modules -Version ${{ env.TERRAFORM_MODULE_VERSION }} -OutputDirectory ./env/core/tf_modules -x
+
+    - name: Install Terraform Modules
+      run: nuget install Airslip.Terraform.Modules -Version ${{ env.TERRAFORM_MODULE_VERSION }} -OutputDirectory ./env/apim/tf_modules -x
 
     - name: Build
       run: dotnet build ./src/Airslip.Identity.sln
@@ -68,11 +71,9 @@ jobs:
       with:
         files: '["./env/core/variables/secrets.tfvars"]'
       env:
-        CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
         ALLOWED_DOMAINS: ${{ secrets.ALLOWED_DOMAINS }}
         SEND_ALL: ${{ secrets.SEND_ALL }}
         LOGZ_IO_LOG_LEVEL: Information
-        RELEASE_NAME: v${{ github.run_id }}
 
     - uses: azure/login@v1
       with:
