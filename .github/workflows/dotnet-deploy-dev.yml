@@ -66,7 +66,7 @@ jobs:
 
     - uses: cschleiden/replace-tokens@v1
       with:
-        files: '["./env/variables/secrets.tfvars"]'
+        files: '["./env/core/variables/secrets.tfvars"]'
       env:
         CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
         ALLOWED_DOMAINS: ${{ secrets.ALLOWED_DOMAINS }}
@@ -91,13 +91,13 @@ jobs:
         terraform plan -var-file=variables/${{ env.ENVIRONMENT_NAME_SHORT }}/variables.tfvars -var-file=variables/secrets.tfvars -out=terraform.tfplan
         terraform apply terraform.tfplan
         terraform output -json >> environment.json
-      working-directory: ./env
+      working-directory: ./env/core
 
     - name: Upload Environment Settings Artifact
       uses: actions/upload-artifact@v2.2.2
       with:
         name: Settings
-        path: ./env/environment.json
+        path: ./env/core/environment.json
         if-no-files-found: error
 
   deploy-web-app:
@@ -165,3 +165,47 @@ jobs:
         app-name: ${{ fromJson(steps.env_settings.outputs.envJson).app_service_name.value }}
         package: ./WebApp
         publish-profile: ${{ steps.publishprofile.outputs.profile }}
+
+  build-apim:
+    needs: deploy-web-app
+    runs-on: ubuntu-latest
+    environment: Development
+    env:
+      ENVIRONMENT_NAME_SHORT: dev
+    steps:
+    - name: Download Environment Artifact
+      uses: actions/download-artifact@v2.0.8
+      with:
+        name: Environment
+        path: ./env
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_wrapper: false
+
+    - uses: cschleiden/replace-tokens@v1
+      with:
+        files: '["./env/apim/variables/secrets.tfvars"]'
+      env:
+        CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+        RELEASE_NAME: v${{ github.run_id }}
+
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_PROD_DEPLOY }}
+
+    - name: Terraform Update
+      id: "terraform_update"
+      env:
+        ARM_CLIENT_ID: ${{ secrets.NON_PROD_ARM_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.NON_PROD_ARM_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.NON_PROD_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.NON_PROD_ARM_TENANT_ID }}
+      run: |
+        az config set extension.use_dynamic_install=yes_without_prompt
+        terraform init -backend-config=variables/${{ env.ENVIRONMENT_NAME_SHORT }}/backend.tfvars
+        terraform plan -var-file=variables/${{ env.ENVIRONMENT_NAME_SHORT }}/variables.tfvars -var-file=variables/secrets.tfvars -out=terraform.tfplan
+        terraform apply terraform.tfplan
+        terraform output -json >> environment.json
+      working-directory: ./env/apim

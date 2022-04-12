@@ -39,15 +39,3 @@ variable "allowed_domains" {}
 variable "log_level" {
   default = "Warning"
 }
-
-variable "certificate_path" {
-  default = "./Certificates/airslip.com.pfx"
-}
-variable "certificate_password" {}
-variable "certificate_name" {
-  default = "airslip-com-certificate"
-}
-
-variable "apis" {}
-
-variable "release_name" {}
