@@ -33,9 +33,16 @@ locals {
   send_all                  = var.send_all
   allowed_domains           = var.allowed_domains
   log_level                 = var.log_level
+
   certificate_name          = var.certificate_name
   certificate_path          = var.certificate_path
   certificate_password      = var.certificate_password
+
+  apis = var.apis
+  revision = replace(var.release_name, ".", "")
+  api_publisher_name = var.api_publisher_name
+  api_publisher_email = var.api_publisher_email
+  api_sku_name = var.api_sku_name
 }
 
 module "ingredient_bowl" {
@@ -108,28 +115,34 @@ module "api_management" {
 
 data "azurerm_client_config" "current" {}
 
-module "frontdoor" {
-  source = "./tf_modules/Airslip.Terraform.Modules/recipes/app_service_front_door"
-
-  app_configuration = {
-    app_id               = local.app_id,
-    hostname             = local.hostname,
-    backend_hostname     = module.api_management.app_service_hostname,
-    app_id_short         = local.short_app_id,
-    short_environment    = local.short_environment,
-    location             = module.ingredient_bowl.location,
-    tags                 = local.tags,
-    certificate_name     = local.certificate_name,
-    certificate_path     = local.certificate_path,
-    certificate_password = local.certificate_password,
-    tenant_id            = data.azurerm_client_config.current.tenant_id,
-    admin_group_id       = local.admin_group_id,
-    deployer_id          = local.deployment_agent_group_id
-  }
+module "apim" {
+  source = "./tf_modules/Airslip.Terraform.Modules/recipes/apim_multiple_apis"
 
   resource_group = {
     use_existing            = true,
     resource_group_name     = module.ingredient_bowl.name,
     resource_group_location = module.ingredient_bowl.location
   }
+
+  app_configuration = {
+    app_id = local.app_id,
+    app_id_short = local.short_app_id,
+    short_environment = local.short_environment,
+    location = local.location,
+    tags = local.tags,
+    api_publisher_name = local.api_publisher_name,
+    api_publisher_email = local.api_publisher_email,
+    api_sku_name = local.api_sku_name,
+    api_custom_domain = local.hostname,
+    certificate_name = local.certificate_name, 
+    certificate_path = local.certificate_path, 
+    certificate_password = local.certificate_password,
+    tenant_id = data.azurerm_client_config.current.tenant_id,
+    admin_group_id = local.admin_group_id,
+    deployer_id = local.deployment_agent_group_id,
+    revision = local.revision
+  }
+
+  apis = local.apis
 }
+

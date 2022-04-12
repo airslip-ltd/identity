@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOTNET_CORE_VERSION: 6.0.x
-      TERRAFORM_MODULE_VERSION: 6.3.3
+      TERRAFORM_MODULE_VERSION: 6.3.4
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core SDK
@@ -72,11 +72,12 @@ jobs:
         ALLOWED_DOMAINS: ${{ secrets.ALLOWED_DOMAINS }}
         SEND_ALL: ${{ secrets.SEND_ALL }}
         LOGZ_IO_LOG_LEVEL: Information
+        RELEASE_NAME: v${{ github.run_id }}
 
     - uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_PROD_DEPLOY }}
-        
+
     - name: Terraform Update
       id: "terraform_update"
       env:

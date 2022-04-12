@@ -1,22 +1,21 @@
 short_environment = "prod"
 location = "UK South"
 environment = "Production"
+hostname = "auth.airslip.com"
+ui_hostname = "https://secure.airslip.com"
+
 admin_group_id = "4a965f57-8ca7-4af3-ab5c-b7384f6ed4c9"
 deployment_agent_group_id = "78963579-14c3-4ccc-b445-49f805ddaff2"
-apim_hostname = "https://app.airslip.com"
-auth_apim_hostname = "https://auth.airslip.com"
-hub_url = "https://oauth.airslip.com"
-portal_url = "https://secure.airslip.com"
 
-max_size_gb = 50
-sku_name = "GP_S_Gen5_8"
-min_capacity = 4
-auto_pause_delay_in_minutes = -1
-additional_ip_addresses = [
+apis = [
     {
-        start_ip_address = "88.202.245.245",
-        end_ip_address = "88.202.245.245"
+        api_resource_suffix = "oauth",
+        api_name = "Identity",
+        api_path = "",
+        api_description = "Identity API",
+        hostname = "airslip-prod-identity-api-app.azurewebsites.net",
+        openapi_path = "https://airslip-prod-identity-api-app.azurewebsites.net/swagger/v1/swagger.json",
+        from_file = false,
+        policy = "./variables/prod/api_policy.xml"
     }
 ]
-send_all = ""
-allowed_domains = ""

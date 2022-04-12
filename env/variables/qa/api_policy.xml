@@ -1,0 +1,19 @@
+<policies>
+    <inbound>
+        <cors allow-credentials="true">
+            <allowed-origins>
+                <origin>https://qa-secure.airslip.com</origin>
+                <origin>https://local.secure.qa.ngrok.io</origin>
+            </allowed-origins>
+            <allowed-methods preflight-result-max-age="300">
+                <method>*</method>
+            </allowed-methods>
+            <allowed-headers>
+                <header>*</header>
+            </allowed-headers>
+            <expose-headers>
+                <header>*</header>
+            </expose-headers>
+        </cors>
+    </inbound>
+</policies>
