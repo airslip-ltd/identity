@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOTNET_CORE_VERSION: 6.0.x
-      TERRAFORM_MODULE_VERSION: 6.4.0
+      TERRAFORM_MODULE_VERSION: 6.4.5
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core SDK
