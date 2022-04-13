@@ -23,15 +23,10 @@ locals {
   short_environment         = var.short_environment
   location                  = var.location
   deployment_agent_group_id = var.deployment_agent_group_id
-  admin_group_id            = var.admin_group_id
 
   resource_group_name = "airslip-${var.short_environment}-identity-api-resources"
 
   hostname = var.hostname
-
-  certificate_name     = var.certificate_name
-  certificate_path     = var.certificate_path
-  certificate_password = var.certificate_password
 
   apis                = var.apis
   revision            = replace(var.release_name, ".", "")
@@ -65,11 +60,7 @@ module "apim" {
     api_publisher_email  = local.api_publisher_email,
     api_sku_name         = local.api_sku_name,
     api_custom_domain    = local.hostname,
-    certificate_name     = local.certificate_name,
-    certificate_path     = local.certificate_path,
-    certificate_password = local.certificate_password,
     tenant_id            = data.azurerm_client_config.current.tenant_id,
-    admin_group_id       = local.admin_group_id,
     deployer_id          = local.deployment_agent_group_id,
     revision             = local.revision
   }
