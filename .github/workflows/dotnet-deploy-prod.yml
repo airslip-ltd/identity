@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOTNET_CORE_VERSION: 6.0.x
-      TERRAFORM_MODULE_VERSION: 6.3.4
+      TERRAFORM_MODULE_VERSION: 6.4.0
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core SDK
@@ -188,7 +188,6 @@ jobs:
       with:
         files: '["./env/apim/variables/secrets.tfvars"]'
       env:
-        CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
         RELEASE_NAME: v${{ github.run_id }}
 
     - uses: azure/login@v1
@@ -350,7 +349,6 @@ jobs:
       with:
         files: '["./env/apim/variables/secrets.tfvars"]'
       env:
-        CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
         RELEASE_NAME: v${{ github.run_id }}
 
     - uses: azure/login@v1

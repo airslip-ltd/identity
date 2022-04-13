@@ -22,15 +22,7 @@ variable "api_sku_name" {
   description = "The sku used for the API Management Service"
   default = "Consumption_0"
 }
-variable "admin_group_id" {}
 variable "deployment_agent_group_id" {}
 variable "hostname" {}
-variable "certificate_path" {
-  default = "./Certificates/airslip.com.pfx"
-}
-variable "certificate_password" {}
-variable "certificate_name" {
-  default = "airslip-com-certificate"
-}
 variable "apis" {}
 variable "release_name" {}
