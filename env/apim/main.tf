@@ -33,6 +33,7 @@ locals {
   api_publisher_name  = var.api_publisher_name
   api_publisher_email = var.api_publisher_email
   api_sku_name        = var.api_sku_name
+  api_policy = "./variables/${var.short_environment}/api_policy.xml"
 }
 
 data "azurerm_client_config" "current" {}
@@ -63,6 +64,7 @@ module "apim" {
     tenant_id            = data.azurerm_client_config.current.tenant_id,
     deployer_id          = local.deployment_agent_group_id,
     revision             = local.revision
+    policy  = local.api_policy
   }
 
   apis = local.apis

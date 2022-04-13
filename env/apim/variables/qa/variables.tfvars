@@ -13,7 +13,6 @@ apis = [
         api_description = "Identity API",
         hostname = "airslip-qa-identity-api-app.azurewebsites.net",
         openapi_path = "https://airslip-qa-identity-api-app.azurewebsites.net/swagger/v1/swagger.json",
-        from_file = false,
-        policy = "./variables/qa/api_policy.xml"
+        from_file = false
     }
 ]

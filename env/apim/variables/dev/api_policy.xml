@@ -18,4 +18,9 @@
             </expose-headers>
         </cors>
     </inbound>
+    <backend>
+        <forward-request />
+    </backend>
+    <outbound />
+    <on-error />
 </policies>
