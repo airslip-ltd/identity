@@ -2,7 +2,7 @@
     <inbound>
         <cors allow-credentials="true">
             <allowed-origins>
-                <origin>https://secure.airslip.com</origin>
+                <origin>https://demo-secure.airslip.com</origin>
             </allowed-origins>
             <allowed-methods preflight-result-max-age="300">
                 <method>*</method>
