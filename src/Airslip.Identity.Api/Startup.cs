@@ -211,7 +211,7 @@ namespace Airslip.Identity.Api
                 .AddMongoServices(Configuration);
 
             services
-                .UseHealthChecks()
+                .UseMonitoring()
                 .AddHealthCheck<MongoDbCheck>();
             
             services
