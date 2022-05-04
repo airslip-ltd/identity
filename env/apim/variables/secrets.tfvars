@@ -1,1 +1,1 @@
-release_name = "v444"
+release_name = "#{RELEASE_NAME}#"
