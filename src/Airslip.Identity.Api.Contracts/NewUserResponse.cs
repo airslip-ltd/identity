@@ -2,5 +2,5 @@
 
 namespace Airslip.Identity.Api.Contracts
 {
-    public record UserResponse(string Message, bool isNewUser) : ISuccess;
+    public record UserResponse(string Email, bool isNewUser) : ISuccess;
 }

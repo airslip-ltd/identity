@@ -25,8 +25,8 @@ namespace Airslip.Identity.Api.Application.Identity
             ApplicationUser? applicationUser = await _userManagerService.FindByEmail(request.Email);
 
             return applicationUser is null
-                ? new UserResponse(_welcomeSettings.NewUser.Message, true)
-                : new UserResponse(_welcomeSettings.ExistingUser.Message, false);
+                ? new UserResponse(request.Email, true)
+                : new UserResponse(request.Email, false);
         }
     }
 }
