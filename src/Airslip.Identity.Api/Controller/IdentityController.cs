@@ -39,15 +39,13 @@ namespace Airslip.Identity.Api.Controller
             _mediator = mediator;
         }
 
-        [HttpPost("check")]
+        [HttpGet("check")]
         [ProducesResponseType(typeof(AuthenticatedUserResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(AuthenticatedUserResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CheckUserExists(CheckUserRequest request)
+        public async Task<IActionResult> CheckUserExists([FromQuery] string email)
         {
-            CheckUserCommand checkUserCommand = new(
-                request.Email);
-
+            CheckUserCommand checkUserCommand = new(email);
             IResponse response = await _mediator.Send(checkUserCommand);
 
             return response switch
