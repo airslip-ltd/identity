@@ -39,220 +39,236 @@ using Airslip.Common.Repository.Implementations;
 using Airslip.Common.Repository.Implementations.Events.Entity.PreValidate;
 using Airslip.Common.Repository.Types.Interfaces;
 using Airslip.Identity.Services.MongoDb;
+using System.Data;
 using System.Linq;
 
-namespace Airslip.Identity.Api
+namespace Airslip.Identity.Api;
+
+public class Startup
 {
-    public class Startup
+    public Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        Configuration = configuration;
+    }
 
-        private IConfiguration Configuration { get; }
+    private IConfiguration Configuration { get; }
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services
-                .AddCors()
-                .AddControllers()
-                .AddNewtonsoftJson();
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services
+            .AddCors()
+            .AddControllers()
+            .AddNewtonsoftJson();
 
-            services
-                .AddHttpClient()
-                .AddHttpContextAccessor();
+        services
+            .AddHttpClient()
+            .AddHttpContextAccessor();
 
-            services
-                .AddOptions()
-                .Configure<PublicApiSettings>(Configuration.GetSection(nameof(PublicApiSettings)))
-                .Configure<EmailConfigurationSettings>(Configuration.GetSection(nameof(EmailConfigurationSettings)))
-                .Configure<WelcomeSettings>(Configuration.GetSection(nameof(WelcomeSettings)))
-                .Configure<EnvironmentSettings>(Configuration.GetSection(nameof(EnvironmentSettings)))
-                .Configure<ApiKeyValidationSettings>(Configuration.GetSection(nameof(ApiKeyValidationSettings)));
+        services
+            .AddOptions()
+            .Configure<PublicApiSettings>(Configuration.GetSection(nameof(PublicApiSettings)))
+            .Configure<EmailConfigurationSettings>(Configuration.GetSection(nameof(EmailConfigurationSettings)))
+            .Configure<WelcomeSettings>(Configuration.GetSection(nameof(WelcomeSettings)))
+            .Configure<EnvironmentSettings>(Configuration.GetSection(nameof(EnvironmentSettings)))
+            .Configure<ApiKeyValidationSettings>(Configuration.GetSection(nameof(ApiKeyValidationSettings)));
 
-            services
-                .AddScoped<IEmailNotificationService, EmailNotificationService>()
-                .AddScoped<IUserLifecycle, UserLifecycle>()
-                .AddScoped<IUserService, UserService>();
+        services
+            .AddScoped<IEmailNotificationService, EmailNotificationService>()
+            .AddScoped<IUserLifecycle, UserLifecycle>()
+            .AddScoped<IUserService, UserService>();
 
-            services
-                .AddSendGrid(Configuration);
+        services
+            .AddSendGrid(Configuration);
 
-            services
-                .AddScoped<ITokenDecodeService<QrCodeToken>, TokenDecodeService<QrCodeToken>>()
-                .AddScoped<ITokenGenerationService<GenerateApiKeyToken>, TokenGenerationService<GenerateApiKeyToken>>()
-                .AddScoped<ITokenGenerationService<GenerateQrCodeToken>, TokenGenerationService<GenerateQrCodeToken>>()
-                .AddScoped<ITokenGenerationService<GenerateUserToken>, TokenGenerationService<GenerateUserToken>>()
-                .AddAirslipJwtAuth(Configuration, AuthType.All)?
-                .AddCookie(options => { options.LoginPath = new PathString("/v1/identity/google-login"); })
-                .AddGoogle(GoogleDefaults.AuthenticationScheme,
-                    options =>
-                    {
-                        IConfigurationSection googleAuthNSection =
-                            Configuration.GetSection("IdentityExternalProviders:Google");
-
-                        options.ClientId = googleAuthNSection["ClientId"];
-                        options.ClientSecret = googleAuthNSection["ClientSecret"];
-                    });
-
-            services
-                .AddIdentity<ApplicationUser, ApplicationRole>(options =>
+        services
+            .AddScoped<ITokenDecodeService<QrCodeToken>, TokenDecodeService<QrCodeToken>>()
+            .AddScoped<ITokenGenerationService<GenerateApiKeyToken>, CryptoTokenGenerationService<GenerateApiKeyToken>>()
+            .AddScoped<ITokenGenerationService<GenerateQrCodeToken>, CryptoTokenGenerationService<GenerateQrCodeToken>>()
+            .AddScoped<ITokenGenerationService<GenerateUserToken>, TokenGenerationService<GenerateUserToken>>()
+            .AddAirslipJwtAuth(Configuration, AuthType.All)?
+            .AddCookie(options => { options.LoginPath = new PathString("/v1/identity/google-login"); })
+            .AddGoogle(GoogleDefaults.AuthenticationScheme,
+                options =>
                 {
-                    options.User.RequireUniqueEmail = true;
-                    options.Password.RequireNonAlphanumeric = false;
-                    options.SignIn.RequireConfirmedEmail = true;
-                })
-                .AddRoles<ApplicationRole>()
-                .AddRoleManager<RoleManager<ApplicationRole>>()
-                .AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>(
-                    Configuration["MongoDbSettings:ConnectionString"],
-                    Configuration["MongoDbSettings:DatabaseName"])
-                .AddDefaultTokenProviders();
+                    IConfigurationSection googleAuthNSection =
+                        Configuration.GetSection("IdentityExternalProviders:Google");
 
-            services.AddMediatR(ApplicationAssembly.Reference);
-            // For all the validators, register them with dependency injection as scoped
-            FluentValidation.AssemblyScanner.FindValidatorsInAssembly(ApplicationAssembly.Reference)
-                .ForEach(item => services.AddScoped(item.InterfaceType, item.ValidatorType));
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidatorBehavior<,>));
-
-            services.AddSwaggerGen(options =>
-            {
-                options.DocumentFilter<BasePathDocumentFilter>();
-
-                string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                string filePath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                options.IncludeXmlComments(filePath);
-                options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory,
-                    $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
-
-                options.SwaggerDoc("v1",
-                    new OpenApiInfo
-                    {
-                        Title = "Identity API",
-                        Version = "1.0.0",
-                        Description = "Includes all API endpoints for authorisation."
-                    }
-                );
-            });
-            
-            // Add repository content
-            services
-                .AddRepositories(Configuration);
-            
-            // This is a temporary workaround and needs fixing before go live
-            ServiceDescriptor? serviceDescriptor = services
-                .FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(EntityOwnershipValidationEvent<,>));
-            if ( serviceDescriptor != null) services.Remove(serviceDescriptor);
-            
-            // Customised per app
-            services.AddScoped<IModelValidator<ApiKeyModel>, ApiKeyModelValidator>();
-            services.AddScoped<IModelValidator<QrCodeModel>, QrCodeModelValidator>();
-            services.AddScoped<IModelValidator<UserModel>, UserModelValidator>();
-            services.AddScoped<IModelValidator<ProfileModel>, ProfileModelValidator>();
-            services.AddScoped<IModelValidator<UserRoleUpdateModel>, UserRoleUpdateModelValidator>();
-            
-            services
-                .AddScoped<ITokenValidator<QrCodeToken>, TokenValidator<QrCodeToken>>();
-            
-            services.AddAutoMapper(cfg =>
-            {
-                cfg.CreateMap<ApiKey, ApiKeyModel>();
-                cfg.CreateMap<ApiKeyModel, ApiKey>();
-                cfg.CreateMap<CreateApiKeyModel, ApiKeyModel>();
-                cfg.CreateMap<QrCode, QrCodeModel>();
-                cfg.CreateMap<QrCodeModel, QrCode>();
-                cfg.CreateMap<CreateQrCodeModel, QrCodeModel>();
-                cfg.CreateMap<DataConsentModel, DataConsent>();
-                cfg.CreateMap<CreateUnregisteredUserModel, UserModel>();
-                cfg.CreateMap<UserRoleUpdateModel, User>()
-                    .ReverseMap();
-                cfg.IgnoreUnmapped<UserRoleUpdateModel, User>();
-                cfg.IgnoreUnmapped<User, UserRoleUpdateModel>();
-                cfg
-                    .CreateMap<ProfileModel, User>()
-                    .ForMember(o => o.EntityId, 
-                        opt => opt.Ignore())
-                    .ForMember(o => o.AirslipUserType, 
-                        opt => opt.Ignore())
-                    .ReverseMap();
-                cfg
-                    .CreateMap<UserModel, User>()
-                    .ForMember(o => o.EntityId, 
-                        opt => opt.Ignore())
-                    .ForMember(o => o.AirslipUserType, 
-                        opt => opt.Ignore())
-                    .ForMember(o => o.RefreshTokens, 
-                        opt => opt.Ignore())
-                    .ReverseMap()
-                    .ForMember(o => o.RefreshTokens, 
-                        opt => opt.Ignore())
-                    .ForMember(o => o.OpenBankingProviders, 
-                        opt => opt.Ignore());
-            });
-
-            services.AddScoped<IApiKeyService, ApiKeyService>();
-            services.AddScoped<IQrCodeService, QrCodeService>();
-            services.AddScoped<IApiKeyRepository, ApiKeyRepository>();
-            services.AddScoped<IDataConsentService, DataConsentService>();
-            services.AddScoped<IUnregisteredUserService, UnregisteredUserService>();
-            
-            services.AddScoped(typeof(IEntitySearch<>), typeof(EntitySearch<>) );
-
-            services
-                .AddApiVersioning(options => { options.ReportApiVersions = true; })
-                .AddVersionedApiExplorer(options =>
-                {
-                    options.GroupNameFormat = "'v'VVV";
-                    options.SubstituteApiVersionInUrl = true;
+                    options.ClientId = googleAuthNSection["ClientId"];
+                    options.ClientSecret = googleAuthNSection["ClientSecret"];
                 });
 
-            services
-                .AddMongoServices(Configuration);
-
-            services
-                .UseMonitoring()
-                .AddHealthCheck<MongoDbCheck>();
-            
-            services
-                .AddApiAccessValidation(Configuration);
-        }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider,  ILoggerFactory loggerFactory)
-        {
-            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
-
-            // Set environments for tokens
-            IOptions<EnvironmentSettings>? environment = serviceProvider.GetService<IOptions<EnvironmentSettings>>();
-            AirslipSchemeOptions.ThisEnvironment = environment?.Value.EnvironmentName ?? "Development";
-
-            // Initialise roles
-            serviceProvider.InitialiseRoles().GetAwaiter().GetResult();
-            
-            loggerFactory.AddSerilog();
-            
-            app.UseSwagger();
-
-            app.UseSwaggerUI(c =>
+        services
+            .AddIdentity<ApplicationUser, ApplicationRole>(options =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Airslip.Identity.Api v1");
-                c.RoutePrefix = string.Empty;
-            });
-            
-            app.UseHttpsRedirection()
-                .UseRouting()
-                .UseAuthentication()
-                .UseAuthorization()
-                .UseMiddleware<ErrorHandlingMiddleware>()
-                .UseMiddleware<JwtTokenMiddleware>()
-                .UseCors(builder => builder
-                    .WithOrigins(Configuration["AllowedHosts"].Split(";"))
-                    .AllowAnyHeader()
-                    .AllowAnyMethod())
-                .UseEndpoints(endpoints =>
+                options.User.RequireUniqueEmail = true;
+                options.Password.RequireNonAlphanumeric = false;
+                options.SignIn.RequireConfirmedEmail = true;
+            })
+            .AddRoles<ApplicationRole>()
+            .AddRoleManager<RoleManager<ApplicationRole>>()
+            .AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>(
+                Configuration["MongoDbSettings:ConnectionString"],
+                Configuration["MongoDbSettings:DatabaseName"])
+            .AddDefaultTokenProviders();
+
+        services.AddMediatR(ApplicationAssembly.Reference);
+        // For all the validators, register them with dependency injection as scoped
+        FluentValidation.AssemblyScanner.FindValidatorsInAssembly(ApplicationAssembly.Reference)
+            .ForEach(item => services.AddScoped(item.InterfaceType, item.ValidatorType));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidatorBehavior<,>));
+
+        services.AddSwaggerGen(options =>
+        {
+            options.DocumentFilter<BasePathDocumentFilter>();
+
+            string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            string filePath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            options.IncludeXmlComments(filePath);
+            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory,
+                $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
+
+            options.SwaggerDoc("v1",
+                new OpenApiInfo
                 {
-                    endpoints.MapControllers();
-                });
+                    Title = "Identity API",
+                    Version = "1.0.0",
+                    Description = "Includes all API endpoints for authorisation."
+                }
+            );
+        });
+            
+        // Add repository content
+        services
+            .AddRepositories(Configuration);
+            
+        // This is a temporary workaround and needs fixing before go live
+        ServiceDescriptor? serviceDescriptor = services
+            .FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(EntityOwnershipValidationEvent<,>));
+        if ( serviceDescriptor != null) services.Remove(serviceDescriptor);
+            
+        // Customised per app
+        services.AddScoped<IModelValidator<ApiKeyModel>, ApiKeyModelValidator>();
+        services.AddScoped<IModelValidator<QrCodeModel>, QrCodeModelValidator>();
+        services.AddScoped<IModelValidator<UserModel>, UserModelValidator>();
+        services.AddScoped<IModelValidator<ProfileModel>, ProfileModelValidator>();
+        services.AddScoped<IModelValidator<UserRoleUpdateModel>, UserRoleUpdateModelValidator>();
+            
+        services
+            .AddScoped<ITokenValidator<QrCodeToken>, TokenValidator<QrCodeToken>>();
+            
+        services.AddAutoMapper(cfg =>
+        {
+            cfg.CreateMap<ApiKey, ApiKeyModel>();
+            cfg.CreateMap<ApiKeyModel, ApiKey>();
+            cfg.CreateMap<CreateApiKeyModel, ApiKeyModel>();
+            cfg.CreateMap<QrCode, QrCodeModel>();
+            cfg.CreateMap<QrCodeModel, QrCode>();
+            cfg.CreateMap<CreateQrCodeModel, QrCodeModel>();
+            cfg.CreateMap<DataConsentModel, DataConsent>();
+            cfg.CreateMap<CreateUnregisteredUserModel, UserModel>();
+            cfg.CreateMap<UserRoleUpdateModel, User>()
+                .ReverseMap();
+            cfg.IgnoreUnmapped<UserRoleUpdateModel, User>();
+            cfg.IgnoreUnmapped<User, UserRoleUpdateModel>();
+            cfg
+                .CreateMap<ProfileModel, User>()
+                .ForMember(o => o.EntityId, 
+                    opt => opt.Ignore())
+                .ForMember(o => o.AirslipUserType, 
+                    opt => opt.Ignore())
+                .ReverseMap();
+            cfg
+                .CreateMap<UserModel, User>()
+                .ForMember(o => o.EntityId, 
+                    opt => opt.Ignore())
+                .ForMember(o => o.AirslipUserType, 
+                    opt => opt.Ignore())
+                .ForMember(o => o.RefreshTokens, 
+                    opt => opt.Ignore())
+                .ReverseMap()
+                .ForMember(o => o.RefreshTokens, 
+                    opt => opt.Ignore())
+                .ForMember(o => o.OpenBankingProviders, 
+                    opt => opt.Ignore());
+        });
+
+        services.AddScoped<IApiKeyService, ApiKeyService>();
+        services.AddScoped<IQrCodeService, QrCodeService>();
+        services.AddScoped<IApiKeyRepository, ApiKeyRepository>();
+        services.AddScoped<IDataConsentService, DataConsentService>();
+        services.AddScoped<IUnregisteredUserService, UnregisteredUserService>();
+            
+        services.AddScoped(typeof(IEntitySearch<>), typeof(EntitySearch<>) );
+
+        services
+            .AddApiVersioning(options => { options.ReportApiVersions = true; })
+            .AddVersionedApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
+            });
+
+        services
+            .AddMongoServices(Configuration);
+
+        services
+            .UseMonitoring()
+            .AddHealthCheck<MongoDbCheck>();
+            
+        services
+            .AddApiAccessValidation(Configuration);
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider,  ILoggerFactory loggerFactory)
+    {
+        if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
+
+        // Set environments for tokens
+        IOptions<EnvironmentSettings>? environment = serviceProvider.GetService<IOptions<EnvironmentSettings>>();
+        AirslipSchemeOptions.ThisEnvironment = environment?.Value.EnvironmentName ?? "Development";
+
+        // Initialise roles
+        serviceProvider.InitialiseRoles().GetAwaiter().GetResult();
+            
+        loggerFactory.AddSerilog();
+            
+        app.UseSwagger();
+
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Airslip.Identity.Api v1");
+            c.RoutePrefix = string.Empty;
+        });
+            
+        app.UseHttpsRedirection()
+            .UseRouting()
+            .UseAuthentication()
+            .UseAuthorization()
+            .UseMiddleware<ErrorHandlingMiddleware>()
+            .UseMiddleware<JwtTokenMiddleware>()
+            .UseCors(builder => builder
+                .WithOrigins(Configuration["AllowedHosts"].Split(";"))
+                .AllowAnyHeader()
+                .AllowAnyMethod())
+            .UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+    }
+}
+
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection Remove<T>(this IServiceCollection services)
+    {
+        if (services.IsReadOnly)
+        {
+            throw new ReadOnlyException($"{nameof(services)} is read only");
         }
+
+        ServiceDescriptor? serviceDescriptor = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(T));
+        if (serviceDescriptor != null) services.Remove(serviceDescriptor);
+
+        return services;
     }
 }

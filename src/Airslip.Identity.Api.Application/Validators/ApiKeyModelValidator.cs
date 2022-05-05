@@ -21,16 +21,6 @@ namespace Airslip.Identity.Api.Application.Validators
                 .Length(1, NameMaxLength);
             RuleFor(o => o.Name)
                 .NotEmpty();
-            
-            RuleFor(o => o.KeyValue)
-                .NotEmpty();
-            
-            RuleFor(o => o.EntityId)
-                .NotEmpty();
-
-            RuleFor(o => o.AirslipUserType)
-                .Equal(AirslipUserType.Merchant);
-
         }
         
         public async Task<ValidationResultModel> ValidateAdd(ApiKeyModel model)

@@ -8,6 +8,7 @@ using Airslip.Common.Repository.Types.Interfaces;
 using Airslip.Common.Repository.Types.Models;
 using Airslip.Common.Types.Interfaces;
 using Airslip.Common.Types.Failures;
+using Airslip.Common.Utilities;
 using Airslip.Common.Utilities.Extensions;
 using Airslip.Identity.Api.Application.Identity;
 using Airslip.Identity.Api.Application.Interfaces;
@@ -204,6 +205,25 @@ namespace Airslip.Identity.Api.Application.Implementations
                 .SetRole(id, roleName);
 
             return result;
+        }
+
+        public async Task<string> AddApiUser(string apiKeyName)
+        {
+            User newUser = new(CommonFunctions.GetId(), apiKeyName, "")
+            {
+                DisplayName = apiKeyName,
+                EntityId = _userToken.EntityId,
+                AirslipUserType = _userToken.AirslipUserType,
+                UserRole = UserRoles.User,
+                AuditInformation = new BasicAuditInformation
+                {
+                    DateCreated = DateTime.UtcNow,
+                    CreatedByUserId = _userToken.UserId
+                }
+            };
+            User user = await _context.AddEntity(newUser);
+
+            return user.Id;
         }
     }
 }
