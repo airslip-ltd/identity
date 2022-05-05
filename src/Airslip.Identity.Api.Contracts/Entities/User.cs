@@ -3,6 +3,7 @@ using Airslip.Common.Repository.Types.Entities;
 using Airslip.Common.Repository.Types.Enums;
 using Airslip.Common.Repository.Types.Interfaces;
 using Airslip.Common.Types.Enums;
+using Airslip.Common.Utilities;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace Airslip.Identity.Api.Contracts.Entities
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     public record User : IEntityWithOwnership
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString("N");
+        public string Id { get; set; } = CommonFunctions.GetId();
         public string Email { get; init; }
         public string? FirstName { get; init; }
         public string? LastName { get; init; }

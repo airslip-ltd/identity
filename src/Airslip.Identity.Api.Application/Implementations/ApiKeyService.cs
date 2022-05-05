@@ -1,3 +1,4 @@
+using Airslip.Common.Auth.Data;
 using Airslip.Common.Auth.Implementations;
 using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
@@ -13,6 +14,7 @@ using Airslip.Identity.Api.Contracts.Models;
 using FluentValidation.Results;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,40 +24,52 @@ namespace Airslip.Identity.Api.Application.Implementations
     {
         private readonly IApiKeyRepository _repository;
         private readonly IModelMapper<ApiKeyModel> _modelMapper;
+        private readonly IUserLifecycle _userLifecycle;
         private readonly ITokenGenerationService<GenerateApiKeyToken> _apiKeyTokenService;
-        private readonly ITokenDecodeService<UserToken> _userTokenService;
+        private readonly UserToken _userToken;
+        private readonly IEntitySearch<ApiKeyModel> _apiKeySearch;
         private readonly ApiKeyValidationSettings _validationSettings;
 
-        public ApiKeyService(IApiKeyRepository repository, IModelMapper<ApiKeyModel> modelMapper,
+        public ApiKeyService(IApiKeyRepository repository, 
+            IModelMapper<ApiKeyModel> modelMapper,
+            IUserLifecycle userLifecycle,
             ITokenGenerationService<GenerateApiKeyToken> apiKeyTokenService,
-            ITokenDecodeService<UserToken> userTokenService, IOptions<ApiKeyValidationSettings> options)
+            ITokenDecodeService<UserToken> userTokenService,
+            IEntitySearch<ApiKeyModel> apiKeySearch, 
+            IOptions<ApiKeyValidationSettings> options)
         {
             _repository = repository;
             _modelMapper = modelMapper;
+            _userLifecycle = userLifecycle;
             _apiKeyTokenService = apiKeyTokenService;
-            _userTokenService = userTokenService;
+            _userToken = userTokenService.GetCurrentToken();
+            _apiKeySearch = apiKeySearch;
             _validationSettings = options.Value;
         }
 
         public async Task<IResponse> CreateNewApiKey(CreateApiKeyModel createApiKeyModel)
         {
-            UserToken userToken = _userTokenService.GetCurrentToken();
             ApiKeyModel apiKeyModel = _modelMapper.Create(createApiKeyModel);
 
+            string userId = await _userLifecycle.AddApiUser(createApiKeyModel.Name);
+            
             // Allocate a new key value, we will use the existing refresh token
             //   logic as the user will never see this value
             apiKeyModel.KeyValue = JwtBearerToken.GenerateRefreshToken();
-            apiKeyModel.EntityId = userToken.EntityId;
-            apiKeyModel.AirslipUserType = userToken.AirslipUserType;
+            apiKeyModel.ApiKeyUserId = userId;
             
             RepositoryActionResultModel<ApiKeyModel> result = await _repository.Add(apiKeyModel);
 
-            if (result is not SuccessfulActionResultModel<ApiKeyModel> success) 
+            if (result is not SuccessfulActionResultModel<ApiKeyModel> success || success.CurrentVersion == null) 
                 return result;
             
-            GenerateApiKeyToken generateApiKeyToken = new(userToken.EntityId, 
+            GenerateApiKeyToken generateApiKeyToken = new(success.CurrentVersion.EntityId!, 
                 apiKeyModel.KeyValue, 
-                userToken.AirslipUserType);
+                success.CurrentVersion.AirslipUserType,
+                success.CurrentVersion.ApiKeyUserId!)
+            {
+                UserRole = UserRoles.User
+            };
 
             NewToken newToken = _apiKeyTokenService.GenerateNewToken(generateApiKeyToken);
 
@@ -64,10 +78,23 @@ namespace Airslip.Identity.Api.Application.Implementations
             return success;
         }
 
-        public Task<IResponse> ExpireApiKey(string id)
+        public async Task<IResponse> Search(EntitySearchQueryModel query)
         {
-            // TODO: Add deletion logic
-            throw new NotImplementedException();
+            EntitySearchResponse<ApiKeyModel> searchResults = await _apiKeySearch
+                .GetSearchResults<ApiKey>(query,
+                    new List<SearchFilterModel>
+                    {
+                        new(nameof(ApiKey.EntityStatus), EntityStatus.Active.ToString()),
+                        new(nameof(ApiKey.EntityId), _userToken.EntityId),
+                        new(nameof(ApiKey.AirslipUserType), _userToken.AirslipUserType.ToString())
+                    });
+            
+            return searchResults;
+        }
+        
+        public async Task<IResponse> Delete(string id)
+        {
+            return await _repository.Delete(id);
         }
 
         public async Task<IResponse> ValidateApiKey(ApiKeyValidationModel model)
@@ -98,6 +125,11 @@ namespace Airslip.Identity.Api.Application.Implementations
                 "ApiKey has expired");
 
             return new ApiKeyValidationResultModel(true, "");
+        }
+
+        public async Task<IResponse> Get(string id)
+        {
+            return await _repository.Get(id);
         }
     }
 }

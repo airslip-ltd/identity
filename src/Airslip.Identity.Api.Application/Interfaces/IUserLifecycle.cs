@@ -14,4 +14,5 @@ public interface IUserLifecycle
     Task<IResponse> Register(RegisterUserCommand model, CancellationToken cancellationToken,
         string? userId = null);
     Task<IResponse> SetRole(string id, string roleName);
+    Task<string> AddApiUser(string apiKeyName);
 }

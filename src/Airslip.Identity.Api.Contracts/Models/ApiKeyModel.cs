@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Airslip.Identity.Api.Contracts.Models
 {
-    public class ApiKeyModel : IModel
+    public class ApiKeyModel : IModelWithOwnership
     {
         public string? Id { get; set; }
         
@@ -16,12 +16,16 @@ namespace Airslip.Identity.Api.Contracts.Models
         
         [JsonIgnore]
         public AirslipUserType AirslipUserType { get; set; }
-        
+
+        [JsonIgnore]
+        public string? UserId { get; set; }
+
         [JsonIgnore]
         public string? EntityId { get; set; }
 
         public string? Name { get; set; }
         
         public string? TokenValue { get; set; }
+        public string? ApiKeyUserId { get; set; }
     }
 }
