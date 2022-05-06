@@ -3,7 +3,7 @@
 	<Import Project="..\common.props" />
 
 	<ItemGroup>
-		<PackageReference Include="Airslip.Common.Utilities" Version="6.1.4" />
+		<PackageReference Include="Airslip.Common.Utilities" Version="6.1.5" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.4" />
 		<PackageReference Include="Microsoft.Extensions.Http.Polly" Version="6.0.3" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.3" />
