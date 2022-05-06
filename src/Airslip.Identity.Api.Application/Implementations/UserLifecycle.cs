@@ -4,6 +4,7 @@ using Airslip.Common.Auth.Interfaces;
 using Airslip.Common.Auth.Models;
 using Airslip.Common.Repository.Data;
 using Airslip.Common.Repository.Types.Entities;
+using Airslip.Common.Repository.Types.Enums;
 using Airslip.Common.Repository.Types.Interfaces;
 using Airslip.Common.Repository.Types.Models;
 using Airslip.Common.Types.Interfaces;
@@ -211,6 +212,7 @@ namespace Airslip.Identity.Api.Application.Implementations
         {
             User newUser = new(CommonFunctions.GetId(), apiKeyName, "")
             {
+                EntityStatus = EntityStatus.Passive,
                 DisplayName = apiKeyName,
                 EntityId = _userToken.EntityId,
                 AirslipUserType = _userToken.AirslipUserType,
