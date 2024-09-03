@@ -57,7 +57,7 @@ jobs:
       ENVIRONMENT_NAME_SHORT: dev
     steps:
     - name: Download Environment Artifact
-      uses: actions/download-artifact@v2.0.8
+      uses: actions/download-artifact@v4.1.7
       with:
         name: Environment
         path: ./env
@@ -112,13 +112,13 @@ jobs:
       APPSERVICE_NAME: identity-api
     steps:
     - name: Download WebApp Artifact
-      uses: actions/download-artifact@v2.0.8
+      uses: actions/download-artifact@v4.1.7
       with:
         name: WebApp
         path: ./WebApp
 
     - name: Download Environment Settings Artifact
-      uses: actions/download-artifact@v2.0.8
+      uses: actions/download-artifact@v4.1.7
       with:
         name: Settings
         path: ./
@@ -175,7 +175,7 @@ jobs:
       ENVIRONMENT_NAME_SHORT: dev
     steps:
     - name: Download Environment Artifact
-      uses: actions/download-artifact@v2.0.8
+      uses: actions/download-artifact@v4.1.7
       with:
         name: Environment
         path: ./env
